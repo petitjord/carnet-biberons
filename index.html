@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F0F5F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1816" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Biberons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Carnet de biberons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  /* Mise en page : une colonne étroite. Le geste principal (noter un biberon) est en haut,
+     le suivi du jour juste dessous sur une échelle graduée comme un vrai biberon,
+     puis le graphique, le journal et les prévisions par âge. */
+  :root {
+    --bg: #F0F5F3;
+    --surface: #FFFFFF;
+    --ink: #12302D;
+    --muted: #58736F;
+    --line: #D5E2DF;
+    --accent: #1B7A70;
+    --accent-ink: #FFFFFF;
+    --milk: #DDEFEB;
+    --bar: #A9D4CC;
+    --peach: #B8501F;
+    --peach-soft: #FBE9DF;
+    --scrim: rgba(8, 20, 18, 0.55);
+    --font-display: "Bricolage Grotesque", "Avenir Next", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0D1816;
+      --surface: #152523;
+      --ink: #E3F0ED;
+      --muted: #8CA9A4;
+      --line: #26403C;
+      --accent: #4FC0B1;
+      --accent-ink: #06211E;
+      --milk: #1B3733;
+      --bar: #2E5E57;
+      --peach: #F2A27A;
+      --peach-soft: #3A2519;
+      --scrim: rgba(0, 0, 0, 0.62);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0D1816;
+    --surface: #152523;
+    --ink: #E3F0ED;
+    --muted: #8CA9A4;
+    --line: #26403C;
+    --accent: #4FC0B1;
+    --accent-ink: #06211E;
+    --milk: #1B3733;
+    --bar: #2E5E57;
+    --peach: #F2A27A;
+    --peach-soft: #3A2519;
+    --scrim: rgba(0, 0, 0, 0.62);
+    color-scheme: dark;
+  }
+
+  :root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
+  button, summary, .chip, .step { touch-action: manipulation; }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.45 var(--font-body);
+    padding-inline: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  h1, h2, h3, p, ul, dl, dd { margin: 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .app { max-width: 480px; margin: 0 auto; padding-block: 20px 40px; display: flex; flex-direction: column; gap: 30px; }
+  h2 { font: 700 21px/1.15 var(--font-display); text-wrap: balance; }
+
+  /* En-tête */
+  .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .head > div { min-width: 0; }
+  h1 { font: 700 34px/1.04 var(--font-display); overflow-wrap: anywhere; text-wrap: balance; }
+  .age { margin-top: 6px; color: var(--muted); }
+  .ghost {
+    flex: none; min-height: 40px; padding: 8px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: transparent; font-weight: 600; font-size: 14px;
+  }
+  .vitals { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); margin-top: 16px; }
+  .vitals div { padding: 12px 0 12px 14px; min-width: 0; }
+  .vitals div:first-child { padding-left: 0; }
+  .vitals div + div { border-left: 1px solid var(--line); }
+  .vitals dt { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+  .vitals dd { font: 700 24px/1.15 var(--font-display); margin-top: 2px; }
+  .vitals dd small { font: 500 13px var(--font-body); color: var(--muted); margin-left: 3px; }
+  .meta-line { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .example { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--peach-soft); font-size: 14px; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .example button { border: 0; background: none; padding: 6px 0; font-weight: 700; color: var(--peach); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Ajout d'un biberon */
+  .add { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 18px 16px 14px; display: flex; flex-direction: column; gap: 16px; }
+  .qty { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .step { width: 54px; height: 54px; border-radius: 50%; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font: 500 30px/1 var(--font-display); display: grid; place-items: center; padding: 0 0 3px; }
+  .step:active { background: var(--milk); }
+  .qval { min-width: 130px; text-align: center; font: 700 60px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .qval span { font: 500 18px var(--font-body); color: var(--muted); margin-left: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip { min-height: 38px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed="true"] { background: var(--milk); border-color: var(--accent); color: var(--accent); }
+  .give { width: 100%; min-height: 70px; border: 0; border-radius: 18px; background: var(--accent); color: var(--accent-ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 10px 14px; }
+  .give:active { transform: scale(0.99); }
+  .g-main { font: 700 22px/1.1 var(--font-display); }
+  .g-sub { font-size: 14px; font-weight: 500; opacity: 0.92; }
+  .later summary { cursor: pointer; font-size: 14px; color: var(--muted); padding: 6px 0; }
+  .later-form { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .later-form input { flex: 1 1 200px; min-width: 0; min-height: 44px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+  .solid { min-height: 44px; padding: 8px 18px; border-radius: 10px; border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+
+  /* Aujourd'hui : échelle graduée */
+  .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .sec-head p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .big { text-align: right; font: 700 40px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .big small { font: 500 15px var(--font-body); color: var(--muted); margin-left: 3px; }
+  .gauge { position: relative; margin: 36px 10px 38px; }
+  .gauge-bar { height: 32px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--milk); overflow: hidden; }
+  .gauge-fill { height: 100%; background: var(--accent); border-radius: 0 6px 6px 0; transition: width 0.5s ease; }
+  .tick { position: absolute; top: 32px; width: 1px; background: var(--muted); opacity: 0.6; }
+  .tick.minor { height: 5px; }
+  .tick.major { height: 10px; opacity: 0.9; }
+  .tick-label { position: absolute; top: 44px; transform: translateX(-50%); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .goal { position: absolute; top: -10px; height: 46px; width: 0; border-left: 2px solid var(--peach); }
+  .goal span { position: absolute; bottom: 100%; left: 0; transform: translateX(-50%); white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--peach); padding-bottom: 2px; }
+  .goal.right span { transform: translateX(-85%); }
+  .goal-note { font-size: 13px; color: var(--muted); margin-top: -14px; }
+  .facts { list-style: none; padding: 0; margin-top: 12px; }
+  .facts li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .facts .k { color: var(--muted); }
+  .facts .v { text-align: right; font-weight: 700; min-width: 0; }
+  .facts .v small { display: block; font-weight: 500; font-size: 13px; color: var(--muted); }
+
+  /* Graphique 7 jours */
+  .chart { width: 100%; height: auto; display: block; margin-top: 10px; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .axis { fill: var(--muted); font: 11px var(--font-body); }
+  .chart .bar { fill: var(--bar); }
+  .chart .bar.today { fill: var(--accent); }
+  .chart .stub { stroke: var(--line); stroke-width: 2; }
+  .chart .goal-line { stroke: var(--peach); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .chart .goal-text { fill: var(--peach); font: 700 11px var(--font-body); }
+  .chart .val { fill: var(--ink); font: 600 11px var(--font-body); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
+  .chart .dlabel { fill: var(--muted); font: 12px var(--font-body); }
+  .chart .dlabel.today { fill: var(--ink); font-weight: 700; }
+
+  /* Journal */
+  .history { display: flex; flex-direction: column; gap: 22px; margin-top: 10px; }
+  .day-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); }
+  .day-head h3 { font: 700 17px var(--font-display); }
+  .day-head p { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .entries { list-style: none; padding: 0; }
+  .entries li { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
+  .entries time { font-weight: 600; font-variant-numeric: tabular-nums; padding: 10px 0; }
+  .entries .ml { font-variant-numeric: tabular-nums; }
+  .del { border: 0; background: none; padding: 10px 6px; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+  .del.confirm { color: var(--peach); font-weight: 700; }
+  .empty { padding: 18px 0; color: var(--muted); }
+
+  /* Prévisions */
+  .lead { margin-top: 8px; }
+  .lead strong { font-weight: 700; }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .table-wrap { overflow-x: auto; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 9px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  thead th { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  tbody th { text-align: left; font-weight: 600; }
+  th:first-child, td:first-child { padding-left: 4px; }
+  tr.past { opacity: 0.55; }
+  tr.now { background: var(--milk); font-weight: 700; }
+  .tag { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); font-size: 11px; font-weight: 600; color: var(--muted); }
+  .tag.now { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .foot { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+
+  /* Toast */
+  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 448px; margin: 0 auto; z-index: 30; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
+  .toast button { border: 0; background: none; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; padding: 6px; color: inherit; }
+
+  /* Fiche bébé */
+  .sheet { position: fixed; inset: 0; z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
+  .backdrop { position: absolute; inset: 0; background: var(--scrim); }
+  .panel { position: relative; width: 100%; max-width: 480px; max-height: 92%; overflow-y: auto; background: var(--surface); border-radius: 22px 22px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field label { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .field input { width: 100%; min-height: 46px; padding: 8px 12px; font-size: 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .err { color: var(--peach); font-weight: 600; font-size: 14px; }
+  .actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  @media (prefers-reduced-motion: reduce) { .gauge-fill { transition: none; } }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="head">
+      <div>
+        <h1 id="babyName">Bébé</h1>
+        <p class="age" id="babyAge"></p>
+      </div>
+      <button class="ghost" id="editBtn" type="button">Modifier la fiche</button>
+    </div>
+    <dl class="vitals" id="vitals"></dl>
+    <p class="meta-line" id="measured" hidden></p>
+    <div class="example" id="example" hidden>
+      <span>Poids, taille et date de naissance sont des exemples. Renseigne ceux de ton bébé pour des prévisions justes.</span>
+      <button type="button" id="exampleBtn">Renseigner</button>
+    </div>
+  </header>
+
+  <section class="add" aria-labelledby="addTitle">
+    <h2 class="sr" id="addTitle">Noter un biberon</h2>
+    <div class="qty">
+      <button class="step" id="qtyMinus" type="button" aria-label="Retirer 10 ml">−</button>
+      <div class="qval" id="qtyOut" aria-live="polite"></div>
+      <button class="step" id="qtyPlus" type="button" aria-label="Ajouter 10 ml">+</button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Quantités rapides"></div>
+    <button class="give" id="giveBtn" type="button">
+      <span class="g-main" id="gMain">Biberon donné</span>
+      <span class="g-sub" id="gSub"></span>
+    </button>
+    <details class="later" id="later">
+      <summary>Oublié ? Ajouter à une autre heure</summary>
+      <div class="later-form">
+        <input type="datetime-local" id="laterTime" aria-label="Date et heure du biberon">
+        <button class="solid" type="button" id="laterBtn">Ajouter</button>
+      </div>
+    </details>
+  </section>
+
+  <section aria-labelledby="todayTitle">
+    <div class="sec-head">
+      <div>
+        <h2 id="todayTitle">Aujourd'hui</h2>
+        <p id="todayCount"></p>
+      </div>
+      <p class="big" id="todayBig"></p>
+    </div>
+    <div class="gauge" id="gauge"></div>
+    <p class="goal-note" id="goalNote"></p>
+    <ul class="facts" id="facts"></ul>
+  </section>
+
+  <section aria-labelledby="weekTitle">
+    <h2 id="weekTitle">7 derniers jours</h2>
+    <div id="chart"></div>
+  </section>
+
+  <section aria-labelledby="logTitle">
+    <h2 id="logTitle">Journal des biberons</h2>
+    <div class="history" id="history"></div>
+  </section>
+
+  <section aria-labelledby="planTitle">
+    <h2 id="planTitle">Prévisions de lait</h2>
+    <p class="lead" id="planLead"></p>
+    <p class="sub" id="planBasis"></p>
+    <div class="table-wrap">
+      <table>
+        <caption class="sr">Quantités de lait habituelles selon l'âge</caption>
+        <thead><tr><th scope="col" style="text-align:left">Âge</th><th scope="col">Biberons / jour</th><th scope="col">ml / biberon</th><th scope="col">Total / jour</th></tr></thead>
+        <tbody id="planBody"></tbody>
+      </table>
+    </div>
+    <p class="sub" id="planNext"></p>
+  </section>
+
+  <footer class="foot">
+    <p id="storage"></p>
+    <p>Repères indicatifs pour un lait infantile. Chaque bébé a son rythme : suis l'étiquette de ton lait et l'avis de ton pédiatre.</p>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toastMsg"></span>
+  <button type="button" id="toastUndo" hidden>Annuler</button>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="backdrop" id="sheetBack"></div>
+  <form class="panel" id="profileForm" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" novalidate>
+    <h2 id="sheetTitle">Fiche du bébé</h2>
+    <div class="field"><label for="fName">Prénom</label><input id="fName" maxlength="40" autocomplete="off"></div>
+    <div class="field"><label for="fBirth">Date de naissance</label><input id="fBirth" type="date"></div>
+    <div class="two">
+      <div class="field"><label for="fWeight">Poids (kg)</label><input id="fWeight" inputmode="decimal" autocomplete="off" placeholder="6,2"></div>
+      <div class="field"><label for="fHeight">Taille (cm)</label><input id="fHeight" inputmode="decimal" autocomplete="off" placeholder="62"></div>
+    </div>
+    <p class="err" id="formErr" role="alert" hidden></p>
+    <div class="actions">
+      <button class="ghost" type="button" id="fCancel">Annuler</button>
+      <button class="solid" type="submit">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var LS_KEY = "carnet-biberons:v1";
+  var LS_QTY = "carnet-biberons:qty";
+  var DAY = 86400000;
+  var PRESETS = [60, 90, 120, 150, 180, 210, 240];
+  var nf = new Intl.NumberFormat("fr-FR");
+  var nf2 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* Repères par âge (mois révolus) : nombre de biberons, ml par biberon, valeurs retenues pour l'objectif. */
+  var PLAN = [
+    { m: 0, nb: [6, 8], ml: [60, 90], n: 7, per: 75 },
+    { m: 1, nb: [6, 7], ml: [90, 120], n: 6, per: 105 },
+    { m: 2, nb: [5, 6], ml: [120, 150], n: 5, per: 150 },
+    { m: 3, nb: [5, 5], ml: [150, 180], n: 5, per: 165 },
+    { m: 4, nb: [5, 5], ml: [180, 210], n: 5, per: 180 },
+    { m: 5, nb: [4, 5], ml: [180, 210], n: 4, per: 210 },
+    { m: 6, nb: [4, 4], ml: [210, 240], n: 4, per: 210 },
+    { m: 7, nb: [3, 4], ml: [210, 240], n: 3, per: 240 },
+    { m: 8, nb: [3, 4], ml: [210, 240], n: 3, per: 240 },
+    { m: 9, nb: [3, 3], ml: [210, 240], n: 3, per: 225 },
+    { m: 10, nb: [3, 3], ml: [210, 240], n: 3, per: 225 },
+    { m: 11, nb: [2, 3], ml: [210, 240], n: 3, per: 210 },
+    { m: 12, nb: [2, 3], ml: [210, 270], n: 2, per: 270 }
+  ];
+
+  var state = { profile: null, feeds: [], mode: "local" };
+  var dbNs = null;
+  var qty = 150;
+  var lastPress = 0, flashTimer = null, toastTimer = null, delTimer = null, pendingDel = null;
+
+  /* ---------- Dates ---------- */
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function iso(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function parseISO(s) { var p = String(s).split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function midnight(ts) { var d = new Date(ts); d.setHours(0, 0, 0, 0); return d; }
+  function dayKey(ts) { return iso(new Date(ts)); }
+  function addMonths(d, m) {
+    var r = new Date(d.getFullYear(), d.getMonth() + m, 1);
+    var last = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+    r.setDate(Math.min(d.getDate(), last));
+    return r;
+  }
+  function toLocalInput(ts) {
+    var d = new Date(ts);
+    return iso(d) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+  function fmtTime(ts) { return new Date(ts).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }); }
+  function fmtShort(ts) { return new Date(ts).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }); }
+  function fmtDate(d) { return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }); }
+  function dayLabel(ts) {
+    var diff = Math.round((midnight(Date.now()) - midnight(ts)) / DAY);
+    if (diff === 0) return "Aujourd'hui";
+    if (diff === 1) return "Hier";
+    return fmtShort(ts);
+  }
+  function fmtDur(ms) {
+    var m = Math.max(0, Math.round(ms / 60000));
+    if (m < 60) return m + " min";
+    var h = Math.floor(m / 60), r = m % 60;
+    if (h >= 24) return Math.floor(h / 24) + " j";
+    return r ? h + " h " + pad(r) : h + " h";
+  }
+  function ageParts(birth, now) {
+    var b = parseISO(birth), n = midnight(now);
+    var months = (n.getFullYear() - b.getFullYear()) * 12 + (n.getMonth() - b.getMonth());
+    if (n.getDate() < b.getDate()) months--;
+    if (months < 0) months = 0;
+    var an = addMonths(b, months);
+    return { months: months, days: Math.round((n - an) / DAY), total: Math.round((n - b) / DAY) };
+  }
+  function ageText(a) {
+    if (a.months < 1) {
+      var w = Math.floor(a.total / 7), d = a.total % 7;
+      if (a.total < 7) return a.total + (a.total > 1 ? " jours" : " jour");
+      return w + (w > 1 ? " semaines" : " semaine") + (d ? " et " + d + (d > 1 ? " jours" : " jour") : "");
+    }
+    var t = a.months + " mois";
+    if (a.days) t += " et " + a.days + (a.days > 1 ? " jours" : " jour");
+    return t;
+  }
+
+  /* ---------- Fiche et objectifs ---------- */
+  function exampleProfile() {
+    var d = new Date(); d.setDate(d.getDate() - 93);
+    return { name: "Bébé", birthDate: iso(d), weightKg: 6.2, heightCm: 62, measuredAt: null };
+  }
+  function cur() { return state.profile || exampleProfile(); }
+  function cleanProfile(o) {
+    if (!o || typeof o !== "object") return null;
+    var w = Number(o.weightKg), h = Number(o.heightCm);
+    if (typeof o.birthDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(o.birthDate)) return null;
+    if (!(w > 0 && w < 30) || !(h > 0 && h < 150)) return null;
+    return {
+      name: String(o.name || "Bébé").slice(0, 40),
+      birthDate: o.birthDate, weightKg: w, heightCm: h,
+      measuredAt: typeof o.measuredAt === "string" ? o.measuredAt : null
+    };
+  }
+  function planFor(p) {
+    var a = ageParts(p.birthDate, Date.now());
+    var row = PLAN[Math.min(a.months, 12)];
+    var total = row.n * row.per, basis = "age";
+    if (a.months < 6 && p.weightKg >= 1) {
+      total = Math.min(900, Math.round(150 * p.weightKg / 10) * 10);
+      basis = "weight";
+    }
+    var per = Math.round(total / row.n / 5) * 5;
+    var gap = Math.min(5, Math.max(3, Math.round(24 / row.n * 4) / 4));
+    return { age: a, row: row, total: total, n: row.n, per: per, gap: gap, basis: basis };
+  }
+  function range(r) { return r[0] === r[1] ? "" + r[0] : r[0] + " à " + r[1]; }
+
+  /* ---------- Stockage ---------- */
+  function validFeed(f) { return isFinite(f.ts) && f.ts > 0 && isFinite(f.ml) && f.ml > 0 && f.ml <= 1000; }
+  function sortFeeds() { state.feeds.sort(function (a, b) { return b.ts - a.ts; }); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function loadLocal() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      var o = JSON.parse(raw);
+      state.profile = cleanProfile(o.profile);
+      state.feeds = (o.feeds || []).map(function (f) { return { id: String(f.id), ts: Number(f.ts), ml: Number(f.ml) }; }).filter(validFeed);
+      sortFeeds();
+    } catch (e) { /* stockage indisponible */ }
+  }
+  function persistLocal() {
+    if (state.mode !== "local") return;
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, feeds: state.feeds })); } catch (e) { /* ignoré */ }
+  }
+  async function addFeed(ml, ts) {
+    if (state.mode === "shared" && dbNs) {
+      var ref = await dbNs.collection("feeds").add({ ts: ts, ml: ml });
+      return ref.id;
+    }
+    var id = uid();
+    state.feeds.push({ id: id, ts: ts, ml: ml });
+    sortFeeds(); persistLocal(); render();
+    return id;
+  }
+  async function deleteFeed(id) {
+    if (state.mode === "shared" && dbNs) { await dbNs.doc("feeds/" + id).delete(); return; }
+    state.feeds = state.feeds.filter(function (f) { return f.id !== id; });
+    persistLocal(); render();
+  }
+  async function saveProfile(p) {
+    if (state.mode === "shared" && dbNs) { await dbNs.doc("baby/profile").set(p); return; }
+    state.profile = p; persistLocal(); render();
+  }
+  function errMsg(e) {
+    var c = e && e.code;
+    if (c === "invalid_argument") return "Tu n'as pas l'autorisation de modifier le carnet sur cette page.";
+    if (c === "quota_exceeded") return "Le carnet est plein. Supprime d'anciens biberons.";
+    return "Enregistrement impossible pour le moment. Réessaie dans un instant.";
+  }
+
+  /* ---------- Rendu ---------- */
+  function renderHead() {
+    var p = cur(), a = ageParts(p.birthDate, Date.now());
+    $("babyName").textContent = p.name || "Bébé";
+    $("babyAge").textContent = ageText(a);
+    var born = parseISO(p.birthDate);
+    $("vitals").innerHTML =
+      '<div><dt>Poids</dt><dd>' + nf2.format(p.weightKg) + '<small>kg</small></dd></div>' +
+      '<div><dt>Taille</dt><dd>' + nf2.format(p.heightCm) + '<small>cm</small></dd></div>' +
+      '<div><dt>Né(e) le</dt><dd>' + fmtDate(born) + '<small>' + born.getFullYear() + '</small></dd></div>';
+    $("example").hidden = !!state.profile;
+    var m = $("measured");
+    if (state.profile && state.profile.measuredAt) {
+      m.hidden = false;
+      m.textContent = "Mesures du " + fmtDate(parseISO(state.profile.measuredAt)) + ".";
+    } else { m.hidden = true; }
+  }
+
+  function renderToday() {
+    var p = cur(), pl = planFor(p), now = Date.now(), t0 = midnight(now).getTime();
+    var todays = state.feeds.filter(function (f) { return f.ts >= t0 && f.ts < t0 + DAY; });
+    var total = todays.reduce(function (s, f) { return s + f.ml; }, 0);
+    $("todayCount").textContent = todays.length + (todays.length > 1 ? " biberons" : " biberon") + " donné" + (todays.length > 1 ? "s" : "");
+    $("todayBig").innerHTML = nf.format(total) + "<small>ml</small>";
+
+    var mx = Math.max(pl.total, total);
+    var scale = Math.max(150, Math.ceil(mx * 1.05 / 150) * 150);
+    var major = scale <= 900 ? 150 : 300;
+    var h = '<div class="gauge-bar"><div class="gauge-fill" style="width:' + Math.min(100, total / scale * 100).toFixed(2) + '%"></div></div>';
+    for (var v = 0; v <= scale; v += 30) {
+      var left = (v / scale * 100).toFixed(2), isMaj = v % major === 0;
+      h += '<i class="tick ' + (isMaj ? "major" : "minor") + '" style="left:' + left + '%"></i>';
+      if (isMaj) h += '<span class="tick-label" style="left:' + left + '%">' + v + '</span>';
+    }
+    var gl = pl.total / scale * 100;
+    h += '<div class="goal' + (gl > 72 ? " right" : "") + '" style="left:' + gl.toFixed(2) + '%"><span>objectif ' + nf.format(pl.total) + ' ml</span></div>';
+    $("gauge").innerHTML = h;
+
+    $("goalNote").textContent = pl.basis === "weight"
+      ? "Objectif : 150 ml par kg (" + nf2.format(p.weightKg) + " kg), limité à 900 ml par jour."
+      : "Objectif selon l'âge : " + pl.n + " biberons d'environ " + pl.per + " ml.";
+
+    var rows = "", last = state.feeds[0];
+    if (last) {
+      var nextTs = last.ts + pl.gap * 3600000, diff = nextTs - now;
+      rows += '<li><span class="k">Prochain biberon</span><span class="v">' +
+        (diff <= 0 ? "À donner maintenant" : "Vers " + fmtTime(nextTs)) +
+        '<small>' + (diff <= 0 ? "Rythme habituel : toutes les " + nf2.format(pl.gap) + " h" : "dans " + fmtDur(diff)) +
+        ' · environ ' + pl.per + ' ml</small></span></li>';
+      var lastDay = last.ts < t0 ? dayLabel(last.ts).toLowerCase() + " à " : "";
+      rows += '<li><span class="k">Dernier biberon</span><span class="v">' + lastDay + fmtTime(last.ts) +
+        '<small>il y a ' + fmtDur(now - last.ts) + ' · ' + last.ml + ' ml</small></span></li>';
+    } else {
+      rows += '<li><span class="k">Prochain biberon</span><span class="v">Dès le premier noté<small>Appuie sur « Biberon donné »</small></span></li>';
+    }
+    var rem = Math.max(0, pl.total - total);
+    if (!todays.length) {
+      rows += '<li><span class="k">À donner aujourd\'hui</span><span class="v">environ ' + nf.format(pl.total) + ' ml<small>' + pl.n + ' biberons d\'environ ' + pl.per + ' ml</small></span></li>';
+    } else if (rem === 0) {
+      rows += '<li><span class="k">Reste à donner</span><span class="v">Objectif du jour atteint</span></li>';
+    } else {
+      var nb = Math.ceil(rem / pl.per);
+      rows += '<li><span class="k">Reste à donner</span><span class="v">environ ' + nf.format(rem) + ' ml<small>' + nb + (nb > 1 ? " biberons" : " biberon") + ' de ' + pl.per + ' ml</small></span></li>';
+    }
+    $("facts").innerHTML = rows;
+  }
+
+  function renderChart() {
+    var pl = planFor(cur()), now = new Date(), days = [], i, map = {};
+    for (i = 6; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      var o = { d: d, key: iso(d), sum: 0 };
+      days.push(o); map[o.key] = o;
+    }
+    state.feeds.forEach(function (f) { var x = map[dayKey(f.ts)]; if (x) x.sum += f.ml; });
+    var mx = Math.max(pl.total, Math.max.apply(null, days.map(function (x) { return x.sum; })));
+    var ymax = Math.max(300, Math.ceil(mx * 1.08 / 300) * 300);
+    var W = 320, H = 176, L = 34, R = 8, T = 18, B = 28, pw = W - L - R, ph = H - T - B;
+    function y(v) { return (T + ph - v / ymax * ph).toFixed(1); }
+    var slot = pw / 7, bw = 24, s = "", v;
+    for (v = 0; v <= ymax; v += 300) {
+      s += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>';
+      s += '<text class="axis" x="' + (L - 6) + '" y="' + (+y(v) + 3.5).toFixed(1) + '" text-anchor="end">' + v + '</text>';
+    }
+    s += '<text class="axis" x="' + (L - 6) + '" y="10" text-anchor="end">ml</text>';
+    var label = [];
+    days.forEach(function (x, idx) {
+      var cx = L + idx * slot + slot / 2, isToday = idx === 6;
+      if (x.sum > 0) {
+        s += '<rect class="bar' + (isToday ? " today" : "") + '" x="' + (cx - bw / 2).toFixed(1) + '" y="' + y(x.sum) + '" width="' + bw + '" height="' + (x.sum / ymax * ph).toFixed(1) + '" rx="4"/>';
+        s += '<text class="val" x="' + cx.toFixed(1) + '" y="' + (+y(x.sum) - 5).toFixed(1) + '" text-anchor="middle">' + x.sum + '</text>';
+      } else {
+        s += '<line class="stub" x1="' + (cx - bw / 2).toFixed(1) + '" x2="' + (cx + bw / 2).toFixed(1) + '" y1="' + y(0) + '" y2="' + y(0) + '"/>';
+      }
+      var wd = isToday ? "auj." : x.d.toLocaleDateString("fr-FR", { weekday: "short" });
+      s += '<text class="dlabel' + (isToday ? " today" : "") + '" x="' + cx.toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + wd + '</text>';
+      label.push(x.d.toLocaleDateString("fr-FR", { weekday: "long" }) + " " + x.sum + " ml");
+    });
+    s += '<line class="goal-line" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(pl.total) + '" y2="' + y(pl.total) + '"/>';
+    s += '<text class="goal-text" x="' + (L + 4) + '" y="' + (+y(pl.total) - 4).toFixed(1) + '">objectif ' + pl.total + '</text>';
+    $("chart").innerHTML = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Lait par jour sur 7 jours. ' + label.join(", ") + '. Objectif ' + pl.total + ' ml.">' + s + '</svg>';
+  }
+
+  function renderHistory() {
+    var cut = midnight(Date.now()).getTime() - 13 * DAY, groups = [], g = null;
+    state.feeds.forEach(function (f) {
+      if (f.ts < cut) return;
+      var k = dayKey(f.ts);
+      if (!g || g.key !== k) { g = { key: k, ts: f.ts, sum: 0, items: [] }; groups.push(g); }
+      g.sum += f.ml; g.items.push(f);
+    });
+    if (!groups.length) {
+      $("history").innerHTML = '<p class="empty">Aucun biberon noté pour l\'instant. Appuie sur « Biberon donné » pour enregistrer le premier : la date et l\'heure s\'ajoutent toutes seules.</p>';
+      return;
+    }
+    $("history").innerHTML = groups.map(function (gr) {
+      var lis = gr.items.map(function (f) {
+        var pend = pendingDel === f.id;
+        return '<li><time>' + fmtTime(f.ts) + '</time><span class="ml">' + f.ml + ' ml</span>' +
+          '<button type="button" class="del' + (pend ? " confirm" : "") + '" data-id="' + f.id + '" aria-label="Supprimer le biberon de ' + fmtTime(f.ts) + '">' +
+          (pend ? "Confirmer" : "Supprimer") + '</button></li>';
+      }).join("");
+      return '<div class="day"><div class="day-head"><h3>' + dayLabel(gr.ts) + '</h3><p>' + nf.format(gr.sum) + ' ml · ' + gr.items.length + (gr.items.length > 1 ? " biberons" : " biberon") + '</p></div><ul class="entries">' + lis + '</ul></div>';
+    }).join("");
+  }
+
+  function renderPlan() {
+    var p = cur(), pl = planFor(p), cm = Math.min(pl.age.months, 12);
+    var today0 = midnight(Date.now()), birth = parseISO(p.birthDate);
+    $("planLead").innerHTML = "À " + ageText(pl.age) + ", vise environ <strong>" + nf.format(pl.total) + " ml par jour</strong>, soit " + pl.n + " biberons d'environ " + pl.per + " ml.";
+    $("planBasis").textContent = pl.basis === "weight"
+      ? "Avant 6 mois, le total suit le poids de ton bébé. Le tableau donne les repères habituels par âge."
+      : "À partir de 6 mois, les repas diversifiés prennent peu à peu le relais du lait.";
+    $("planBody").innerHTML = PLAN.map(function (r) {
+      var cls = r.m < cm ? "past" : (r.m === cm ? "now" : "");
+      var label = r.m === 12 ? "12 mois et +" : r.m + "–" + (r.m + 1) + " mois", tag = "";
+      if (r.m === cm) tag = '<span class="tag now">Maintenant</span>';
+      else if (r.m === cm + 1) {
+        var days = Math.max(0, Math.ceil((addMonths(birth, r.m) - today0) / DAY));
+        tag = '<span class="tag">' + (days === 0 ? "Aujourd'hui" : "Dans " + days + " j") + '</span>';
+      }
+      return '<tr class="' + cls + '"><th scope="row">' + label + tag + '</th><td>' + range(r.nb) + '</td><td>' + range(r.ml) + '</td><td>' + r.n * r.per + ' ml</td></tr>';
+    }).join("");
+    if (cm < 12) {
+      var nx = PLAN[cm + 1], when = addMonths(birth, nx.m);
+      $("planNext").textContent = "Prochain palier le " + fmtDate(when) + " : " + range(nx.nb) + " biberons de " + range(nx.ml) + " ml.";
+    } else {
+      $("planNext").textContent = "Après 12 mois, les repas prennent le relais du lait. Demande conseil à ton pédiatre.";
+    }
+  }
+
+  function renderFoot() {
+    $("storage").textContent = state.mode === "shared"
+      ? "Le carnet est enregistré et partagé avec les personnes qui ont accès à cette page."
+      : "Le carnet est enregistré sur cet iPhone seulement. Un autre appareil aura son propre carnet.";
+  }
+
+  function render() {
+    renderHead(); renderToday(); renderChart(); renderHistory(); renderPlan(); renderFoot(); updateQtyUI();
+  }
+
+  /* ---------- Quantité ---------- */
+  function updateQtyUI() {
+    $("qtyOut").innerHTML = qty + '<span>ml</span>';
+    $("chips").innerHTML = PRESETS.map(function (v) {
+      return '<button type="button" class="chip" data-ml="' + v + '" aria-pressed="' + (v === qty) + '">' + v + '</button>';
+    }).join("");
+    if (!flashTimer) { $("gMain").textContent = "Biberon donné"; $("gSub").textContent = qty + " ml · date et heure ajoutées"; }
+  }
+  function setQty(v, remember) {
+    qty = Math.min(400, Math.max(10, Math.round(v / 10) * 10));
+    if (remember) { try { localStorage.setItem(LS_QTY, String(qty)); } catch (e) { /* ignoré */ } }
+    updateQtyUI();
+  }
+
+  /* ---------- Messages ---------- */
+  function hideToast() { $("toast").hidden = true; }
+  function toast(msg, undoFn) {
+    $("toastMsg").textContent = msg;
+    var u = $("toastUndo");
+    u.hidden = !undoFn;
+    u.onclick = function () { if (undoFn) undoFn(); hideToast(); };
+    $("toast").hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, undoFn ? 7000 : 4000);
+  }
+  function flashGive(ts, ml) {
+    $("gMain").textContent = "Noté ✓";
+    $("gSub").textContent = ml + " ml à " + fmtTime(ts);
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function () { flashTimer = null; updateQtyUI(); }, 2200);
+  }
+  async function undoFeed(id) {
+    try { await deleteFeed(id); } catch (e) { toast(errMsg(e)); }
+  }
+
+  /* ---------- Fiche bébé ---------- */
+  function openSheet() {
+    var p = cur();
+    $("fName").value = p.name || "";
+    $("fBirth").value = p.birthDate;
+    $("fBirth").max = iso(new Date());
+    $("fWeight").value = nf2.format(p.weightKg);
+    $("fHeight").value = nf2.format(p.heightCm);
+    $("formErr").hidden = true;
+    $("sheet").hidden = false;
+    $("fName").focus();
+  }
+  function closeSheet() { $("sheet").hidden = true; $("editBtn").focus(); }
+  function num(s) { return parseFloat(String(s).replace(/\s/g, "").replace(",", ".")); }
+  async function submitProfile(e) {
+    e.preventDefault();
+    var err = "", birth = $("fBirth").value, w = num($("fWeight").value), h = num($("fHeight").value);
+    var b = birth ? parseISO(birth) : null, today = midnight(Date.now());
+    if (!b || isNaN(b) || b > today) err = "Choisis une date de naissance qui n'est pas dans le futur.";
+    else if ((today - b) / DAY > 1100) err = "Cette application suit les bébés jusqu'à 3 ans environ.";
+    else if (!(w >= 1 && w <= 20)) err = "Entre un poids entre 1 et 20 kg.";
+    else if (!(h >= 30 && h <= 110)) err = "Entre une taille entre 30 et 110 cm.";
+    if (err) { $("formErr").textContent = err; $("formErr").hidden = false; return; }
+    var old = state.profile;
+    var changed = !old || old.weightKg !== w || old.heightCm !== h;
+    var p = {
+      name: ($("fName").value.trim() || "Bébé").slice(0, 40),
+      birthDate: birth, weightKg: Math.round(w * 100) / 100, heightCm: Math.round(h * 10) / 10,
+      measuredAt: changed ? iso(new Date()) : old.measuredAt
+    };
+    try { await saveProfile(p); closeSheet(); toast("Fiche enregistrée"); }
+    catch (ex) { $("formErr").textContent = errMsg(ex); $("formErr").hidden = false; }
+  }
+
+  /* ---------- Événements ---------- */
+  function bind() {
+    $("qtyMinus").addEventListener("click", function () { setQty(qty - 10, true); });
+    $("qtyPlus").addEventListener("click", function () { setQty(qty + 10, true); });
+    $("chips").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-ml]");
+      if (b) setQty(+b.getAttribute("data-ml"), true);
+    });
+    $("giveBtn").addEventListener("click", async function () {
+      var now = Date.now();
+      if (now - lastPress < 900) return;
+      lastPress = now;
+      var ml = qty;
+      try {
+        var id = await addFeed(ml, now);
+        flashGive(now, ml);
+        toast("Biberon de " + ml + " ml noté à " + fmtTime(now), function () { undoFeed(id); });
+      } catch (e) { toast(errMsg(e)); }
+    });
+    $("later").addEventListener("toggle", function () {
+      if ($("later").open) { var t = toLocalInput(Date.now()); $("laterTime").value = t; $("laterTime").max = t; }
+    });
+    $("laterBtn").addEventListener("click", async function () {
+      var ts = new Date($("laterTime").value).getTime();
+      if (!isFinite(ts)) { toast("Choisis la date et l'heure du biberon."); return; }
+      if (ts > Date.now() + 60000) { toast("Cette heure est dans le futur."); return; }
+      if (ts < Date.now() - 14 * DAY) { toast("Le journal garde les 14 derniers jours."); return; }
+      try { await addFeed(qty, ts); toast("Biberon de " + qty + " ml ajouté à " + fmtTime(ts)); $("later").open = false; }
+      catch (e) { toast(errMsg(e)); }
+    });
+    $("history").addEventListener("click", async function (e) {
+      var b = e.target.closest && e.target.closest("button[data-id]");
+      if (!b) return;
+      var id = b.getAttribute("data-id");
+      clearTimeout(delTimer);
+      if (pendingDel === id) {
+        pendingDel = null;
+        try { await deleteFeed(id); } catch (ex) { toast(errMsg(ex)); renderHistory(); }
+      } else {
+        pendingDel = id;
+        delTimer = setTimeout(function () { pendingDel = null; renderHistory(); }, 3500);
+        renderHistory();
+      }
+    });
+    $("editBtn").addEventListener("click", openSheet);
+    $("exampleBtn").addEventListener("click", openSheet);
+    $("fCancel").addEventListener("click", closeSheet);
+    $("sheetBack").addEventListener("click", closeSheet);
+    $("profileForm").addEventListener("submit", submitProfile);
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("sheet").hidden) closeSheet(); });
+  }
+
+  /* ---------- Démarrage ---------- */
+  function onDbError() { state.mode = "local"; renderFoot(); }
+  function connectDb(db) {
+    dbNs = db; state.mode = "shared"; state.profile = null; state.feeds = [];
+    render();
+    db.doc("baby/profile").onSnapshot(function (s) {
+      state.profile = s.exists ? cleanProfile(s.data()) : null;
+      render();
+    }, onDbError);
+    db.collection("feeds").orderBy("ts", "desc").limit(500).onSnapshot(function (q) {
+      state.feeds = q.docs.map(function (d) { var x = d.data() || {}; return { id: d.id, ts: Number(x.ts), ml: Number(x.ml) }; }).filter(validFeed);
+      sortFeeds();
+      render();
+    }, onDbError);
+  }
+
+  loadLocal();
+  var saved = NaN;
+  try { saved = parseInt(localStorage.getItem(LS_QTY), 10); } catch (e) { /* ignoré */ }
+  qty = isFinite(saved) ? Math.min(400, Math.max(10, saved)) : Math.round(planFor(cur()).per / 10) * 10;
+  bind();
+  render();
+  setInterval(render, 60000);
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("db").then(function (db) { if (db) connectDb(db); }).catch(function () { /* mode appareil */ });
+  }
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () { /* hors ligne indisponible */ }); });
+  }
+})();
+</script>
+</body>
+</html>
