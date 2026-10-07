@@ -102,14 +102,8 @@
     flex: none; min-height: 40px; padding: 8px 14px; border-radius: 10px;
     border: 1px solid var(--line); background: transparent; font-weight: 600; font-size: 14px;
   }
-  .vitals { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); margin-top: 16px; }
-  .vitals div { padding: 12px 0 12px 14px; min-width: 0; }
-  .vitals div:first-child { padding-left: 0; }
-  .vitals div + div { border-left: 1px solid var(--line); }
-  .vitals dt { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
-  .vitals dd { font: 700 24px/1.15 var(--font-display); margin-top: 2px; }
-  .vitals dd small { font: 500 13px var(--font-body); color: var(--muted); margin-left: 3px; }
-  .meta-line { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .now { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); font-variant-numeric: tabular-nums; margin-bottom: 10px; }
+  .born { margin-top: 2px; font-size: 14px; color: var(--muted); }
   .example { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: var(--peach-soft); font-size: 14px; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
   .example button { border: 0; background: none; padding: 6px 0; font-weight: 700; color: var(--peach); text-decoration: underline; text-underline-offset: 3px; }
 
@@ -207,7 +201,6 @@
   .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
   .field label { font-size: 13px; font-weight: 600; color: var(--muted); }
   .field input { width: 100%; min-height: 46px; padding: 8px 12px; font-size: 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
-  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
   .err { color: var(--peach); font-weight: 600; font-size: 14px; }
   .actions { display: flex; gap: 10px; justify-content: flex-end; }
 
@@ -217,17 +210,17 @@
 <body>
 <main class="app">
   <header>
+    <p class="now" id="now"></p>
     <div class="head">
       <div>
         <h1 id="babyName">Bébé</h1>
         <p class="age" id="babyAge"></p>
+        <p class="born" id="babyBorn"></p>
       </div>
       <button class="ghost" id="editBtn" type="button">Modifier la fiche</button>
     </div>
-    <dl class="vitals" id="vitals"></dl>
-    <p class="meta-line" id="measured" hidden></p>
     <div class="example" id="example" hidden>
-      <span>Poids, taille et date de naissance sont des exemples. Renseigne ceux de ton bébé pour des prévisions justes.</span>
+      <span>La date de naissance est un exemple. Renseigne celle de ton bébé pour des prévisions justes.</span>
       <button type="button" id="exampleBtn">Renseigner</button>
     </div>
   </header>
@@ -307,10 +300,6 @@
     <h2 id="sheetTitle">Fiche du bébé</h2>
     <div class="field"><label for="fName">Prénom</label><input id="fName" maxlength="40" autocomplete="off"></div>
     <div class="field"><label for="fBirth">Date de naissance</label><input id="fBirth" type="date"></div>
-    <div class="two">
-      <div class="field"><label for="fWeight">Poids (kg)</label><input id="fWeight" inputmode="decimal" autocomplete="off" placeholder="6,2"></div>
-      <div class="field"><label for="fHeight">Taille (cm)</label><input id="fHeight" inputmode="decimal" autocomplete="off" placeholder="62"></div>
-    </div>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
       <button class="ghost" type="button" id="fCancel">Annuler</button>
@@ -324,7 +313,6 @@
   "use strict";
 
   var LS_KEY = "carnet-biberons:v1";
-  var LS_QTY = "carnet-biberons:qty";
   var DAY = 86400000;
   var PRESETS = [60, 90, 120, 150, 180, 210, 240];
   var nf = new Intl.NumberFormat("fr-FR");
@@ -350,7 +338,7 @@
 
   var state = { profile: null, feeds: [], mode: "local" };
   var dbNs = null;
-  var qty = 150;
+  var qty = 90;
   var lastPress = 0, flashTimer = null, toastTimer = null, delTimer = null, pendingDel = null;
 
   /* ---------- Dates ---------- */
@@ -407,31 +395,20 @@
   /* ---------- Fiche et objectifs ---------- */
   function exampleProfile() {
     var d = new Date(); d.setDate(d.getDate() - 93);
-    return { name: "Bébé", birthDate: iso(d), weightKg: 6.2, heightCm: 62, measuredAt: null };
+    return { name: "Bébé", birthDate: iso(d) };
   }
   function cur() { return state.profile || exampleProfile(); }
   function cleanProfile(o) {
     if (!o || typeof o !== "object") return null;
-    var w = Number(o.weightKg), h = Number(o.heightCm);
     if (typeof o.birthDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(o.birthDate)) return null;
-    if (!(w > 0 && w < 30) || !(h > 0 && h < 150)) return null;
-    return {
-      name: String(o.name || "Bébé").slice(0, 40),
-      birthDate: o.birthDate, weightKg: w, heightCm: h,
-      measuredAt: typeof o.measuredAt === "string" ? o.measuredAt : null
-    };
+    return { name: String(o.name || "Bébé").slice(0, 40), birthDate: o.birthDate };
   }
   function planFor(p) {
     var a = ageParts(p.birthDate, Date.now());
     var row = PLAN[Math.min(a.months, 12)];
-    var total = row.n * row.per, basis = "age";
-    if (a.months < 6 && p.weightKg >= 1) {
-      total = Math.min(900, Math.round(150 * p.weightKg / 10) * 10);
-      basis = "weight";
-    }
-    var per = Math.round(total / row.n / 5) * 5;
+    var total = row.n * row.per, per = row.per;
     var gap = Math.min(5, Math.max(3, Math.round(24 / row.n * 4) / 4));
-    return { age: a, row: row, total: total, n: row.n, per: per, gap: gap, basis: basis };
+    return { age: a, row: row, total: total, n: row.n, per: per, gap: gap };
   }
   function range(r) { return r[0] === r[1] ? "" + r[0] : r[0] + " à " + r[1]; }
 
@@ -480,21 +457,18 @@
   }
 
   /* ---------- Rendu ---------- */
+  function renderNow() {
+    var d = new Date();
+    var t = d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    $("now").textContent = t.charAt(0).toUpperCase() + t.slice(1) + " · " + fmtTime(d.getTime());
+  }
   function renderHead() {
-    var p = cur(), a = ageParts(p.birthDate, Date.now());
+    var p = cur(), a = ageParts(p.birthDate, Date.now()), born = parseISO(p.birthDate);
+    renderNow();
     $("babyName").textContent = p.name || "Bébé";
     $("babyAge").textContent = ageText(a);
-    var born = parseISO(p.birthDate);
-    $("vitals").innerHTML =
-      '<div><dt>Poids</dt><dd>' + nf2.format(p.weightKg) + '<small>kg</small></dd></div>' +
-      '<div><dt>Taille</dt><dd>' + nf2.format(p.heightCm) + '<small>cm</small></dd></div>' +
-      '<div><dt>Né(e) le</dt><dd>' + fmtDate(born) + '<small>' + born.getFullYear() + '</small></dd></div>';
+    $("babyBorn").textContent = "Né(e) le " + fmtDate(born) + " " + born.getFullYear();
     $("example").hidden = !!state.profile;
-    var m = $("measured");
-    if (state.profile && state.profile.measuredAt) {
-      m.hidden = false;
-      m.textContent = "Mesures du " + fmtDate(parseISO(state.profile.measuredAt)) + ".";
-    } else { m.hidden = true; }
   }
 
   function renderToday() {
@@ -517,9 +491,7 @@
     h += '<div class="goal' + (gl > 72 ? " right" : "") + '" style="left:' + gl.toFixed(2) + '%"><span>objectif ' + nf.format(pl.total) + ' ml</span></div>';
     $("gauge").innerHTML = h;
 
-    $("goalNote").textContent = pl.basis === "weight"
-      ? "Objectif : 150 ml par kg (" + nf2.format(p.weightKg) + " kg), limité à 900 ml par jour."
-      : "Objectif selon l'âge : " + pl.n + " biberons d'environ " + pl.per + " ml.";
+    $("goalNote").textContent = "Objectif selon l'âge : " + pl.n + " biberons d'environ " + pl.per + " ml.";
 
     var rows = "", last = state.feeds[0];
     if (last) {
@@ -609,9 +581,7 @@
     var p = cur(), pl = planFor(p), cm = Math.min(pl.age.months, 12);
     var today0 = midnight(Date.now()), birth = parseISO(p.birthDate);
     $("planLead").innerHTML = "À " + ageText(pl.age) + ", vise environ <strong>" + nf.format(pl.total) + " ml par jour</strong>, soit " + pl.n + " biberons d'environ " + pl.per + " ml.";
-    $("planBasis").textContent = pl.basis === "weight"
-      ? "Avant 6 mois, le total suit le poids de ton bébé. Le tableau donne les repères habituels par âge."
-      : "À partir de 6 mois, les repas diversifiés prennent peu à peu le relais du lait.";
+    $("planBasis").textContent = "Repères habituels pour cet âge. À partir de 6 mois, les repas diversifiés prennent peu à peu le relais du lait.";
     $("planBody").innerHTML = PLAN.map(function (r) {
       var cls = r.m < cm ? "past" : (r.m === cm ? "now" : "");
       var label = r.m === 12 ? "12 mois et +" : r.m + "–" + (r.m + 1) + " mois", tag = "";
@@ -648,9 +618,8 @@
     }).join("");
     if (!flashTimer) { $("gMain").textContent = "Biberon donné"; $("gSub").textContent = qty + " ml · date et heure ajoutées"; }
   }
-  function setQty(v, remember) {
+  function setQty(v) {
     qty = Math.min(400, Math.max(10, Math.round(v / 10) * 10));
-    if (remember) { try { localStorage.setItem(LS_QTY, String(qty)); } catch (e) { /* ignoré */ } }
     updateQtyUI();
   }
 
@@ -681,41 +650,30 @@
     $("fName").value = p.name || "";
     $("fBirth").value = p.birthDate;
     $("fBirth").max = iso(new Date());
-    $("fWeight").value = nf2.format(p.weightKg);
-    $("fHeight").value = nf2.format(p.heightCm);
     $("formErr").hidden = true;
     $("sheet").hidden = false;
     $("fName").focus();
   }
   function closeSheet() { $("sheet").hidden = true; $("editBtn").focus(); }
-  function num(s) { return parseFloat(String(s).replace(/\s/g, "").replace(",", ".")); }
   async function submitProfile(e) {
     e.preventDefault();
-    var err = "", birth = $("fBirth").value, w = num($("fWeight").value), h = num($("fHeight").value);
+    var err = "", birth = $("fBirth").value;
     var b = birth ? parseISO(birth) : null, today = midnight(Date.now());
     if (!b || isNaN(b) || b > today) err = "Choisis une date de naissance qui n'est pas dans le futur.";
     else if ((today - b) / DAY > 1100) err = "Cette application suit les bébés jusqu'à 3 ans environ.";
-    else if (!(w >= 1 && w <= 20)) err = "Entre un poids entre 1 et 20 kg.";
-    else if (!(h >= 30 && h <= 110)) err = "Entre une taille entre 30 et 110 cm.";
     if (err) { $("formErr").textContent = err; $("formErr").hidden = false; return; }
-    var old = state.profile;
-    var changed = !old || old.weightKg !== w || old.heightCm !== h;
-    var p = {
-      name: ($("fName").value.trim() || "Bébé").slice(0, 40),
-      birthDate: birth, weightKg: Math.round(w * 100) / 100, heightCm: Math.round(h * 10) / 10,
-      measuredAt: changed ? iso(new Date()) : old.measuredAt
-    };
+    var p = { name: ($("fName").value.trim() || "Bébé").slice(0, 40), birthDate: birth };
     try { await saveProfile(p); closeSheet(); toast("Fiche enregistrée"); }
     catch (ex) { $("formErr").textContent = errMsg(ex); $("formErr").hidden = false; }
   }
 
   /* ---------- Événements ---------- */
   function bind() {
-    $("qtyMinus").addEventListener("click", function () { setQty(qty - 10, true); });
-    $("qtyPlus").addEventListener("click", function () { setQty(qty + 10, true); });
+    $("qtyMinus").addEventListener("click", function () { setQty(qty - 10); });
+    $("qtyPlus").addEventListener("click", function () { setQty(qty + 10); });
     $("chips").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-ml]");
-      if (b) setQty(+b.getAttribute("data-ml"), true);
+      if (b) setQty(+b.getAttribute("data-ml"));
     });
     $("giveBtn").addEventListener("click", async function () {
       var now = Date.now();
@@ -778,12 +736,12 @@
   }
 
   loadLocal();
-  var saved = NaN;
-  try { saved = parseInt(localStorage.getItem(LS_QTY), 10); } catch (e) { /* ignoré */ }
-  qty = isFinite(saved) ? Math.min(400, Math.max(10, saved)) : Math.round(planFor(cur()).per / 10) * 10;
   bind();
   render();
   setInterval(render, 60000);
+  setInterval(renderNow, 15000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) render(); });
+  window.addEventListener("pageshow", render);
 
   if (window.claude && typeof window.claude.use === "function") {
     window.claude.use("db").then(function (db) { if (db) connectDb(db); }).catch(function () { /* mode appareil */ });
