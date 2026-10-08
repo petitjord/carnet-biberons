@@ -125,6 +125,8 @@
   .mot-head { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
   .mot-head button { min-width: 36px; min-height: 36px; margin: -8px -8px -8px 0; border: 0; background: transparent; font-size: 22px; line-height: 1; color: var(--muted); }
   .mot p { margin: 4px 0 0; font-size: 17px; line-height: 1.4; color: var(--ink); }
+  .check { display: flex; align-items: center; gap: 10px; margin: 6px 0 4px; font-size: 15px; }
+  .check input { width: 22px; height: 22px; flex: none; accent-color: var(--accent); }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .chip { min-height: 38px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
   .chip[aria-pressed="true"] { background: var(--milk); border-color: var(--accent); color: var(--accent); }
@@ -391,6 +393,7 @@
     <h2 id="sheetTitle">Fiche du bébé</h2>
     <div class="field"><label for="fName">Prénom</label><input id="fName" maxlength="40" autocomplete="off"></div>
     <div class="field"><label for="fBirth">Date de naissance</label><input id="fBirth" type="date"></div>
+    <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot doux du jour » sur cet appareil</span></label>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
       <button class="ghost" type="button" id="fCancel">Annuler</button>
@@ -486,7 +489,7 @@
     "Je t'aime pour ce que tu es, ce que tu fais et ce que tu rends possible.",
     "Belle journée, mon cœur. J'ai hâte de te retrouver ce soir.",
     "Je me sens chez moi partout où tu es.",
-    "Merci d'être un parent aussi tendre et aussi présent.",
+    "Merci d'être une maman aussi tendre et aussi présente.",
     "Si je pouvais ralentir le temps, je garderais ces petites journées à trois.",
     "Je ne te le dis jamais assez : tu comptes plus que tout.",
     "Chaque jour avec toi est un cadeau que je n'oublie pas d'ouvrir.",
@@ -495,8 +498,8 @@
     "Notre petite famille se construit doucement, et j'en suis fier.",
     "Je ne sais pas toujours comment te remercier. Alors je t'aime, c'est déjà ça.",
     "Tu fais battre mon cœur plus calmement et plus fort à la fois.",
-    "Bonne journée à la personne qui rend notre maison pleine de vie.",
-    "Je t'ai choisi une fois. Je te choisirais encore tous les matins.",
+    "Bonne journée à celle qui rend notre maison pleine de vie.",
+    "Je t'ai choisie une fois. Je te choisirais encore tous les matins.",
     "Avec toi, même les nuits courtes ont du bon.",
     "Belle journée, remplie de petites joies et de pensées pour toi.",
     "On a changé, mais mon amour pour toi a grandi avec nous.",
@@ -941,10 +944,18 @@
     }
   }
 
+  function motOn() { try { return localStorage.getItem("carnet-biberons:motActif") === "1"; } catch (e) { return false; } }
+  function setMot(on) {
+    try {
+      if (on) localStorage.setItem("carnet-biberons:motActif", "1"); else localStorage.removeItem("carnet-biberons:motActif");
+      localStorage.removeItem("carnet-biberons:mot");
+    } catch (e) { /* ignoré */ }
+    renderMot();
+  }
   function renderMot() {
     var now = new Date(), key = iso(now), n = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / DAY);
-    var hidden = false;
-    try { hidden = localStorage.getItem("carnet-biberons:mot") === key; } catch (e) {}
+    var hidden = true;
+    try { hidden = localStorage.getItem("carnet-biberons:motActif") !== "1" || localStorage.getItem("carnet-biberons:mot") === key; } catch (e) {}
     $("motText").textContent = MOTS[n % MOTS.length];
     $("mot").hidden = hidden;
   }
@@ -1022,6 +1033,7 @@
     $("fName").value = p.name || "";
     $("fBirth").value = p.birthDate;
     $("fBirth").max = iso(new Date());
+    $("fMot").checked = motOn();
     $("formErr").hidden = true;
     $("sheet").hidden = false;
     $("fName").focus();
@@ -1167,6 +1179,10 @@
   }
   function inviteLink() { return location.origin + location.pathname + "#famille=" + fmtCode(state.code); }
   function readInvite() {
+    if (/[#&]mot=1/.test(location.hash || "")) {
+      setMot(true);
+      if (!/famille=/.test(location.hash)) { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignoré */ } }
+    }
     var m = /[#&]famille=([a-z0-9-]+)/i.exec(location.hash || "");
     if (!m) return;
     var c = normCode(m[1]);
@@ -1180,6 +1196,7 @@
   /* ---------- Événements ---------- */
   function bind() {
     $("restIn").addEventListener("input", updateRest);
+    $("fMot").addEventListener("change", function () { setMot($("fMot").checked); });
     $("motClose").addEventListener("click", function () {
       try { localStorage.setItem("carnet-biberons:mot", iso(new Date())); } catch (e) {}
       $("mot").hidden = true;
