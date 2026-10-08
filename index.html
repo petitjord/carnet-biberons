@@ -90,7 +90,8 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .num { font-variant-numeric: tabular-nums; }
 
-  .app { max-width: 480px; margin: 0 auto; padding-block: 20px 40px; display: flex; flex-direction: column; gap: 30px; }
+  .app { max-width: 480px; margin: 0 auto; padding-block: 20px 100px; display: flex; flex-direction: column; gap: 30px; }
+  .tabpanel { display: flex; flex-direction: column; gap: 30px; }
   h2 { font: 700 21px/1.15 var(--font-display); text-wrap: balance; }
 
   /* En-tête */
@@ -167,31 +168,32 @@
   .day-head h3 { font: 700 17px var(--font-display); }
   .day-head p { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .entries { list-style: none; padding: 0; }
-  .entries li { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
-  .entries time { font-weight: 600; font-variant-numeric: tabular-nums; padding: 10px 0; }
-  .entries .ml { font-variant-numeric: tabular-nums; }
-  .del { border: 0; background: none; padding: 10px 6px; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
-  .del.confirm { color: var(--peach); font-weight: 700; }
+  .entry { width: 100%; min-height: 62px; display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 0; border: 0; border-bottom: 1px solid var(--line); background: none; text-align: left; }
+  .entry:active { background: var(--milk); }
+  .entry time { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .entry .main { display: flex; flex-direction: column; gap: 1px; padding: 9px 0; min-width: 0; }
+  .entry .ml { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .entry .gap { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .entry .gap b { color: var(--ink); font-weight: 600; }
+  .entry .chev { color: var(--muted); font-size: 24px; line-height: 1; padding-right: 4px; }
   .empty { padding: 18px 0; color: var(--muted); }
 
   /* Prévisions */
   .lead { margin-top: 8px; }
   .lead strong { font-weight: 700; }
   .sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
-  .table-wrap { overflow-x: auto; margin-top: 14px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
-  th, td { padding: 9px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
-  thead th { font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-  tbody th { text-align: left; font-weight: 600; }
-  th:first-child, td:first-child { padding-left: 4px; }
-  tr.past { opacity: 0.55; }
-  tr.now { background: var(--milk); font-weight: 700; }
-  .tag { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); font-size: 11px; font-weight: 600; color: var(--muted); }
-  .tag.now { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 14px 0 0; border-block: 1px solid var(--line); }
+  .plan-grid div { padding: 12px 0 12px 12px; min-width: 0; }
+  .plan-grid div:first-child { padding-left: 0; }
+  .plan-grid div + div { border-left: 1px solid var(--line); }
+  .plan-grid dt { font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+  .plan-grid dd { margin: 2px 0 0; font: 700 24px/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
+  .plan-grid dd small { font: 500 13px var(--font-body); color: var(--muted); margin-left: 3px; }
+  .next { margin-top: 14px; }
   .foot { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
 
   /* Toast */
-  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 448px; margin: 0 auto; z-index: 30; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
+  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); max-width: 448px; margin: 0 auto; z-index: 30; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
   .toast button { border: 0; background: none; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; padding: 6px; color: inherit; }
 
   /* Fiche bébé */
@@ -203,6 +205,21 @@
   .field input { width: 100%; min-height: 46px; padding: 8px 12px; font-size: 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
   .err { color: var(--peach); font-weight: 600; font-size: 14px; }
   .actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* Barre d'onglets */
+  .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .tabbar-in { max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .tab { position: relative; min-height: 60px; padding: 8px 4px 6px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .tab[aria-selected="true"] { color: var(--accent); }
+  .tab[aria-selected="true"]::before { content: ""; position: absolute; top: -1px; left: 30%; right: 30%; height: 3px; border-radius: 0 0 3px 3px; background: var(--accent); }
+
+  /* Modifier un biberon */
+  .qty-edit { display: flex; align-items: center; gap: 10px; }
+  .qty-edit input { flex: 1 1 auto; min-width: 0; text-align: center; font-weight: 700; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .step.small { flex: none; width: 46px; height: 46px; font-size: 26px; }
+  .actions.between { justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .actions.between .right { display: flex; gap: 10px; }
 
   /* Partage */
   .share-row { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -221,6 +238,7 @@
 </head>
 <body>
 <main class="app">
+  <div class="tabpanel" id="tab-feeds" role="tabpanel" aria-labelledby="tabbtn-feeds">
   <header>
     <p class="now" id="now"></p>
     <div class="head">
@@ -262,48 +280,76 @@
     </details>
   </section>
 
-  <section aria-labelledby="todayTitle">
-    <div class="sec-head">
-      <div>
-        <h2 id="todayTitle">Aujourd'hui</h2>
-        <p id="todayCount"></p>
+    <section aria-labelledby="todayTitle">
+      <div class="sec-head">
+        <div>
+          <h2 id="todayTitle">Aujourd'hui</h2>
+          <p id="todayCount"></p>
+        </div>
+        <p class="big" id="todayBig"></p>
       </div>
-      <p class="big" id="todayBig"></p>
-    </div>
-    <div class="gauge" id="gauge"></div>
-    <p class="goal-note" id="goalNote"></p>
-    <ul class="facts" id="facts"></ul>
-  </section>
+      <ul class="facts" id="facts"></ul>
+    </section>
 
-  <section aria-labelledby="weekTitle">
-    <h2 id="weekTitle">7 derniers jours</h2>
-    <div id="chart"></div>
-  </section>
+    <section aria-labelledby="logTitle">
+      <h2 id="logTitle">Journal des biberons</h2>
+      <p class="sub" id="logHint"></p>
+      <div class="history" id="history"></div>
+    </section>
 
-  <section aria-labelledby="logTitle">
-    <h2 id="logTitle">Journal des biberons</h2>
-    <div class="history" id="history"></div>
-  </section>
+    <footer class="foot">
+      <p id="storage"></p>
+    </footer>
+  </div>
 
-  <section aria-labelledby="planTitle">
-    <h2 id="planTitle">Prévisions de lait</h2>
-    <p class="lead" id="planLead"></p>
-    <p class="sub" id="planBasis"></p>
-    <div class="table-wrap">
-      <table>
-        <caption class="sr">Quantités de lait habituelles selon l'âge</caption>
-        <thead><tr><th scope="col" style="text-align:left">Âge</th><th scope="col">Biberons / jour</th><th scope="col">ml / biberon</th><th scope="col">Total / jour</th></tr></thead>
-        <tbody id="planBody"></tbody>
-      </table>
-    </div>
-    <p class="sub" id="planNext"></p>
-  </section>
+  <div class="tabpanel" id="tab-goal" role="tabpanel" aria-labelledby="tabbtn-goal" hidden>
+    <section aria-labelledby="goalTitle">
+      <div class="sec-head">
+        <div>
+          <h2 id="goalTitle">Objectif du jour</h2>
+          <p id="goalCount"></p>
+        </div>
+        <p class="big" id="goalBig"></p>
+      </div>
+      <div class="gauge" id="gauge"></div>
+      <p class="goal-note" id="goalNote"></p>
+      <ul class="facts" id="goalFacts"></ul>
+    </section>
 
-  <footer class="foot">
-    <p id="storage"></p>
-    <p>Repères indicatifs pour un lait infantile. Chaque bébé a son rythme : suis l'étiquette de ton lait et l'avis de ton pédiatre.</p>
-  </footer>
+    <section aria-labelledby="weekTitle">
+      <h2 id="weekTitle">7 derniers jours</h2>
+      <div id="chart"></div>
+      <p class="sub" id="weekAvg"></p>
+    </section>
+  </div>
+
+  <div class="tabpanel" id="tab-plan" role="tabpanel" aria-labelledby="tabbtn-plan" hidden>
+    <section aria-labelledby="planTitle">
+      <h2 id="planTitle">Prévisions de lait</h2>
+      <p class="lead" id="planLead"></p>
+      <dl class="plan-grid" id="planGrid"></dl>
+      <p class="sub" id="planBasis"></p>
+      <p class="next" id="planNext"></p>
+    </section>
+  </div>
 </main>
+
+<nav class="tabbar" aria-label="Sections du carnet">
+  <div class="tabbar-in" role="tablist" id="tabbar">
+    <button class="tab" type="button" role="tab" id="tabbtn-feeds" data-tab="feeds" aria-controls="tab-feeds" aria-selected="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9.5" width="8" height="11.5" rx="2"/><path d="M9 9.5V7h6v2.5"/><path d="M10.5 7V4.5a1.5 1.5 0 0 1 3 0V7"/><path d="M8 14h3M8 17.5h2"/></svg>
+      <span>Biberons</span>
+    </button>
+    <button class="tab" type="button" role="tab" id="tabbtn-goal" data-tab="goal" aria-controls="tab-goal" aria-selected="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
+      <span>Bilan</span>
+    </button>
+    <button class="tab" type="button" role="tab" id="tabbtn-plan" data-tab="plan" aria-controls="tab-plan" aria-selected="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l5.5-6 4 3L20 6"/><path d="M15 6h5v5"/></svg>
+      <span>Prévisions</span>
+    </button>
+  </div>
+</nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span id="toastMsg"></span>
@@ -320,6 +366,30 @@
     <div class="actions">
       <button class="ghost" type="button" id="fCancel">Annuler</button>
       <button class="solid" type="submit">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<div class="sheet" id="feedSheet" hidden>
+  <div class="backdrop" id="feedBack"></div>
+  <form class="panel" id="feedForm" role="dialog" aria-modal="true" aria-labelledby="feedTitle" novalidate>
+    <h2 id="feedTitle">Modifier le biberon</h2>
+    <div class="field"><label for="feedTime">Date et heure</label><input id="feedTime" type="datetime-local"></div>
+    <div class="field">
+      <label for="feedMl">Quantité (ml)</label>
+      <div class="qty-edit">
+        <button class="step small" type="button" id="feedMinus" aria-label="Retirer 10 ml">−</button>
+        <input id="feedMl" type="number" inputmode="numeric" min="10" max="500" step="10" autocomplete="off">
+        <button class="step small" type="button" id="feedPlus" aria-label="Ajouter 10 ml">+</button>
+      </div>
+    </div>
+    <p class="err" id="feedErr" role="alert" hidden></p>
+    <div class="actions between">
+      <button class="ghost leave" type="button" id="feedDelete">Supprimer</button>
+      <div class="right">
+        <button class="ghost" type="button" id="feedCancel">Annuler</button>
+        <button class="solid" type="submit">Enregistrer</button>
+      </div>
     </div>
   </form>
 </div>
@@ -394,7 +464,7 @@
 
   var state = { profile: null, profileLocal: false, feeds: [], mode: "local", code: null, sync: "none" };
   var qty = 90;
-  var lastPress = 0, flashTimer = null, toastTimer = null, delTimer = null, pendingDel = null;
+  var lastPress = 0, flashTimer = null, toastTimer = null;
 
   /* ---------- Dates ---------- */
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
@@ -425,7 +495,7 @@
     var m = Math.max(0, Math.round(ms / 60000));
     if (m < 60) return m + " min";
     var h = Math.floor(m / 60), r = m % 60;
-    if (h >= 24) return Math.floor(h / 24) + " j";
+    if (h >= 24) { var dd = Math.floor(h / 24), hh = h % 24; return dd + " j" + (hh ? " " + hh + " h" : ""); }
     return r ? h + " h " + pad(r) : h + " h";
   }
   function ageParts(birth, now) {
@@ -616,6 +686,11 @@
     state.feeds = state.feeds.filter(function (f) { return f.id !== id; });
     persistLocal(); render();
   }
+  async function updateFeed(id, ts, ml) {
+    if (state.mode === "shared" && fsm) { fsm.setDoc(fsm.doc(feedsCol(), id), { ts: ts, ml: ml }).catch(writeFailed); return; }
+    state.feeds = state.feeds.map(function (f) { return f.id === id ? { id: f.id, ts: ts, ml: ml, local: f.local } : f; });
+    sortFeeds(); persistLocal(); render();
+  }
   async function saveProfile(p) {
     state.profile = p;
     if (state.mode === "shared" && fsm) {
@@ -643,28 +718,14 @@
     $("example").hidden = !!state.profile;
   }
 
+  function sumMl(list) { return list.reduce(function (t, f) { return t + f.ml; }, 0); }
+  function todayFeeds() { var t0 = midnight(Date.now()).getTime(); return state.feeds.filter(function (f) { return f.ts >= t0 && f.ts < t0 + DAY; }); }
+
   function renderToday() {
-    var p = cur(), pl = planFor(p), now = Date.now(), t0 = midnight(now).getTime();
-    var todays = state.feeds.filter(function (f) { return f.ts >= t0 && f.ts < t0 + DAY; });
-    var total = todays.reduce(function (s, f) { return s + f.ml; }, 0);
+    var pl = planFor(cur()), now = Date.now(), t0 = midnight(now).getTime();
+    var todays = todayFeeds(), total = sumMl(todays);
     $("todayCount").textContent = todays.length + (todays.length > 1 ? " biberons" : " biberon") + " donné" + (todays.length > 1 ? "s" : "");
     $("todayBig").innerHTML = nf.format(total) + "<small>ml</small>";
-
-    var mx = Math.max(pl.total, total);
-    var scale = Math.max(150, Math.ceil(mx * 1.05 / 150) * 150);
-    var major = scale <= 900 ? 150 : 300;
-    var h = '<div class="gauge-bar"><div class="gauge-fill" style="width:' + Math.min(100, total / scale * 100).toFixed(2) + '%"></div></div>';
-    for (var v = 0; v <= scale; v += 30) {
-      var left = (v / scale * 100).toFixed(2), isMaj = v % major === 0;
-      h += '<i class="tick ' + (isMaj ? "major" : "minor") + '" style="left:' + left + '%"></i>';
-      if (isMaj) h += '<span class="tick-label" style="left:' + left + '%">' + v + '</span>';
-    }
-    var gl = pl.total / scale * 100;
-    h += '<div class="goal' + (gl > 72 ? " right" : "") + '" style="left:' + gl.toFixed(2) + '%"><span>objectif ' + nf.format(pl.total) + ' ml</span></div>';
-    $("gauge").innerHTML = h;
-
-    $("goalNote").textContent = "Objectif selon l'âge : " + pl.n + " biberons d'environ " + pl.per + " ml.";
-
     var rows = "", last = state.feeds[0];
     if (last) {
       var nextTs = last.ts + pl.gap * 3600000, diff = nextTs - now;
@@ -678,26 +739,46 @@
     } else {
       rows += '<li><span class="k">Prochain biberon</span><span class="v">Dès le premier noté<small>Appuie sur « Biberon donné »</small></span></li>';
     }
-    var rem = Math.max(0, pl.total - total);
+    $("facts").innerHTML = rows;
+  }
+
+  function renderGoal() {
+    var pl = planFor(cur()), todays = todayFeeds(), total = sumMl(todays);
+    $("goalCount").textContent = todays.length + " sur " + pl.n + " biberons prévus";
+    $("goalBig").innerHTML = nf.format(total) + "<small>/ " + nf.format(pl.total) + " ml</small>";
+    var mx = Math.max(pl.total, total);
+    var scale = Math.max(150, Math.ceil(mx * 1.05 / 150) * 150);
+    var major = scale <= 900 ? 150 : 300;
+    var h = '<div class="gauge-bar"><div class="gauge-fill" style="width:' + Math.min(100, total / scale * 100).toFixed(2) + '%"></div></div>';
+    for (var v = 0; v <= scale; v += 30) {
+      var left = (v / scale * 100).toFixed(2), isMaj = v % major === 0;
+      h += '<i class="tick ' + (isMaj ? "major" : "minor") + '" style="left:' + left + '%"></i>';
+      if (isMaj) h += '<span class="tick-label" style="left:' + left + '%">' + v + '</span>';
+    }
+    var gl = pl.total / scale * 100;
+    h += '<div class="goal' + (gl > 72 ? " right" : "") + '" style="left:' + gl.toFixed(2) + '%"><span>objectif ' + nf.format(pl.total) + ' ml</span></div>';
+    $("gauge").innerHTML = h;
+    $("goalNote").textContent = "Objectif selon l'âge : " + pl.n + " biberons d'environ " + pl.per + " ml.";
+    var rem = Math.max(0, pl.total - total), rows;
     if (!todays.length) {
-      rows += '<li><span class="k">À donner aujourd\'hui</span><span class="v">environ ' + nf.format(pl.total) + ' ml<small>' + pl.n + ' biberons d\'environ ' + pl.per + ' ml</small></span></li>';
+      rows = '<li><span class="k">À donner aujourd\'hui</span><span class="v">environ ' + nf.format(pl.total) + ' ml<small>' + pl.n + ' biberons d\'environ ' + pl.per + ' ml</small></span></li>';
     } else if (rem === 0) {
-      rows += '<li><span class="k">Reste à donner</span><span class="v">Objectif du jour atteint</span></li>';
+      rows = '<li><span class="k">Reste à donner</span><span class="v">Objectif du jour atteint</span></li>';
     } else {
       var nb = Math.ceil(rem / pl.per);
-      rows += '<li><span class="k">Reste à donner</span><span class="v">environ ' + nf.format(rem) + ' ml<small>' + nb + (nb > 1 ? " biberons" : " biberon") + ' de ' + pl.per + ' ml</small></span></li>';
+      rows = '<li><span class="k">Reste à donner</span><span class="v">environ ' + nf.format(rem) + ' ml<small>' + nb + (nb > 1 ? " biberons" : " biberon") + ' de ' + pl.per + ' ml</small></span></li>';
     }
-    $("facts").innerHTML = rows;
+    $("goalFacts").innerHTML = rows;
   }
 
   function renderChart() {
     var pl = planFor(cur()), now = new Date(), days = [], i, map = {};
     for (i = 6; i >= 0; i--) {
       var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-      var o = { d: d, key: iso(d), sum: 0 };
+      var o = { d: d, key: iso(d), sum: 0, n: 0 };
       days.push(o); map[o.key] = o;
     }
-    state.feeds.forEach(function (f) { var x = map[dayKey(f.ts)]; if (x) x.sum += f.ml; });
+    state.feeds.forEach(function (f) { var x = map[dayKey(f.ts)]; if (x) { x.sum += f.ml; x.n++; } });
     var mx = Math.max(pl.total, Math.max.apply(null, days.map(function (x) { return x.sum; })));
     var ymax = Math.max(300, Math.ceil(mx * 1.08 / 300) * 300);
     var W = 320, H = 176, L = 34, R = 8, T = 18, B = 28, pw = W - L - R, ph = H - T - B;
@@ -723,50 +804,59 @@
     });
     s += '<line class="goal-line" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(pl.total) + '" y2="' + y(pl.total) + '"/>';
     s += '<text class="goal-text" x="' + (L + 4) + '" y="' + (+y(pl.total) - 4).toFixed(1) + '">objectif ' + pl.total + '</text>';
+    var past = days.slice(0, 6).filter(function (x) { return x.sum > 0; });
+    if (past.length) {
+      var avgMl = Math.round(past.reduce(function (t, x) { return t + x.sum; }, 0) / past.length / 10) * 10;
+      var avgN = Math.round(past.reduce(function (t, x) { return t + x.n; }, 0) / past.length * 10) / 10;
+      $("weekAvg").textContent = "Moyenne des jours précédents : environ " + nf.format(avgMl) + " ml et " + nf2.format(avgN) + " biberons par jour.";
+    } else { $("weekAvg").textContent = ""; }
     $("chart").innerHTML = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Lait par jour sur 7 jours. ' + label.join(", ") + '. Objectif ' + pl.total + ' ml.">' + s + '</svg>';
   }
 
   function renderHistory() {
     var cut = midnight(Date.now()).getTime() - 13 * DAY, groups = [], g = null;
-    state.feeds.forEach(function (f) {
+    state.feeds.forEach(function (f, idx) {
       if (f.ts < cut) return;
       var k = dayKey(f.ts);
       if (!g || g.key !== k) { g = { key: k, ts: f.ts, sum: 0, items: [] }; groups.push(g); }
-      g.sum += f.ml; g.items.push(f);
+      g.sum += f.ml;
+      g.items.push({ f: f, prev: state.feeds[idx + 1] || null });
     });
+    $("logHint").textContent = groups.length ? "Touche un biberon pour modifier l'heure ou la quantité. L'intervalle compte les heures depuis le biberon précédent." : "";
     if (!groups.length) {
       $("history").innerHTML = '<p class="empty">Aucun biberon noté pour l\'instant. Appuie sur « Biberon donné » pour enregistrer le premier : la date et l\'heure s\'ajoutent toutes seules.</p>';
       return;
     }
     $("history").innerHTML = groups.map(function (gr) {
-      var lis = gr.items.map(function (f) {
-        var pend = pendingDel === f.id;
-        return '<li><time>' + fmtTime(f.ts) + '</time><span class="ml">' + f.ml + ' ml</span>' +
-          '<button type="button" class="del' + (pend ? " confirm" : "") + '" data-id="' + f.id + '" aria-label="Supprimer le biberon de ' + fmtTime(f.ts) + '">' +
-          (pend ? "Confirmer" : "Supprimer") + '</button></li>';
+      var lis = gr.items.map(function (it) {
+        var f = it.f;
+        var gap = it.prev ? '<span class="gap"><b>' + fmtDur(f.ts - it.prev.ts) + '</b> depuis le précédent</span>' : '';
+        return '<li><button type="button" class="entry" data-id="' + f.id + '" aria-label="Modifier le biberon de ' + fmtTime(f.ts) + ', ' + f.ml + ' ml">' +
+          '<time>' + fmtTime(f.ts) + '</time>' +
+          '<span class="main"><span class="ml">' + f.ml + ' ml</span>' + gap + '</span>' +
+          '<span class="chev" aria-hidden="true">›</span></button></li>';
       }).join("");
       return '<div class="day"><div class="day-head"><h3>' + dayLabel(gr.ts) + '</h3><p>' + nf.format(gr.sum) + ' ml · ' + gr.items.length + (gr.items.length > 1 ? " biberons" : " biberon") + '</p></div><ul class="entries">' + lis + '</ul></div>';
     }).join("");
   }
 
+  function planLabel(m) { return m === 0 ? "moins de 1 mois" : (m >= 12 ? "12 mois et plus" : m + " à " + (m + 1) + " mois"); }
+  function rangeDash(r) { return r[0] === r[1] ? "" + r[0] : r[0] + "–" + r[1]; }
   function renderPlan() {
-    var p = cur(), pl = planFor(p), cm = Math.min(pl.age.months, 12);
+    var p = cur(), pl = planFor(p), cm = Math.min(pl.age.months, 12), r = PLAN[cm];
     var today0 = midnight(Date.now()), birth = parseISO(p.birthDate);
-    $("planLead").innerHTML = "À " + ageText(pl.age) + ", vise environ <strong>" + nf.format(pl.total) + " ml par jour</strong>, soit " + pl.n + " biberons d'environ " + pl.per + " ml.";
-    $("planBasis").textContent = "Repères habituels pour cet âge. À partir de 6 mois, les repas diversifiés prennent peu à peu le relais du lait.";
-    $("planBody").innerHTML = PLAN.map(function (r) {
-      var cls = r.m < cm ? "past" : (r.m === cm ? "now" : "");
-      var label = r.m === 12 ? "12 mois et +" : r.m + "–" + (r.m + 1) + " mois", tag = "";
-      if (r.m === cm) tag = '<span class="tag now">Maintenant</span>';
-      else if (r.m === cm + 1) {
-        var days = Math.max(0, Math.ceil((addMonths(birth, r.m) - today0) / DAY));
-        tag = '<span class="tag">' + (days === 0 ? "Aujourd'hui" : "Dans " + days + " j") + '</span>';
-      }
-      return '<tr class="' + cls + '"><th scope="row">' + label + tag + '</th><td>' + range(r.nb) + '</td><td>' + range(r.ml) + '</td><td>' + r.n * r.per + ' ml</td></tr>';
-    }).join("");
+    $("planLead").innerHTML = "Tranche d'âge actuelle : <strong>" + planLabel(cm) + "</strong> (ton bébé a " + ageText(pl.age) + ").";
+    $("planGrid").innerHTML =
+      '<div><dt>Biberons / jour</dt><dd>' + rangeDash(r.nb) + '</dd></div>' +
+      '<div><dt>ml / biberon</dt><dd>' + rangeDash(r.ml) + '</dd></div>' +
+      '<div><dt>Total / jour</dt><dd>' + pl.total + '<small>ml</small></dd></div>';
+    $("planBasis").textContent = "Repères habituels pour un lait infantile, à adapter à l'appétit de ton bébé. " +
+      (cm >= 5 ? "Autour de 6 mois, les repas diversifiés prennent peu à peu le relais du lait. " : "") +
+      "Suis l'étiquette de ton lait et l'avis de ton pédiatre.";
     if (cm < 12) {
-      var nx = PLAN[cm + 1], when = addMonths(birth, nx.m);
-      $("planNext").textContent = "Prochain palier le " + fmtDate(when) + " : " + range(nx.nb) + " biberons de " + range(nx.ml) + " ml.";
+      var nx = PLAN[cm + 1], when = addMonths(birth, nx.m), days = Math.max(0, Math.ceil((when - today0) / DAY));
+      $("planNext").textContent = "Prochain palier le " + fmtDate(when) + " (" + (days === 0 ? "aujourd'hui" : "dans " + days + (days > 1 ? " jours" : " jour")) + ") : " +
+        range(nx.nb) + " biberons de " + range(nx.ml) + " ml.";
     } else {
       $("planNext").textContent = "Après 12 mois, les repas prennent le relais du lait. Demande conseil à ton pédiatre.";
     }
@@ -782,7 +872,7 @@
   }
 
   function render() {
-    renderHead(); renderToday(); renderChart(); renderHistory(); renderPlan(); renderFoot(); updateQtyUI();
+    renderHead(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderPlan(); renderFoot(); updateQtyUI();
   }
 
   /* ---------- Quantité ---------- */
@@ -841,6 +931,70 @@
     var p = { name: ($("fName").value.trim() || "Bébé").slice(0, 40), birthDate: birth };
     try { await saveProfile(p); closeSheet(); toast("Fiche enregistrée"); }
     catch (ex) { $("formErr").textContent = errMsg(ex); $("formErr").hidden = false; }
+  }
+
+  /* ---------- Onglets ---------- */
+  var TABS = ["feeds", "goal", "plan"];
+  function showTab(name) {
+    TABS.forEach(function (t) {
+      var on = t === name;
+      $("tab-" + t).hidden = !on;
+      $("tabbtn-" + t).setAttribute("aria-selected", on ? "true" : "false");
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- Modifier un biberon ---------- */
+  var editingId = null, delArmed = false, delArmTimer = null;
+  function findFeed(id) {
+    for (var i = 0; i < state.feeds.length; i++) if (state.feeds[i].id === id) return state.feeds[i];
+    return null;
+  }
+  function renderFeedSheet() { $("feedDelete").textContent = delArmed ? "Confirmer la suppression" : "Supprimer"; }
+  function feedError(msg) { $("feedErr").textContent = msg; $("feedErr").hidden = false; }
+  function openFeed(id) {
+    var f = findFeed(id);
+    if (!f) return;
+    hideToast();
+    editingId = id; delArmed = false; clearTimeout(delArmTimer);
+    $("feedTime").value = toLocalInput(f.ts);
+    $("feedTime").max = toLocalInput(Date.now());
+    $("feedMl").value = f.ml;
+    $("feedErr").hidden = true;
+    renderFeedSheet();
+    $("feedSheet").hidden = false;
+    $("feedCancel").focus();
+  }
+  function closeFeed() { $("feedSheet").hidden = true; editingId = null; delArmed = false; clearTimeout(delArmTimer); }
+  function stepFeed(d) {
+    var v = parseInt($("feedMl").value, 10);
+    if (!isFinite(v)) v = 90;
+    $("feedMl").value = Math.min(500, Math.max(10, Math.round(v / 10) * 10 + d));
+  }
+  async function submitFeed(e) {
+    e.preventDefault();
+    var f = findFeed(editingId);
+    if (!f) { closeFeed(); toast("Ce biberon n'existe plus."); return; }
+    var ml = parseInt($("feedMl").value, 10), v = $("feedTime").value;
+    var ts = v === toLocalInput(f.ts) ? f.ts : new Date(v).getTime();
+    var err = "";
+    if (!isFinite(ts)) err = "Choisis la date et l'heure du biberon.";
+    else if (ts !== f.ts && ts > Date.now() + 60000) err = "Cette heure est dans le futur.";
+    else if (ts !== f.ts && ts < Date.now() - 14 * DAY) err = "Le journal garde les 14 derniers jours.";
+    else if (!(ml >= 10 && ml <= 500)) err = "Entre une quantité entre 10 et 500 ml.";
+    if (err) { feedError(err); return; }
+    if (ts === f.ts && ml === f.ml) { closeFeed(); return; }
+    try { await updateFeed(f.id, ts, ml); closeFeed(); toast("Biberon modifié : " + ml + " ml à " + fmtTime(ts)); }
+    catch (ex) { feedError(errMsg(ex)); }
+  }
+  async function removeFeed() {
+    var f = findFeed(editingId);
+    closeFeed();
+    if (!f) return;
+    try {
+      await deleteFeed(f.id);
+      toast("Biberon supprimé", function () { addFeed(f.ml, f.ts).catch(function (e) { toast(errMsg(e)); }); });
+    } catch (e) { toast(errMsg(e)); }
   }
 
   /* ---------- Fenêtre de partage ---------- */
@@ -947,19 +1101,25 @@
       try { await addFeed(qty, ts); toast("Biberon de " + qty + " ml ajouté à " + fmtTime(ts)); $("later").open = false; }
       catch (e) { toast(errMsg(e)); }
     });
-    $("history").addEventListener("click", async function (e) {
+    $("history").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-id]");
-      if (!b) return;
-      var id = b.getAttribute("data-id");
-      clearTimeout(delTimer);
-      if (pendingDel === id) {
-        pendingDel = null;
-        try { await deleteFeed(id); } catch (ex) { toast(errMsg(ex)); renderHistory(); }
-      } else {
-        pendingDel = id;
-        delTimer = setTimeout(function () { pendingDel = null; renderHistory(); }, 3500);
-        renderHistory();
-      }
+      if (b) openFeed(b.getAttribute("data-id"));
+    });
+    $("tabbar").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-tab]");
+      if (b) showTab(b.getAttribute("data-tab"));
+    });
+    $("feedForm").addEventListener("submit", submitFeed);
+    $("feedCancel").addEventListener("click", closeFeed);
+    $("feedBack").addEventListener("click", closeFeed);
+    $("feedMinus").addEventListener("click", function () { stepFeed(-10); });
+    $("feedPlus").addEventListener("click", function () { stepFeed(10); });
+    $("feedDelete").addEventListener("click", function () {
+      clearTimeout(delArmTimer);
+      if (!delArmed) {
+        delArmed = true; renderFeedSheet();
+        delArmTimer = setTimeout(function () { delArmed = false; renderFeedSheet(); }, 4000);
+      } else { removeFeed(); }
     });
     $("editBtn").addEventListener("click", openSheet);
     $("exampleBtn").addEventListener("click", openSheet);
@@ -997,6 +1157,7 @@
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       if (!$("sheet").hidden) closeSheet();
+      else if (!$("feedSheet").hidden) closeFeed();
       else if (!$("shareSheet").hidden) closeShare();
     });
   }
