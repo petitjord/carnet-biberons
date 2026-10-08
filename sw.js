@@ -1,5 +1,5 @@
 /* Service worker : permet d'ouvrir le carnet sans connexion. */
-var CACHE = "carnet-biberons-v2";
+var CACHE = "carnet-biberons-v3";
 var ASSETS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", function (event) {
@@ -21,7 +21,8 @@ self.addEventListener("fetch", function (event) {
   if (req.method !== "GET") return;
   var url = new URL(req.url);
   var sameOrigin = url.origin === self.location.origin;
-  var fonts = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
+  var fonts = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" ||
+    (url.hostname === "www.gstatic.com" && url.pathname.indexOf("/firebasejs/") === 0);
   if (!sameOrigin && !fonts) return;
 
   /* La page elle-même : le réseau d'abord, pour voir les mises à jour tout de suite. */

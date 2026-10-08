@@ -204,6 +204,18 @@
   .err { color: var(--peach); font-weight: 600; font-size: 14px; }
   .actions { display: flex; gap: 10px; justify-content: flex-end; }
 
+  /* Partage */
+  .share-row { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .share-row p { min-width: 0; flex: 1 1 180px; font-size: 14px; color: var(--muted); display: flex; align-items: center; }
+  .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); margin-right: 8px; }
+  .dot.wait { background: var(--peach); }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .note { font-size: 14px; color: var(--muted); }
+  .code-box { font: 600 18px/1.35 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.03em; padding: 14px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
+  .actions.split { justify-content: space-between; flex-wrap: wrap; }
+  .actions.split > button { flex: 1 1 140px; }
+  .leave { align-self: flex-start; color: var(--peach); border-color: transparent; padding-left: 0; }
+
   @media (prefers-reduced-motion: reduce) { .gauge-fill { transition: none; } }
 </style>
 </head>
@@ -222,6 +234,10 @@
     <div class="example" id="example" hidden>
       <span>La date de naissance est un exemple. Renseigne celle de ton bébé pour des prévisions justes.</span>
       <button type="button" id="exampleBtn">Renseigner</button>
+    </div>
+    <div class="share-row" id="shareRow">
+      <p id="shareStatus"></p>
+      <button class="ghost" id="shareBtn" type="button">Partager</button>
     </div>
   </header>
 
@@ -308,11 +324,51 @@
   </form>
 </div>
 
+<div class="sheet" id="shareSheet" hidden>
+  <div class="backdrop" id="shareBack"></div>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <h2 id="shareTitle">Partager le carnet</h2>
+    <div class="stack" id="shareNone">
+      <p class="note">Avec un code famille, vous voyez tous les deux les mêmes biberons depuis vos deux téléphones, même si l'un d'eux est hors connexion un moment.</p>
+      <button class="solid" type="button" id="shareCreate">Créer un code famille</button>
+      <form class="stack" id="shareJoinForm" novalidate>
+        <div class="field">
+          <label for="shareCodeIn">Ou colle le code de l'autre parent</label>
+          <input id="shareCodeIn" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="xxxxxx-xxxxxx-xxxxxx">
+        </div>
+        <button class="ghost" type="submit">Rejoindre ce carnet</button>
+      </form>
+    </div>
+    <div class="stack" id="shareOn" hidden>
+      <p class="note">Donne ce code à l'autre parent. Il le colle dans « Partager » sur son téléphone. Toute personne qui connaît ce code peut lire et modifier le carnet : ne le publie nulle part.</p>
+      <div class="code-box" id="shareCodeOut"></div>
+      <div class="actions split">
+        <button class="ghost" type="button" id="shareCopy">Copier le code</button>
+        <button class="solid" type="button" id="shareInvite">Envoyer l'invitation</button>
+      </div>
+      <button class="ghost leave" type="button" id="shareLeave">Arrêter le partage</button>
+    </div>
+    <p class="note">Les biberons sont enregistrés chez Google (Firebase) sous ce code, et gardés aussi sur chaque téléphone.</p>
+    <p class="err" id="shareErr" role="alert" hidden></p>
+    <div class="actions"><button class="ghost" type="button" id="shareClose">Fermer</button></div>
+  </div>
+</div>
+
 <script>
 (function () {
   "use strict";
 
   var LS_KEY = "carnet-biberons:v1";
+  var LS_CODE = "carnet-biberons:famille";
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCRn63fwfcQQ_Po2PYsJwSrP3YydYbcFuw",
+    authDomain: "carnet-biberons.firebaseapp.com",
+    projectId: "carnet-biberons",
+    storageBucket: "carnet-biberons.firebasestorage.app",
+    messagingSenderId: "323340409238",
+    appId: "1:323340409238:web:0ea1884e5db0c4b6abe5b7"
+  };
+  var FB_BASE = "https://www.gstatic.com/firebasejs/10.14.1/";
   var DAY = 86400000;
   var PRESETS = [60, 90, 120, 150, 180, 210, 240];
   var nf = new Intl.NumberFormat("fr-FR");
@@ -336,8 +392,7 @@
     { m: 12, nb: [2, 3], ml: [210, 270], n: 2, per: 270 }
   ];
 
-  var state = { profile: null, feeds: [], mode: "local" };
-  var dbNs = null;
+  var state = { profile: null, profileLocal: false, feeds: [], mode: "local", code: null, sync: "none" };
   var qty = 90;
   var lastPress = 0, flashTimer = null, toastTimer = null, delTimer = null, pendingDel = null;
 
@@ -412,7 +467,7 @@
   }
   function range(r) { return r[0] === r[1] ? "" + r[0] : r[0] + " à " + r[1]; }
 
-  /* ---------- Stockage ---------- */
+  /* ---------- Stockage sur l'appareil ---------- */
   function validFeed(f) { return isFinite(f.ts) && f.ts > 0 && isFinite(f.ml) && f.ml > 0 && f.ml <= 1000; }
   function sortFeeds() { state.feeds.sort(function (a, b) { return b.ts - a.ts; }); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -422,38 +477,155 @@
       if (!raw) return;
       var o = JSON.parse(raw);
       state.profile = cleanProfile(o.profile);
-      state.feeds = (o.feeds || []).map(function (f) { return { id: String(f.id), ts: Number(f.ts), ml: Number(f.ml) }; }).filter(validFeed);
+      state.profileLocal = !!o.profileLocal && !!state.profile;
+      state.feeds = (o.feeds || []).map(function (f) { return { id: String(f.id), ts: Number(f.ts), ml: Number(f.ml), local: !!f.local }; }).filter(validFeed);
       sortFeeds();
     } catch (e) { /* stockage indisponible */ }
   }
   function persistLocal() {
-    if (state.mode !== "local") return;
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, feeds: state.feeds })); } catch (e) { /* ignoré */ }
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, profileLocal: state.profileLocal, feeds: state.feeds })); } catch (e) { /* ignoré */ }
   }
+
+  /* ---------- Code famille ---------- */
+  var CODE_CHARS = "23456789abcdefghjkmnpqrstuvwxyz";
+  function normCode(x) { return String(x || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function validCode(c) { return c.length >= 16 && c.length <= 40; }
+  function fmtCode(c) { return (c.match(/.{1,6}/g) || []).join("-"); }
+  function genCode() {
+    var a = new Uint8Array(18), out = "", k;
+    (window.crypto || window.msCrypto).getRandomValues(a);
+    for (k = 0; k < a.length; k++) out += CODE_CHARS.charAt(a[k] % CODE_CHARS.length);
+    return out;
+  }
+
+  /* ---------- Synchronisation (Firebase) ---------- */
+  var fsm = null, fsDb = null, unsubs = [], connecting = false, retryTimer = null, syncedCode = null;
+  function feedsCol() { return fsm.collection(fsDb, "families", state.code, "feeds"); }
+  function profileRef() { return fsm.doc(fsDb, "families", state.code, "baby", "profile"); }
+  function errMsg(e) {
+    var c = e && e.code;
+    if (c === "permission-denied") return "Enregistrement refusé. Vérifie le code famille et les règles de sécurité Firestore.";
+    if (c === "resource-exhausted") return "Le quota gratuit du jour est atteint. Réessaie demain.";
+    return "Enregistrement impossible pour le moment. Réessaie dans un instant.";
+  }
+  function writeFailed(e) {
+    if (e && e.code === "permission-denied") state.sync = "denied";
+    toast(errMsg(e));
+    renderFoot();
+  }
+  function stopSync() {
+    unsubs.forEach(function (u) { try { u(); } catch (e) { /* ignoré */ } });
+    unsubs = [];
+  }
+  function syncInfo() {
+    var online = navigator.onLine !== false;
+    if (!state.code) return { ok: false, text: "Carnet sur cet appareil seulement" };
+    if (state.sync === "denied") return { ok: false, text: "Accès refusé : vérifie le code famille et les règles Firestore" };
+    if (state.sync === "error") return { ok: false, text: "Synchronisation interrompue : rouvre l'application" };
+    if (state.mode !== "shared") return { ok: false, text: online ? "Connexion au carnet partagé…" : "Hors connexion : biberons gardés sur ce téléphone" };
+    if (state.sync === "pending") return { ok: false, text: online ? "Envoi en cours…" : "Hors connexion : envoi au retour du réseau" };
+    if (state.sync === "cache") return { ok: false, text: online ? "Connexion au carnet partagé…" : "Hors connexion : dernières données connues" };
+    return { ok: true, text: "Partagé et synchronisé" };
+  }
+  async function loadFirebase() {
+    var appM = await import(FB_BASE + "firebase-app.js");
+    var dbM = await import(FB_BASE + "firebase-firestore.js");
+    if (!fsDb) {
+      var app = appM.initializeApp(FIREBASE_CONFIG);
+      try {
+        fsDb = dbM.initializeFirestore(app, {
+          localCache: dbM.persistentLocalCache({ tabManager: dbM.persistentMultipleTabManager() }),
+          experimentalAutoDetectLongPolling: true
+        });
+      } catch (e) { fsDb = dbM.getFirestore(app); }
+    }
+    fsm = dbM;
+  }
+  function tryConnect() {
+    if (!state.code || connecting) return;
+    if (state.mode === "shared" && syncedCode === state.code) return;
+    if (fsm) { startSync(); return; }
+    connecting = true;
+    renderFoot();
+    loadFirebase().then(function () { connecting = false; startSync(); }).catch(function () {
+      connecting = false;
+      renderFoot();
+      clearTimeout(retryTimer);
+      retryTimer = setTimeout(tryConnect, 30000);
+    });
+  }
+  function startSync() {
+    stopSync();
+    syncedCode = state.code;
+    state.mode = "shared";
+    state.sync = "cache";
+    var pend = state.feeds.filter(function (f) { return f.local; });
+    pend.forEach(function (f) {
+      f.local = false;
+      fsm.setDoc(fsm.doc(feedsCol(), f.id), { ts: f.ts, ml: f.ml }).catch(writeFailed);
+    });
+    if (pend.length) persistLocal();
+    unsubs.push(fsm.onSnapshot(profileRef(), { includeMetadataChanges: true }, onProfileSnap, onSyncError));
+    var q = fsm.query(feedsCol(), fsm.orderBy("ts", "desc"), fsm.limit(500));
+    unsubs.push(fsm.onSnapshot(q, { includeMetadataChanges: true }, onFeedsSnap, onSyncError));
+    render();
+  }
+  function onProfileSnap(snap) {
+    if (snap.exists()) {
+      var p = cleanProfile(snap.data());
+      if (p) { state.profile = p; state.profileLocal = false; }
+    } else if (!snap.metadata.fromCache && state.profile && state.profileLocal) {
+      state.profileLocal = false;
+      fsm.setDoc(profileRef(), state.profile).catch(writeFailed);
+    } else if (!snap.metadata.fromCache && !state.profileLocal) {
+      state.profile = null;
+    }
+    persistLocal();
+    render();
+  }
+  function onFeedsSnap(snap) {
+    var m = snap.metadata;
+    if (m.fromCache && snap.empty && !m.hasPendingWrites && state.feeds.length) { state.sync = "cache"; render(); return; }
+    state.feeds = snap.docs.map(function (d) {
+      var x = d.data() || {};
+      return { id: d.id, ts: Number(x.ts), ml: Number(x.ml), local: false };
+    }).filter(validFeed);
+    sortFeeds();
+    if (state.sync !== "denied") state.sync = m.hasPendingWrites ? "pending" : (m.fromCache ? "cache" : "synced");
+    persistLocal();
+    render();
+  }
+  function onSyncError(e) {
+    state.sync = e && e.code === "permission-denied" ? "denied" : "error";
+    render();
+  }
+
   async function addFeed(ml, ts) {
-    if (state.mode === "shared" && dbNs) {
-      var ref = await dbNs.collection("feeds").add({ ts: ts, ml: ml });
+    if (state.mode === "shared" && fsm) {
+      var ref = fsm.doc(feedsCol());
+      fsm.setDoc(ref, { ts: ts, ml: ml }).catch(writeFailed);
       return ref.id;
     }
     var id = uid();
-    state.feeds.push({ id: id, ts: ts, ml: ml });
+    state.feeds.push({ id: id, ts: ts, ml: ml, local: true });
     sortFeeds(); persistLocal(); render();
     return id;
   }
   async function deleteFeed(id) {
-    if (state.mode === "shared" && dbNs) { await dbNs.doc("feeds/" + id).delete(); return; }
+    if (state.mode === "shared" && fsm) { fsm.deleteDoc(fsm.doc(feedsCol(), id)).catch(writeFailed); return; }
     state.feeds = state.feeds.filter(function (f) { return f.id !== id; });
     persistLocal(); render();
   }
   async function saveProfile(p) {
-    if (state.mode === "shared" && dbNs) { await dbNs.doc("baby/profile").set(p); return; }
-    state.profile = p; persistLocal(); render();
-  }
-  function errMsg(e) {
-    var c = e && e.code;
-    if (c === "invalid_argument") return "Tu n'as pas l'autorisation de modifier le carnet sur cette page.";
-    if (c === "quota_exceeded") return "Le carnet est plein. Supprime d'anciens biberons.";
-    return "Enregistrement impossible pour le moment. Réessaie dans un instant.";
+    state.profile = p;
+    if (state.mode === "shared" && fsm) {
+      state.profileLocal = false;
+      persistLocal(); render();
+      fsm.setDoc(profileRef(), p).catch(writeFailed);
+      return;
+    }
+    state.profileLocal = true;
+    persistLocal(); render();
   }
 
   /* ---------- Rendu ---------- */
@@ -601,9 +773,12 @@
   }
 
   function renderFoot() {
-    $("storage").textContent = state.mode === "shared"
-      ? "Le carnet est enregistré et partagé avec les personnes qui ont accès à cette page."
-      : "Le carnet est enregistré sur cet iPhone seulement. Un autre appareil aura son propre carnet.";
+    $("storage").textContent = state.code
+      ? "Le carnet est partagé : chaque téléphone garde une copie et se synchronise par Internet."
+      : "Le carnet est enregistré sur cet appareil seulement. Pour le partager avec l'autre parent, appuie sur « Partager ».";
+    var info = syncInfo();
+    $("shareStatus").innerHTML = '<span class="dot' + (info.ok ? "" : " wait") + '"></span><span>' + info.text + '</span>';
+    $("shareBtn").textContent = state.code ? "Partage" : "Partager avec l'autre parent";
   }
 
   function render() {
@@ -646,6 +821,7 @@
 
   /* ---------- Fiche bébé ---------- */
   function openSheet() {
+    hideToast();
     var p = cur();
     $("fName").value = p.name || "";
     $("fBirth").value = p.birthDate;
@@ -665,6 +841,76 @@
     var p = { name: ($("fName").value.trim() || "Bébé").slice(0, 40), birthDate: birth };
     try { await saveProfile(p); closeSheet(); toast("Fiche enregistrée"); }
     catch (ex) { $("formErr").textContent = errMsg(ex); $("formErr").hidden = false; }
+  }
+
+  /* ---------- Fenêtre de partage ---------- */
+  var leaveArmed = false, leaveTimer = null;
+  function renderShareSheet() {
+    var on = !!state.code;
+    $("shareNone").hidden = on;
+    $("shareOn").hidden = !on;
+    if (on) $("shareCodeOut").textContent = fmtCode(state.code);
+    $("shareLeave").textContent = leaveArmed ? "Confirmer : arrêter le partage" : "Arrêter le partage";
+  }
+  function openShare(prefill) {
+    hideToast();
+    leaveArmed = false;
+    $("shareErr").hidden = true;
+    renderShareSheet();
+    if (prefill) $("shareCodeIn").value = prefill;
+    $("shareSheet").hidden = false;
+    (state.code ? $("shareInvite") : $("shareCreate")).focus();
+  }
+  function closeShare() { $("shareSheet").hidden = true; $("shareBtn").focus(); }
+  function shareError(msg) { $("shareErr").textContent = msg; $("shareErr").hidden = false; }
+  function useCode(code) {
+    if (state.mode === "shared") {
+      stopSync();
+      state.feeds = []; state.profile = null; state.profileLocal = false;
+      state.mode = "local"; syncedCode = null;
+    }
+    state.code = code;
+    state.sync = "none";
+    try { localStorage.setItem(LS_CODE, code); } catch (e) { /* ignoré */ }
+    leaveArmed = false;
+    $("shareErr").hidden = true;
+    $("shareCodeIn").value = "";
+    persistLocal(); render(); renderShareSheet(); tryConnect();
+  }
+  function leaveShare() {
+    stopSync(); syncedCode = null;
+    state.feeds.forEach(function (f) { f.local = true; });
+    state.profileLocal = !!state.profile;
+    state.code = null; state.mode = "local"; state.sync = "none";
+    try { localStorage.removeItem(LS_CODE); } catch (e) { /* ignoré */ }
+    leaveArmed = false;
+    persistLocal(); render(); closeShare();
+    toast("Partage arrêté. Le carnet reste sur ce téléphone.");
+  }
+  function copyText(text, okMsg) {
+    function fallback() {
+      var t = document.createElement("textarea"), ok = false;
+      t.value = text; t.setAttribute("readonly", "");
+      t.style.cssText = "position:fixed;top:0;left:0;opacity:0;font-size:16px";
+      document.body.appendChild(t);
+      t.focus(); t.select();
+      try { t.setSelectionRange(0, text.length); ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(t);
+      toast(ok ? okMsg : "Copie impossible : sélectionne le code et copie-le à la main.");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+    else fallback();
+  }
+  function inviteLink() { return location.origin + location.pathname + "#famille=" + fmtCode(state.code); }
+  function readInvite() {
+    var m = /[#&]famille=([a-z0-9-]+)/i.exec(location.hash || "");
+    if (!m) return;
+    var c = normCode(m[1]);
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignoré */ }
+    if (!validCode(c) || c === state.code) return;
+    if (state.code) { openShare(); toast("Ce lien contient un autre code famille. Arrête d'abord le partage actuel pour le rejoindre."); return; }
+    openShare(fmtCode(c));
+    toast("Code reçu par lien : appuie sur « Rejoindre ce carnet ».");
   }
 
   /* ---------- Événements ---------- */
@@ -716,36 +962,54 @@
     $("fCancel").addEventListener("click", closeSheet);
     $("sheetBack").addEventListener("click", closeSheet);
     $("profileForm").addEventListener("submit", submitProfile);
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("sheet").hidden) closeSheet(); });
+    $("shareBtn").addEventListener("click", function () { openShare(); });
+    $("shareBack").addEventListener("click", closeShare);
+    $("shareClose").addEventListener("click", closeShare);
+    $("shareCreate").addEventListener("click", function () { useCode(genCode()); });
+    $("shareJoinForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var c = normCode($("shareCodeIn").value);
+      if (!validCode(c)) { shareError("Le code doit contenir au moins 16 lettres ou chiffres."); return; }
+      useCode(c);
+    });
+    $("shareCopy").addEventListener("click", function () { copyText(fmtCode(state.code), "Code copié"); });
+    $("shareInvite").addEventListener("click", function () {
+      var link = inviteLink();
+      if (navigator.share) {
+        navigator.share({
+          title: "Carnet de biberons",
+          text: "Rejoins notre carnet de biberons. Code famille : " + fmtCode(state.code) + ". Ouvre l'application, appuie sur « Partager avec l'autre parent » et colle ce code.",
+          url: link
+        }).catch(function () { /* annulé */ });
+      } else { copyText(link, "Lien d'invitation copié"); }
+    });
+    $("shareLeave").addEventListener("click", function () {
+      clearTimeout(leaveTimer);
+      if (!leaveArmed) {
+        leaveArmed = true; renderShareSheet();
+        leaveTimer = setTimeout(function () { leaveArmed = false; renderShareSheet(); }, 4000);
+      } else { leaveShare(); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      if (!$("sheet").hidden) closeSheet();
+      else if (!$("shareSheet").hidden) closeShare();
+    });
   }
 
   /* ---------- Démarrage ---------- */
-  function onDbError() { state.mode = "local"; renderFoot(); }
-  function connectDb(db) {
-    dbNs = db; state.mode = "shared"; state.profile = null; state.feeds = [];
-    render();
-    db.doc("baby/profile").onSnapshot(function (s) {
-      state.profile = s.exists ? cleanProfile(s.data()) : null;
-      render();
-    }, onDbError);
-    db.collection("feeds").orderBy("ts", "desc").limit(500).onSnapshot(function (q) {
-      state.feeds = q.docs.map(function (d) { var x = d.data() || {}; return { id: d.id, ts: Number(x.ts), ml: Number(x.ml) }; }).filter(validFeed);
-      sortFeeds();
-      render();
-    }, onDbError);
-  }
-
   loadLocal();
+  try { var savedCode = normCode(localStorage.getItem(LS_CODE)); if (validCode(savedCode)) state.code = savedCode; } catch (e) { /* ignoré */ }
   bind();
   render();
   setInterval(render, 60000);
   setInterval(renderNow, 15000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) render(); });
   window.addEventListener("pageshow", render);
-
-  if (window.claude && typeof window.claude.use === "function") {
-    window.claude.use("db").then(function (db) { if (db) connectDb(db); }).catch(function () { /* mode appareil */ });
-  }
+  window.addEventListener("online", function () { renderFoot(); tryConnect(); });
+  window.addEventListener("offline", renderFoot);
+  readInvite();
+  tryConnect();
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () { /* hors ligne indisponible */ }); });
   }
