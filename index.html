@@ -869,6 +869,10 @@
       state.feeds = []; state.profile = null; state.profileLocal = false;
       state.mode = "local"; syncedCode = null;
     }
+    if (state.mode !== "shared") {
+      state.feeds.forEach(function (f) { f.local = true; });
+      if (state.profile) state.profileLocal = true;
+    }
     state.code = code;
     state.sync = "none";
     try { localStorage.setItem(LS_CODE, code); } catch (e) { /* ignoré */ }
