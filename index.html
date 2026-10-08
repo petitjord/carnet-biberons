@@ -165,6 +165,13 @@
   .chart .goal-text { fill: var(--peach); font: 700 11px var(--font-body); }
   .chart .val { fill: var(--ink); font: 600 11px var(--font-body); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
   .chart .dlabel { fill: var(--muted); font: 12px var(--font-body); }
+  .chart .hit { fill: transparent; cursor: pointer; outline: none; }
+  .chart .hit:focus-visible { stroke: var(--accent); stroke-width: 2; }
+  .chart .selbg { fill: var(--milk); }
+  .chart .dlabel.sel { fill: var(--accent); font-weight: 700; }
+  .chart .bar.sel { fill: var(--accent); }
+  #dayDetail { margin-top: 6px; }
+  #dayDetail .day { margin-top: 8px; }
   .chart .dlabel.today { fill: var(--ink); font-weight: 700; }
 
   /* Journal */
@@ -330,6 +337,8 @@
       <h2 id="weekTitle">7 derniers jours</h2>
       <div id="chart"></div>
       <p class="sub" id="weekAvg"></p>
+      <p class="sub" id="dayHint">Touche un jour du graphique pour voir ses biberons.</p>
+      <div id="dayDetail" aria-live="polite"></div>
     </section>
   </div>
 
@@ -782,6 +791,18 @@
     $("goalFacts").innerHTML = rows;
   }
 
+  var selDay = null;
+  function dayDetailHTML(key) {
+    var list = [], sum = 0, ts0 = null;
+    state.feeds.forEach(function (f, idx) {
+      if (dayKey(f.ts) !== key) return;
+      list.push({ f: f, prev: state.feeds[idx + 1] || null }); sum += f.ml; if (ts0 === null) ts0 = f.ts;
+    });
+    var d = parseISO(key), title = dayLabel(d.getTime());
+    if (!list.length) return '<div class="day"><div class="day-head"><h3>' + title + '</h3></div><p class="empty">Aucun biberon noté ce jour-là.</p></div>';
+    return '<div class="day"><div class="day-head"><h3>' + title + '</h3><p>' + nf.format(sum) + ' ml · ' + list.length + (list.length > 1 ? " biberons" : " biberon") + '</p></div><ul class="entries">' +
+      list.map(function (it) { return entryHTML(it.f, it.prev); }).join("") + '</ul></div>';
+  }
   function renderChart() {
     var pl = planFor(cur()), now = new Date(), days = [], i, map = {};
     for (i = 6; i >= 0; i--) {
@@ -801,16 +822,19 @@
     }
     s += '<text class="axis" x="' + (L - 6) + '" y="10" text-anchor="end">ml</text>';
     var label = [];
+    if (selDay && !map[selDay]) selDay = null;
     days.forEach(function (x, idx) {
-      var cx = L + idx * slot + slot / 2, isToday = idx === 6;
+      var cx = L + idx * slot + slot / 2, isToday = idx === 6, sel = x.key === selDay;
+      if (sel) s += '<rect class="selbg" x="' + (L + idx * slot + 1).toFixed(1) + '" y="' + (T - 4) + '" width="' + (slot - 2).toFixed(1) + '" height="' + (ph + B + 2) + '" rx="8"/>';
       if (x.sum > 0) {
-        s += '<rect class="bar' + (isToday ? " today" : "") + '" x="' + (cx - bw / 2).toFixed(1) + '" y="' + y(x.sum) + '" width="' + bw + '" height="' + (x.sum / ymax * ph).toFixed(1) + '" rx="4"/>';
+        s += '<rect class="bar' + (isToday ? " today" : "") + (sel ? " sel" : "") + '" x="' + (cx - bw / 2).toFixed(1) + '" y="' + y(x.sum) + '" width="' + bw + '" height="' + (x.sum / ymax * ph).toFixed(1) + '" rx="4"/>';
         s += '<text class="val" x="' + cx.toFixed(1) + '" y="' + (+y(x.sum) - 5).toFixed(1) + '" text-anchor="middle">' + x.sum + '</text>';
       } else {
         s += '<line class="stub" x1="' + (cx - bw / 2).toFixed(1) + '" x2="' + (cx + bw / 2).toFixed(1) + '" y1="' + y(0) + '" y2="' + y(0) + '"/>';
       }
       var wd = isToday ? "auj." : x.d.toLocaleDateString("fr-FR", { weekday: "short" });
       s += '<text class="dlabel' + (isToday ? " today" : "") + '" x="' + cx.toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + wd + '</text>';
+      s += '<rect class="hit" tabindex="0" role="button" data-day="' + x.key + '" aria-pressed="' + sel + '" aria-label="' + x.d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }) + ', ' + x.sum + ' ml, voir le détail" x="' + (L + idx * slot).toFixed(1) + '" y="0" width="' + slot.toFixed(1) + '" height="' + H + '"/>';
       label.push(x.d.toLocaleDateString("fr-FR", { weekday: "long" }) + " " + x.sum + " ml");
     });
     s += '<line class="goal-line" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(pl.total) + '" y2="' + y(pl.total) + '"/>';
@@ -821,9 +845,18 @@
       var avgN = Math.round(past.reduce(function (t, x) { return t + x.n; }, 0) / past.length * 10) / 10;
       $("weekAvg").textContent = "Moyenne des jours précédents : environ " + nf.format(avgMl) + " ml et " + nf2.format(avgN) + " biberons par jour.";
     } else { $("weekAvg").textContent = ""; }
+ $("dayDetail").innerHTML = selDay ? dayDetailHTML(selDay) : "";
+    $("dayHint").hidden = !!selDay;
     $("chart").innerHTML = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Lait par jour sur 7 jours. ' + label.join(", ") + '. Objectif ' + pl.total + ' ml.">' + s + '</svg>';
   }
 
+  function entryHTML(f, prev) {
+    var gap = prev ? '<span class="gap"><b>' + fmtDur(f.ts - prev.ts) + '</b> depuis le précédent</span>' : '<span class="gap">Premier biberon du carnet</span>';
+    return '<li><button type="button" class="entry" data-id="' + f.id + '" aria-label="Modifier le biberon de ' + fmtTime(f.ts) + ', ' + f.ml + ' ml">' +
+      '<time>' + fmtTime(f.ts) + '</time>' +
+      '<span class="main"><span class="ml">' + f.ml + ' ml</span>' + gap + '</span>' +
+      '<span class="chev" aria-hidden="true">›</span></button></li>';
+  }
   function renderHistory() {
     var cut = midnight(Date.now()).getTime() - 13 * DAY, groups = [], g = null;
     state.feeds.forEach(function (f, idx) {
@@ -839,14 +872,7 @@
       return;
     }
     $("history").innerHTML = groups.map(function (gr) {
-      var lis = gr.items.map(function (it) {
-        var f = it.f;
-        var gap = it.prev ? '<span class="gap"><b>' + fmtDur(f.ts - it.prev.ts) + '</b> depuis le précédent</span>' : '<span class="gap">Premier biberon du carnet</span>';
-        return '<li><button type="button" class="entry" data-id="' + f.id + '" aria-label="Modifier le biberon de ' + fmtTime(f.ts) + ', ' + f.ml + ' ml">' +
-          '<time>' + fmtTime(f.ts) + '</time>' +
-          '<span class="main"><span class="ml">' + f.ml + ' ml</span>' + gap + '</span>' +
-          '<span class="chev" aria-hidden="true">›</span></button></li>';
-      }).join("");
+      var lis = gr.items.map(function (it) { return entryHTML(it.f, it.prev); }).join("");
       return '<div class="day"><div class="day-head"><h3>' + dayLabel(gr.ts) + '</h3><p>' + nf.format(gr.sum) + ' ml · ' + gr.items.length + (gr.items.length > 1 ? " biberons" : " biberon") + '</p></div><ul class="entries">' + lis + '</ul></div>';
     }).join("");
   }
@@ -1140,6 +1166,22 @@
     $("history").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-id]");
       if (b) openFeed(b.getAttribute("data-id"));
+    });
+    $("dayDetail").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-id]");
+      if (b) openFeed(b.getAttribute("data-id"));
+    });
+    function pickDay(el) {
+      var k = el && el.getAttribute && el.getAttribute("data-day");
+      if (!k) return;
+      selDay = selDay === k ? null : k;
+      renderChart();
+      var again = $("chart").querySelector('[data-day="' + k + '"]');
+      if (again && selDay) again.focus();
+    }
+    $("chart").addEventListener("click", function (e) { pickDay(e.target.closest && e.target.closest("[data-day]")); });
+    $("chart").addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { var t = e.target.closest && e.target.closest("[data-day]"); if (t) { e.preventDefault(); pickDay(t); } }
     });
     $("tabbar").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-tab]");
