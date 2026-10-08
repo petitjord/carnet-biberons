@@ -393,7 +393,7 @@
     <h2 id="sheetTitle">Fiche du bébé</h2>
     <div class="field"><label for="fName">Prénom</label><input id="fName" maxlength="40" autocomplete="off"></div>
     <div class="field"><label for="fBirth">Date de naissance</label><input id="fBirth" type="date"></div>
-    <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot doux du jour » sur cet appareil</span></label>
+    <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot doux du jour »</span></label>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
       <button class="ghost" type="button" id="fCancel">Annuler</button>
@@ -944,18 +944,18 @@
     }
   }
 
-  function motOn() { try { return localStorage.getItem("carnet-biberons:motActif") === "1"; } catch (e) { return false; } }
+  function motOn() { try { return localStorage.getItem("carnet-biberons:motActif") !== "0"; } catch (e) { return true; } }
   function setMot(on) {
     try {
-      if (on) localStorage.setItem("carnet-biberons:motActif", "1"); else localStorage.removeItem("carnet-biberons:motActif");
+      if (on) localStorage.removeItem("carnet-biberons:motActif"); else localStorage.setItem("carnet-biberons:motActif", "0");
       localStorage.removeItem("carnet-biberons:mot");
     } catch (e) { /* ignoré */ }
     renderMot();
   }
   function renderMot() {
     var now = new Date(), key = iso(now), n = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / DAY);
-    var hidden = true;
-    try { hidden = localStorage.getItem("carnet-biberons:motActif") !== "1" || localStorage.getItem("carnet-biberons:mot") === key; } catch (e) {}
+    var hidden = false;
+    try { hidden = localStorage.getItem("carnet-biberons:motActif") === "0" || localStorage.getItem("carnet-biberons:mot") === key; } catch (e) {}
     $("motText").textContent = MOTS[n % MOTS.length];
     $("mot").hidden = hidden;
   }
