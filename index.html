@@ -830,7 +830,7 @@
     $("history").innerHTML = groups.map(function (gr) {
       var lis = gr.items.map(function (it) {
         var f = it.f;
-        var gap = it.prev ? '<span class="gap"><b>' + fmtDur(f.ts - it.prev.ts) + '</b> depuis le précédent</span>' : '';
+        var gap = it.prev ? '<span class="gap"><b>' + fmtDur(f.ts - it.prev.ts) + '</b> depuis le précédent</span>' : '<span class="gap">Premier biberon du carnet</span>';
         return '<li><button type="button" class="entry" data-id="' + f.id + '" aria-label="Modifier le biberon de ' + fmtTime(f.ts) + ', ' + f.ml + ' ml">' +
           '<time>' + fmtTime(f.ts) + '</time>' +
           '<span class="main"><span class="ml">' + f.ml + ' ml</span>' + gap + '</span>' +
