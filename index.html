@@ -120,6 +120,11 @@
   .rest input { min-height: 44px; padding: 6px 10px; font-size: 18px; font-weight: 700; text-align: center; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); width: 100%; font-variant-numeric: tabular-nums; }
   .rest p { grid-column: 1 / -1; margin: 0; font-size: 14px; color: var(--muted); min-height: 1.2em; }
   .rest p.bad { color: #b3261e; }
+  .mot { margin: 0 0 14px; padding: 12px 14px 14px; border-radius: 16px; background: var(--milk); border: 1px solid var(--line); }
+  .mot[hidden] { display: none; }
+  .mot-head { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+  .mot-head button { min-width: 36px; min-height: 36px; margin: -8px -8px -8px 0; border: 0; background: transparent; font-size: 22px; line-height: 1; color: var(--muted); }
+  .mot p { margin: 4px 0 0; font-size: 17px; line-height: 1.4; color: var(--ink); }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .chip { min-height: 38px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
   .chip[aria-pressed="true"] { background: var(--milk); border-color: var(--accent); color: var(--accent); }
@@ -270,6 +275,11 @@
       <button class="ghost" id="shareBtn" type="button">Partager</button>
     </div>
   </header>
+
+  <aside class="mot" id="mot" hidden aria-labelledby="motTitle">
+    <div class="mot-head"><span id="motTitle">Mot doux du jour</span><button type="button" id="motClose" aria-label="Masquer le mot doux du jour">×</button></div>
+    <p id="motText"></p>
+  </aside>
 
   <section class="add" aria-labelledby="addTitle">
     <h2 class="sr" id="addTitle">Noter un biberon</h2>
@@ -461,6 +471,38 @@
   var DAY = 86400000;
   var PRESETS = [60, 90, 120, 150, 180, 210, 240];
   var DEFAULT_ML = 120;
+  var MOTS = [
+    "Bonjour. Merci d'être là, chaque jour, avec nous.",
+    "Réveil du jour : on a de la chance de s'avoir.",
+    "Le plus beau de ma vie : toi et notre bébé. ❤️",
+    "Chaque matin, je referais tous mes choix pour arriver jusqu'à toi.",
+    "Même avec les yeux qui piquent, tu es magnifique.",
+    "Merci pour tout ce que tu fais, ce qu'on voit et ce qu'on ne dit pas.",
+    "Je pense à toi, là, maintenant. Rien de plus, rien de moins.",
+    "Te voir avec notre bébé, c'est retomber amoureux une fois de plus.",
+    "Tu rends les journées difficiles plus légères. Je ne te le dis pas assez.",
+    "Notre vie n'est pas parfaite, mais c'est exactement celle que je voulais avec toi.",
+    "Tu es mon endroit préféré au monde.",
+    "Je t'aime pour ce que tu es, ce que tu fais et ce que tu rends possible.",
+    "Belle journée, mon cœur. J'ai hâte de te retrouver ce soir.",
+    "Je me sens chez moi partout où tu es.",
+    "Merci d'être un parent aussi tendre et aussi présent.",
+    "Si je pouvais ralentir le temps, je garderais ces petites journées à trois.",
+    "Je ne te le dis jamais assez : tu comptes plus que tout.",
+    "Chaque jour avec toi est un cadeau que je n'oublie pas d'ouvrir.",
+    "Tu es mon calme dans les journées agitées.",
+    "Je t'aime plus qu'hier et un peu moins que demain.",
+    "Notre petite famille se construit doucement, et j'en suis fier.",
+    "Je ne sais pas toujours comment te remercier. Alors je t'aime, c'est déjà ça.",
+    "Tu fais battre mon cœur plus calmement et plus fort à la fois.",
+    "Bonne journée à la personne qui rend notre maison pleine de vie.",
+    "Je t'ai choisi une fois. Je te choisirais encore tous les matins.",
+    "Avec toi, même les nuits courtes ont du bon.",
+    "Belle journée, remplie de petites joies et de pensées pour toi.",
+    "On a changé, mais mon amour pour toi a grandi avec nous.",
+    "Si un jour tu doutes, souviens-toi que je suis là, de ton côté, toujours.",
+    "Bonjour toi, mon amour, ma force et mon plus beau projet."
+  ];
   var nf = new Intl.NumberFormat("fr-FR");
   var nf2 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
   var $ = function (id) { return document.getElementById(id); };
@@ -899,6 +941,13 @@
     }
   }
 
+  function renderMot() {
+    var now = new Date(), key = iso(now), n = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / DAY);
+    var hidden = false;
+    try { hidden = localStorage.getItem("carnet-biberons:mot") === key; } catch (e) {}
+    $("motText").textContent = MOTS[n % MOTS.length];
+    $("mot").hidden = hidden;
+  }
   function renderFoot() {
     $("storage").textContent = state.code
       ? "Le carnet est partagé : chaque téléphone garde une copie et se synchronise par Internet."
@@ -909,7 +958,7 @@
   }
 
   function render() {
-    renderHead(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderPlan(); renderFoot(); updateQtyUI();
+    renderHead(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderPlan(); renderFoot(); renderMot(); updateQtyUI();
   }
 
   /* ---------- Quantité ---------- */
@@ -1131,6 +1180,10 @@
   /* ---------- Événements ---------- */
   function bind() {
     $("restIn").addEventListener("input", updateRest);
+    $("motClose").addEventListener("click", function () {
+      try { localStorage.setItem("carnet-biberons:mot", iso(new Date())); } catch (e) {}
+      $("mot").hidden = true;
+    });
     $("qtyMinus").addEventListener("click", function () { setQty(qty - 10); });
     $("qtyPlus").addEventListener("click", function () { setQty(qty + 10); });
     $("chips").addEventListener("click", function (e) {
