@@ -266,7 +266,7 @@
         <p class="age" id="babyAge"></p>
         <p class="born" id="babyBorn"></p>
       </div>
-      <button class="ghost" id="editBtn" type="button">Modifier la fiche</button>
+      <button class="ghost" id="editBtn" type="button">Fiche et réglages</button>
     </div>
     <div class="example" id="example" hidden>
       <span>La date de naissance est un exemple. Renseigne celle de ton bébé pour des prévisions justes.</span>
@@ -390,9 +390,10 @@
 <div class="sheet" id="sheet" hidden>
   <div class="backdrop" id="sheetBack"></div>
   <form class="panel" id="profileForm" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" novalidate>
-    <h2 id="sheetTitle">Fiche du bébé</h2>
+    <h2 id="sheetTitle">Fiche et réglages</h2>
     <div class="field"><label for="fName">Prénom</label><input id="fName" maxlength="40" autocomplete="off"></div>
     <div class="field"><label for="fBirth">Date de naissance</label><input id="fBirth" type="date"></div>
+    <div class="field"><label for="fDefault">Quantité par défaut d'un biberon (ml)</label><input id="fDefault" type="number" inputmode="numeric" min="10" max="400" step="10" autocomplete="off"></div>
     <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot doux du jour »</span></label>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
@@ -474,6 +475,11 @@
   var DAY = 86400000;
   var PRESETS = [60, 90, 120, 150, 180, 210, 240];
   var DEFAULT_ML = 120;
+  function loadDefaultMl() {
+    try { var v = parseInt(localStorage.getItem("carnet-biberons:defaultMl"), 10); if (v >= 10 && v <= 400) return Math.round(v / 10) * 10; } catch (e) { /* ignoré */ }
+    return DEFAULT_ML;
+  }
+  var defaultMl = loadDefaultMl();
   var MOTS = [
     "Bonjour. Merci d'être là, chaque jour, avec nous.",
     "Réveil du jour : on a de la chance de s'avoir.",
@@ -528,7 +534,7 @@
   ];
 
   var state = { profile: null, profileLocal: false, feeds: [], mode: "local", code: null, sync: "none" };
-  var qty = DEFAULT_ML;
+  var qty = defaultMl;
   var lastPress = 0, flashTimer = null, toastTimer = null;
 
   /* ---------- Dates ---------- */
@@ -1034,6 +1040,7 @@
     $("fBirth").value = p.birthDate;
     $("fBirth").max = iso(new Date());
     $("fMot").checked = motOn();
+    $("fDefault").value = defaultMl;
     $("formErr").hidden = true;
     $("sheet").hidden = false;
     $("fName").focus();
@@ -1043,10 +1050,18 @@
     e.preventDefault();
     var err = "", birth = $("fBirth").value;
     var b = birth ? parseISO(birth) : null, today = midnight(Date.now());
-    if (!b || isNaN(b) || b > today) err = "Choisis une date de naissance qui n'est pas dans le futur.";
+    var dm = parseInt($("fDefault").value, 10);
+    if (!(dm >= 10 && dm <= 400)) err = "La quantité par défaut doit être comprise entre 10 et 400 ml.";
+    else if (!b || isNaN(b) || b > today) err = "Choisis une date de naissance qui n'est pas dans le futur.";
     else if ((today - b) / DAY > 1100) err = "Cette application suit les bébés jusqu'à 3 ans environ.";
     if (err) { $("formErr").textContent = err; $("formErr").hidden = false; return; }
     var p = { name: ($("fName").value.trim() || "Bébé").slice(0, 40), birthDate: birth };
+    dm = Math.round(dm / 10) * 10;
+    if (dm !== defaultMl) {
+      defaultMl = dm;
+      try { localStorage.setItem("carnet-biberons:defaultMl", String(dm)); } catch (e2) { /* ignoré */ }
+      setQty(dm);
+    }
     try { await saveProfile(p); closeSheet(); toast("Fiche enregistrée"); }
     catch (ex) { $("formErr").textContent = errMsg(ex); $("formErr").hidden = false; }
   }
@@ -1086,7 +1101,7 @@
   function closeFeed() { $("feedSheet").hidden = true; editingId = null; delArmed = false; clearTimeout(delArmTimer); }
   function stepFeed(d) {
     var v = parseInt($("feedMl").value, 10);
-    if (!isFinite(v)) v = DEFAULT_ML;
+    if (!isFinite(v)) v = defaultMl;
     $("feedMl").value = Math.min(500, Math.max(5, v + d));
   }
   async function submitFeed(e) {
