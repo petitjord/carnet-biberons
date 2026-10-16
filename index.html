@@ -14,6 +14,15 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <title>Carnet de biberons</title>
+<script>
+(function () {
+  try {
+    var t = JSON.parse(localStorage.getItem("carnet-biberons:theme") || "{}"), r = document.documentElement;
+    if (t.palette === "rose" || t.palette === "nuit") r.setAttribute("data-palette", t.palette);
+    if (t.mode === "light" || t.mode === "dark") r.setAttribute("data-theme", t.mode);
+  } catch (e) { /* ignoré */ }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
@@ -70,6 +79,17 @@
     color-scheme: dark;
   }
 
+
+  /* Palettes de couleurs au choix (réglage de la fiche) */
+  :root[data-palette="rose"] { --bg:#FBF1F0; --surface:#FFFFFF; --ink:#3A2326; --muted:#7E5F63; --line:#EBD6D5; --accent:#B5476A; --accent-ink:#FFFFFF; --milk:#F8E1E6; --bar:#E8B4C2; }
+  :root[data-palette="nuit"] { --bg:#EFF3FA; --surface:#FFFFFF; --ink:#16223B; --muted:#5A6683; --line:#D5DDED; --accent:#3A5BC7; --accent-ink:#FFFFFF; --milk:#DFE7F8; --bar:#A9BCEB; }
+  @media (prefers-color-scheme: dark) {
+    :root[data-palette="rose"]:not([data-theme="light"]) { --bg:#1C1214; --surface:#2A1C1F; --ink:#F5E4E6; --muted:#C0A0A5; --line:#4A3237; --accent:#EE8FAE; --accent-ink:#2B0E17; --milk:#3A2229; --bar:#7A3F52; }
+    :root[data-palette="nuit"]:not([data-theme="light"]) { --bg:#0E1424; --surface:#172036; --ink:#E4EAF8; --muted:#96A3C4; --line:#2A3656; --accent:#8FA8F5; --accent-ink:#0B1330; --milk:#1F2B4A; --bar:#34508F; }
+  }
+  :root[data-palette="rose"][data-theme="dark"] { --bg:#1C1214; --surface:#2A1C1F; --ink:#F5E4E6; --muted:#C0A0A5; --line:#4A3237; --accent:#EE8FAE; --accent-ink:#2B0E17; --milk:#3A2229; --bar:#7A3F52; }
+  :root[data-palette="nuit"][data-theme="dark"] { --bg:#0E1424; --surface:#172036; --ink:#E4EAF8; --muted:#96A3C4; --line:#2A3656; --accent:#8FA8F5; --accent-ink:#0B1330; --milk:#1F2B4A; --bar:#34508F; }
+
   :root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
   body { margin: 0; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
   [hidden] { display: none !important; }
@@ -90,14 +110,14 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .num { font-variant-numeric: tabular-nums; }
 
-  .app { max-width: 480px; margin: 0 auto; padding-block: 20px 100px; display: flex; flex-direction: column; gap: 30px; }
+  .app { max-width: 480px; margin: 0 auto; padding-block: 20px 190px; display: flex; flex-direction: column; gap: 30px; }
   .tabpanel { display: flex; flex-direction: column; gap: 30px; }
   h2 { font: 700 21px/1.15 var(--font-display); text-wrap: balance; }
 
   /* En-tête */
   .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
   .head > div { min-width: 0; }
-  h1 { font: 700 34px/1.04 var(--font-display); overflow-wrap: anywhere; text-wrap: balance; }
+  h1 { font: 700 38px/1.02 var(--font-display); letter-spacing: -0.01em; overflow-wrap: anywhere; text-wrap: balance; }
   .age { margin-top: 6px; color: var(--muted); }
   .ghost {
     flex: none; min-height: 40px; padding: 8px 14px; border-radius: 10px;
@@ -109,7 +129,7 @@
   .example button { border: 0; background: none; padding: 6px 0; font-weight: 700; color: var(--peach); text-decoration: underline; text-underline-offset: 3px; }
 
   /* Ajout d'un biberon */
-  .add { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 18px 16px 14px; display: flex; flex-direction: column; gap: 16px; }
+  .add { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 16px 30px -26px rgba(10, 40, 36, 0.55); padding: 18px 16px 14px; display: flex; flex-direction: column; gap: 16px; }
   .qty { display: flex; align-items: center; justify-content: center; gap: 16px; }
   .step { width: 54px; height: 54px; border-radius: 50%; border: 1.5px solid var(--accent); background: transparent; color: var(--accent); font: 500 30px/1 var(--font-display); display: grid; place-items: center; padding: 0 0 3px; }
   .step:active { background: var(--milk); }
@@ -212,7 +232,7 @@
   .foot { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
 
   /* Toast */
-  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); max-width: 448px; margin: 0 auto; z-index: 30; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
+  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(160px + env(safe-area-inset-bottom, 0px)); max-width: 448px; margin: 0 auto; z-index: 30; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
   .toast button { border: 0; background: none; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; padding: 6px; color: inherit; }
 
   /* Fiche bébé */
@@ -252,7 +272,101 @@
   .actions.split > button { flex: 1 1 140px; }
   .leave { align-self: flex-start; color: var(--peach); border-color: transparent; padding-left: 0; }
 
-  @media (prefers-reduced-motion: reduce) { .gauge-fill { transition: none; } }
+
+  /* Carte du dernier biberon (minuteur) */
+  .hero { display: flex; align-items: center; gap: 18px; padding: 18px 16px; border-radius: 24px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 16px 30px -24px rgba(10, 40, 36, 0.55); }
+  .hero.empty { gap: 16px; }
+  .ring { position: relative; flex: none; width: 120px; height: 120px; }
+  .ring svg { width: 100%; height: 100%; display: block; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--milk); stroke-width: 10; }
+  .ring-fg { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.3s; }
+  .hero.late .ring-fg { stroke: var(--peach); }
+  .ring-in { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 12px; }
+  .ring-k { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .ring-v { font: 700 25px/1.05 var(--font-display); font-variant-numeric: tabular-nums; }
+  .hero-txt { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .hero-txt .k { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .hero-txt .v { display: block; font: 700 19px/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
+  .hero-txt .v.late { color: var(--peach); }
+  .hero-txt .s { display: block; font-size: 13px; color: var(--muted); margin-top: 1px; }
+  .hero svg.ill { flex: none; width: 96px; height: 96px; }
+  .hero-txt .v.big2 { font-size: 20px; }
+
+  /* Bouton principal ancré en bas, à portée de pouce */
+  .dock { position: fixed; left: 0; right: 0; bottom: calc(61px + env(safe-area-inset-bottom, 0px)); z-index: 9; padding: 26px 16px 10px; background: linear-gradient(to top, var(--bg) 62%, transparent); pointer-events: none; }
+  .dock-in { max-width: 480px; margin: 0 auto; pointer-events: auto; }
+  .give { box-shadow: 0 10px 24px -10px var(--accent); transition: transform 0.12s ease, box-shadow 0.12s ease; }
+  .give:active { transform: scale(0.98); box-shadow: 0 4px 10px -8px var(--accent); }
+  .give.done { animation: pop 0.38s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.035); } 100% { transform: scale(1); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .tabpanel.enter { animation: rise 0.3s ease both; }
+  .step, .chip, .ghost, .solid, .tab, .navbtn { transition: transform 0.1s ease, background-color 0.15s ease; }
+  .step:active, .chip:active, .ghost:active, .solid:active, .tab:active, .navbtn:active { transform: scale(0.95); }
+
+  /* Qui a donné le biberon */
+  .who { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; padding: 1px 9px 1px 7px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--milk); color: var(--ink); vertical-align: 1px; }
+  .who::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--pd, var(--accent)); }
+  .pd0 { --pd: hsl(168 60% 38%); } .pd1 { --pd: hsl(18 78% 52%); } .pd2 { --pd: hsl(262 52% 62%); } .pd3 { --pd: hsl(204 70% 48%); }
+
+  /* Frise de la journée (24 h) */
+  .strip { position: relative; height: 34px; margin: 12px 4px 4px; }
+  .strip .rail { position: absolute; left: 0; right: 0; top: 9px; height: 6px; border-radius: 3px; background: var(--line); }
+  .strip .night { position: absolute; top: 9px; height: 6px; background: var(--bar); opacity: 0.55; }
+  .strip i { position: absolute; top: 4px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--pd, var(--accent)); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--line); }
+  .strip .tk { position: absolute; top: 21px; transform: translateX(-50%); font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* Balayage pour supprimer */
+  .entries li { position: relative; overflow: hidden; }
+  .swipe-del { position: absolute; top: 0; bottom: 0; right: 0; width: 130px; display: flex; align-items: center; justify-content: center; background: #B3261E; color: #fff; font-weight: 700; font-size: 14px; opacity: 0; transition: opacity 0.1s; }
+  li.swiping .swipe-del { opacity: 1; }
+  .entry { position: relative; background: var(--bg); touch-action: pan-y; transition: transform 0.2s ease; }
+  .entry.drag { transition: none; }
+  li.gone .entry { transform: translateX(-110%); }
+  li.gone { transition: opacity 0.2s; opacity: 0; }
+  .adj { display: flex; flex-wrap: wrap; gap: 8px; }
+  .adj .chip { min-height: 36px; padding: 4px 12px; font-size: 14px; }
+  .who-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* Bilan : semaines et statistiques */
+  .wk-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .wk-nav { display: flex; align-items: center; gap: 6px; }
+  .navbtn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 20px; line-height: 1; display: grid; place-items: center; padding: 0 0 2px; }
+  .navbtn[disabled] { opacity: 0.35; }
+  .wk-lab { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .tile { padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); min-width: 0; }
+  .tile .k { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .tile .v { margin-top: 2px; font: 700 24px/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
+  .tile .v small { font: 500 13px var(--font-body); color: var(--muted); margin-left: 3px; }
+  .tile .d { margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+  .tile .d.up { color: var(--accent); } .tile .d.down { color: var(--peach); }
+  .split { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--line); margin-top: 10px; }
+  .split span { display: block; height: 100%; background: var(--pd, var(--accent)); }
+  .legend { list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+  .legend li { display: flex; align-items: center; gap: 8px; }
+  .legend li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--pd, var(--accent)); }
+  .legend b { font-weight: 700; margin-left: auto; font-variant-numeric: tabular-nums; }
+  .legend em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .hours { width: 100%; height: auto; display: block; margin-top: 8px; }
+  .hours .hb { fill: var(--bar); } .hours .hb.top { fill: var(--accent); }
+  .hours .night { fill: var(--milk); }
+  .hours text { fill: var(--muted); font: 10px var(--font-body); }
+  .sect { margin-top: 24px; }
+  .sect h3 { font: 700 17px var(--font-display); }
+
+  /* Réglages de la fiche */
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { min-height: 42px; border: 0; background: none; font-weight: 600; font-size: 14px; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--milk); color: var(--accent); }
+  .swatches { display: flex; gap: 14px; }
+  .sw { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1.5px var(--line); }
+  .sw[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--ink); }
+  .sw.menthe { background: #1B7A70; } .sw.rose { background: #B5476A; } .sw.nuit { background: #3A5BC7; }
+  .field.row-label > span { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+  @media (prefers-reduced-motion: reduce) { .gauge-fill, .ring-fg, .entry { transition: none; } .tabpanel.enter, .give.done { animation: none; } }
 </style>
 </head>
 <body>
@@ -278,6 +392,8 @@
     </div>
   </header>
 
+  <section class="hero" id="hero" aria-label="Dernier biberon" aria-live="off"></section>
+
   <aside class="mot" id="mot" hidden aria-labelledby="motTitle">
     <div class="mot-head"><span id="motTitle">Mot doux du jour</span><button type="button" id="motClose" aria-label="Masquer le mot doux du jour">×</button></div>
     <p id="motText"></p>
@@ -296,10 +412,6 @@
       <input id="restIn" type="number" inputmode="numeric" min="0" step="5" placeholder="0" autocomplete="off">
       <p id="restOut" aria-live="polite"></p>
     </div>
-    <button class="give" id="giveBtn" type="button">
-      <span class="g-main" id="gMain">Biberon donné</span>
-      <span class="g-sub" id="gSub"></span>
-    </button>
     <details class="later" id="later">
       <summary>Oublié ? Ajouter à une autre heure</summary>
       <div class="later-form">
@@ -317,7 +429,6 @@
         </div>
         <p class="big" id="todayBig"></p>
       </div>
-      <ul class="facts" id="facts"></ul>
     </section>
 
     <section aria-labelledby="logTitle">
@@ -346,11 +457,28 @@
     </section>
 
     <section aria-labelledby="weekTitle">
-      <h2 id="weekTitle">7 derniers jours</h2>
+      <div class="wk-head">
+        <div><h2 id="weekTitle">7 derniers jours</h2><p class="wk-lab" id="wkLab"></p></div>
+        <div class="wk-nav">
+          <button class="navbtn" type="button" id="wkPrev" aria-label="Semaine précédente">‹</button>
+          <button class="navbtn" type="button" id="wkNext" aria-label="Semaine suivante">›</button>
+        </div>
+      </div>
       <div id="chart"></div>
-      <p class="sub" id="weekAvg"></p>
       <p class="sub" id="dayHint">Touche un jour du graphique pour voir ses biberons.</p>
       <div id="dayDetail" aria-live="polite"></div>
+      <div class="tiles" id="tiles"></div>
+      <p class="sub" id="weekAvg"></p>
+      <div class="sect" id="whoSect" hidden>
+        <h3>Qui donne les biberons</h3>
+        <div class="split" id="whoSplit" role="img" aria-label="Répartition des biberons par personne"></div>
+        <ul class="legend" id="whoLegend"></ul>
+      </div>
+      <div class="sect">
+        <h3>Heures des biberons</h3>
+        <p class="sub">Nombre de biberons à chaque heure de la journée, sur ces 7 jours.</p>
+        <div id="hours"></div>
+      </div>
     </section>
   </div>
 
@@ -364,6 +492,15 @@
     </section>
   </div>
 </main>
+
+<div class="dock" id="dock">
+  <div class="dock-in">
+    <button class="give" id="giveBtn" type="button">
+      <span class="g-main" id="gMain">Biberon donné</span>
+      <span class="g-sub" id="gSub"></span>
+    </button>
+  </div>
+</div>
 
 <nav class="tabbar" aria-label="Sections du carnet">
   <div class="tabbar-in" role="tablist" id="tabbar">
@@ -394,6 +531,22 @@
     <div class="field"><label for="fName">Prénom</label><input id="fName" maxlength="40" autocomplete="off"></div>
     <div class="field"><label for="fBirth">Date de naissance</label><input id="fBirth" type="date"></div>
     <div class="field"><label for="fDefault">Quantité par défaut d'un biberon (ml)</label><input id="fDefault" type="number" inputmode="numeric" min="10" max="400" step="10" autocomplete="off"></div>
+    <div class="field"><label for="fMe">Mon prénom (affiché sur les biberons que je donne)</label><input id="fMe" maxlength="20" autocomplete="off" placeholder="Papa, Maman…"></div>
+    <p class="note" id="byNote" hidden>Les règles Firebase n'acceptent pas encore le champ « donné par » : les prénoms ne sont pas partagés. Voir le fichier firestore.rules du dépôt.</p>
+    <div class="field"><span class="lab" id="palLab" style="font-size:13px;font-weight:600;color:var(--muted)">Couleur de l'application</span>
+      <div class="swatches" role="group" aria-labelledby="palLab">
+        <button type="button" class="sw menthe" data-palette="menthe" aria-label="Menthe" aria-pressed="true"></button>
+        <button type="button" class="sw rose" data-palette="rose" aria-label="Rose poudré" aria-pressed="false"></button>
+        <button type="button" class="sw nuit" data-palette="nuit" aria-label="Bleu nuit" aria-pressed="false"></button>
+      </div>
+    </div>
+    <div class="field"><span class="lab" id="modeLab" style="font-size:13px;font-weight:600;color:var(--muted)">Affichage</span>
+      <div class="seg" role="group" aria-labelledby="modeLab">
+        <button type="button" data-mode="auto" aria-pressed="true">Auto</button>
+        <button type="button" data-mode="light" aria-pressed="false">Clair</button>
+        <button type="button" data-mode="dark" aria-pressed="false">Sombre</button>
+      </div>
+    </div>
     <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot doux du jour »</span></label>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
@@ -407,7 +560,12 @@
   <div class="backdrop" id="feedBack"></div>
   <form class="panel" id="feedForm" role="dialog" aria-modal="true" aria-labelledby="feedTitle" novalidate>
     <h2 id="feedTitle">Modifier le biberon</h2>
-    <div class="field"><label for="feedTime">Date et heure</label><input id="feedTime" type="datetime-local"></div>
+    <div class="field"><label for="feedTime">Date et heure</label><input id="feedTime" type="datetime-local">
+      <div class="adj" id="feedAdj" role="group" aria-label="Décaler l'heure">
+        <button type="button" class="chip" data-min="-15">−15 min</button><button type="button" class="chip" data-min="-5">−5 min</button>
+        <button type="button" class="chip" data-min="5">+5 min</button><button type="button" class="chip" data-min="15">+15 min</button>
+      </div>
+    </div>
     <div class="field">
       <label for="feedMl">Quantité (ml)</label>
       <div class="qty-edit">
@@ -415,7 +573,9 @@
         <input id="feedMl" type="number" inputmode="numeric" min="10" max="500" step="10" autocomplete="off">
         <button class="step small" type="button" id="feedPlus" aria-label="Ajouter 10 ml">+</button>
       </div>
+      <div class="adj" id="feedMlChips" role="group" aria-label="Quantités rapides"><button type="button" class="chip" data-v="60">60</button><button type="button" class="chip" data-v="90">90</button><button type="button" class="chip" data-v="120">120</button><button type="button" class="chip" data-v="150">150</button><button type="button" class="chip" data-v="180">180</button></div>
     </div>
+    <div class="field" id="feedByField"><label id="feedByLab">Donné par</label><div class="who-pick" id="feedBy" role="group" aria-labelledby="feedByLab"></div></div>
     <p class="err" id="feedErr" role="alert" hidden></p>
     <div class="actions between">
       <button class="ghost leave" type="button" id="feedDelete">Supprimer</button>
@@ -609,6 +769,7 @@
   function range(r) { return r[0] === r[1] ? "" + r[0] : r[0] + " à " + r[1]; }
 
   /* ---------- Stockage sur l'appareil ---------- */
+  function cleanBy(x) { return typeof x === "string" ? x.trim().slice(0, 20) : ""; }
   function validFeed(f) { return isFinite(f.ts) && f.ts > 0 && isFinite(f.ml) && f.ml > 0 && f.ml <= 1000; }
   function sortFeeds() { state.feeds.sort(function (a, b) { return b.ts - a.ts; }); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -619,7 +780,7 @@
       var o = JSON.parse(raw);
       state.profile = cleanProfile(o.profile);
       state.profileLocal = !!o.profileLocal && !!state.profile;
-      state.feeds = (o.feeds || []).map(function (f) { return { id: String(f.id), ts: Number(f.ts), ml: Number(f.ml), local: !!f.local }; }).filter(validFeed);
+      state.feeds = (o.feeds || []).map(function (f) { return { id: String(f.id), ts: Number(f.ts), ml: Number(f.ml), by: cleanBy(f.by), local: !!f.local }; }).filter(validFeed);
       sortFeeds();
     } catch (e) { /* stockage indisponible */ }
   }
@@ -703,7 +864,7 @@
     var pend = state.feeds.filter(function (f) { return f.local; });
     pend.forEach(function (f) {
       f.local = false;
-      fsm.setDoc(fsm.doc(feedsCol(), f.id), { ts: f.ts, ml: f.ml }).catch(writeFailed);
+      sendFeed(fsm.doc(feedsCol(), f.id), f.ts, f.ml, f.by);
     });
     if (pend.length) persistLocal();
     unsubs.push(fsm.onSnapshot(profileRef(), { includeMetadataChanges: true }, onProfileSnap, onSyncError));
@@ -729,7 +890,7 @@
     if (m.fromCache && snap.empty && !m.hasPendingWrites && state.feeds.length) { state.sync = "cache"; render(); return; }
     state.feeds = snap.docs.map(function (d) {
       var x = d.data() || {};
-      return { id: d.id, ts: Number(x.ts), ml: Number(x.ml), local: false };
+      return { id: d.id, ts: Number(x.ts), ml: Number(x.ml), by: cleanBy(x.by), local: false };
     }).filter(validFeed);
     sortFeeds();
     if (state.sync !== "denied") state.sync = m.hasPendingWrites ? "pending" : (m.fromCache ? "cache" : "synced");
@@ -741,14 +902,30 @@
     render();
   }
 
-  async function addFeed(ml, ts) {
+  /* « Donné par » : prénom choisi sur chaque téléphone. Si les règles Firebase refusent encore
+     ce champ, on enregistre le biberon sans lui et on réessaie plus tard. */
+  function curBy() { try { return cleanBy(localStorage.getItem("carnet-biberons:moi")); } catch (e) { return ""; } }
+  function noBy() { try { return Date.now() < Number(localStorage.getItem("carnet-biberons:noBy") || 0); } catch (e) { return false; } }
+  function sendFeed(ref, ts, ml, by) {
+    var data = { ts: ts, ml: ml };
+    if (by && !noBy()) data.by = by;
+    return fsm.setDoc(ref, data).catch(function (e) {
+      if (e && e.code === "permission-denied" && data.by) {
+        try { localStorage.setItem("carnet-biberons:noBy", String(Date.now() + 12 * 3600000)); } catch (x) { /* ignoré */ }
+        return fsm.setDoc(ref, { ts: ts, ml: ml }).catch(writeFailed);
+      }
+      writeFailed(e);
+    });
+  }
+  async function addFeed(ml, ts, by) {
+    if (by === undefined) by = curBy();
     if (state.mode === "shared" && fsm) {
       var ref = fsm.doc(feedsCol());
-      fsm.setDoc(ref, { ts: ts, ml: ml }).catch(writeFailed);
+      sendFeed(ref, ts, ml, by);
       return ref.id;
     }
     var id = uid();
-    state.feeds.push({ id: id, ts: ts, ml: ml, local: true });
+    state.feeds.push({ id: id, ts: ts, ml: ml, by: by, local: true });
     sortFeeds(); persistLocal(); render();
     return id;
   }
@@ -757,9 +934,9 @@
     state.feeds = state.feeds.filter(function (f) { return f.id !== id; });
     persistLocal(); render();
   }
-  async function updateFeed(id, ts, ml) {
-    if (state.mode === "shared" && fsm) { fsm.setDoc(fsm.doc(feedsCol(), id), { ts: ts, ml: ml }).catch(writeFailed); return; }
-    state.feeds = state.feeds.map(function (f) { return f.id === id ? { id: f.id, ts: ts, ml: ml, local: f.local } : f; });
+  async function updateFeed(id, ts, ml, by) {
+    if (state.mode === "shared" && fsm) { sendFeed(fsm.doc(feedsCol(), id), ts, ml, by); return; }
+    state.feeds = state.feeds.map(function (f) { return f.id === id ? { id: f.id, ts: ts, ml: ml, by: by, local: f.local } : f; });
     sortFeeds(); persistLocal(); render();
   }
   async function saveProfile(p) {
@@ -797,21 +974,56 @@
     var todays = todayFeeds(), total = sumMl(todays);
     $("todayCount").textContent = todays.length + (todays.length > 1 ? " biberons" : " biberon") + " donné" + (todays.length > 1 ? "s" : "");
     $("todayBig").innerHTML = nf.format(total) + "<small>ml</small>";
-    var rows = "", last = state.feeds[0];
-    if (last) {
-      var nextTs = last.ts + pl.gap * 3600000, diff = nextTs - now;
-      rows += '<li><span class="k">Prochain biberon</span><span class="v">' +
-        (diff <= 0 ? "À donner maintenant" : "Vers " + fmtTime(nextTs)) +
-        '<small>' + (diff <= 0 ? "Rythme habituel : toutes les " + nf2.format(pl.gap) + " h" : "dans " + fmtDur(diff)) +
-        ' · environ ' + pl.per + ' ml</small></span></li>';
-      var lastDay = last.ts < t0 ? dayLabel(last.ts).toLowerCase() + " à " : "";
-      rows += '<li><span class="k">Dernier biberon</span><span class="v">' + lastDay + fmtTime(last.ts) +
-        '<small>il y a ' + fmtDur(now - last.ts) + ' · ' + last.ml + ' ml</small></span></li>';
-    } else {
-      rows += '<li><span class="k">Prochain biberon</span><span class="v">Dès le premier noté<small>Appuie sur « Biberon donné »</small></span></li>';
-    }
-    $("facts").innerHTML = rows;
   }
+
+  var RING = 2 * Math.PI * 52;
+  var ILL = '<svg class="ill" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="45" fill="var(--milk)"/>' +
+    '<path d="M66 24a20 20 0 1 0 8 30 16 16 0 0 1-8-30z" fill="var(--bar)" opacity=".55"/>' +
+    '<rect x="37" y="42" width="22" height="34" rx="8" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>' +
+    '<path d="M41 42v-5h14v5" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>' +
+    '<path d="M44 37v-6a4 4 0 0 1 8 0v6" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<path d="M42 56h6M42 63h4" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<g fill="var(--accent)"><circle cx="22" cy="30" r="2"/><circle cx="76" cy="62" r="2"/><circle cx="26" cy="68" r="1.5"/></g></svg>';
+  function renderHero() {
+    var el = $("hero"), pl = planFor(cur()), now = Date.now(), t0 = midnight(now).getTime(), last = state.feeds[0];
+    if (!last) {
+      el.className = "hero empty";
+      el.innerHTML = ILL + '<div class="hero-txt"><span><span class="k">Dernier biberon</span><span class="v big2">Aucun biberon noté</span>' +
+        '<span class="s">Le minuteur démarre dès le premier biberon.</span></span></div>';
+      return;
+    }
+    var elapsed = Math.max(0, now - last.ts), gapMs = pl.gap * 3600000, frac = Math.min(1, Math.max(0.02, elapsed / gapMs));
+    var late = elapsed > gapMs, nextTs = last.ts + gapMs;
+    var lastDay = last.ts < t0 ? dayLabel(last.ts).toLowerCase() + " à " : "";
+    var who = last.by ? '<span class="who ' + personClass(last.by) + '">' + esc(last.by) + '</span>' : "";
+    var next = late
+      ? '<span class="v late">À donner maintenant</span><span class="s">Rythme habituel : toutes les ' + nf2.format(pl.gap) + ' h · environ ' + pl.per + ' ml</span>'
+      : '<span class="v">Vers ' + fmtTime(nextTs) + '</span><span class="s">dans ' + fmtDur(nextTs - now) + ' · environ ' + pl.per + ' ml</span>';
+    var html = '<div class="ring" role="img" aria-label="Dernier biberon il y a ' + fmtDur(elapsed) + '"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="52"/>' +
+      '<circle class="ring-fg" cx="60" cy="60" r="52" stroke-dasharray="' + RING.toFixed(1) + '" stroke-dashoffset="' + (RING * (1 - frac)).toFixed(1) + '"/></svg>' +
+      '<div class="ring-in"><span class="ring-k">il y a</span><span class="ring-v">' + fmtDur(elapsed) + '</span></div></div>' +
+      '<div class="hero-txt"><span><span class="k">Dernier biberon</span><span class="v">' + lastDay + fmtTime(last.ts) + ' · ' + last.ml + ' ml</span>' + (who ? '<span class="s">' + who + '</span>' : '') + '</span>' +
+      '<span><span class="k">Prochain biberon</span>' + next + '</span></div>';
+    var prev = el.getAttribute("data-sig");
+    el.className = "hero" + (late ? " late" : "");
+    if (prev !== null && el.querySelector(".ring-fg") && el.getAttribute("data-last") === String(last.id)) {
+      el.querySelector(".ring-fg").setAttribute("stroke-dashoffset", (RING * (1 - frac)).toFixed(1));
+      el.querySelector(".ring-v").textContent = fmtDur(elapsed);
+      el.querySelector(".hero-txt").innerHTML = html.slice(html.indexOf('<div class="hero-txt">') + 22, -6);
+    } else {
+      el.innerHTML = html;
+    }
+    el.setAttribute("data-sig", "1"); el.setAttribute("data-last", String(last.id));
+  }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  var people = [];
+  function computePeople() {
+    var seen = {};
+    state.feeds.forEach(function (f) { if (f.by) seen[f.by] = 1; });
+    var me = curBy(); if (me) seen[me] = 1;
+    people = Object.keys(seen).sort(function (a, b) { return a.localeCompare(b, "fr"); });
+  }
+  function personClass(by) { var i = people.indexOf(by); return "pd" + (i < 0 ? 0 : i % 4); }
 
   function renderGoal() {
     var pl = planFor(cur()), todays = todayFeeds(), total = sumMl(todays);
@@ -842,7 +1054,79 @@
     $("goalFacts").innerHTML = rows;
   }
 
-  var selDay = null;
+  var selDay = null, weekOff = 0;
+  function windowRange(off) {
+    var n = new Date();
+    return { a: new Date(n.getFullYear(), n.getMonth(), n.getDate() - 6 - 7 * off), b: new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1 - 7 * off) };
+  }
+  function windowStats(off) {
+    var r = windowRange(off), t0 = r.a.getTime(), t1 = r.b.getTime(), todayKey = dayKey(Date.now());
+    var feeds = state.feeds.filter(function (f) { return f.ts >= t0 && f.ts < t1; });
+    var per = {}, total = 0, night = 0, keys;
+    feeds.forEach(function (f) {
+      var k = dayKey(f.ts); per[k] = per[k] || { sum: 0, n: 0 }; per[k].sum += f.ml; per[k].n++;
+      total += f.ml;
+      var h = new Date(f.ts).getHours(); if (h >= 22 || h < 6) night += f.ml;
+    });
+    keys = Object.keys(per);
+    var partial = off === 0 && keys.length > 1 && per[todayKey];
+    if (partial) keys = keys.filter(function (k) { return k !== todayKey; });
+    var avgMl = keys.length ? keys.reduce(function (t, k) { return t + per[k].sum; }, 0) / keys.length : 0;
+    var avgN = keys.length ? keys.reduce(function (t, k) { return t + per[k].n; }, 0) / keys.length : 0;
+    var asc = feeds.slice().sort(function (a, b) { return a.ts - b.ts; }), gaps = [];
+    for (var i = 1; i < asc.length; i++) { var g = asc[i].ts - asc[i - 1].ts; if (g < DAY) gaps.push(g); }
+    var avgGap = gaps.length ? gaps.reduce(function (t, g) { return t + g; }, 0) / gaps.length : 0;
+    return { feeds: feeds, total: total, night: night, avgMl: avgMl, avgN: avgN, avgGap: avgGap, partial: !!partial, days: keys.length };
+  }
+  function renderStats() {
+    var st = windowStats(weekOff), pv = windowStats(weekOff + 1);
+    if (!st.feeds.length) {
+      $("tiles").innerHTML = ""; $("weekAvg").textContent = "Aucun biberon noté sur cette période.";
+      $("whoSect").hidden = true; $("hours").innerHTML = ""; return;
+    }
+    var delta = "";
+    if (st.avgMl > 0 && pv.avgMl > 0) {
+      var pc = Math.round((st.avgMl - pv.avgMl) / pv.avgMl * 100);
+      delta = '<div class="d ' + (pc > 0 ? "up" : pc < 0 ? "down" : "") + '">' + (pc > 0 ? "+" : "") + pc + ' % vs 7 jours d\'avant</div>';
+    }
+    var nightPc = st.total ? Math.round(st.night / st.total * 100) : 0;
+    $("tiles").innerHTML =
+      '<div class="tile"><div class="k">Moyenne / jour</div><div class="v">' + nf.format(Math.round(st.avgMl)) + '<small>ml</small></div>' + (delta || '<div class="d">&nbsp;</div>') + '</div>' +
+      '<div class="tile"><div class="k">Biberons / jour</div><div class="v">' + nf2.format(Math.round(st.avgN * 10) / 10) + '</div><div class="d">' + (st.partial ? "sans la journée en cours" : "&nbsp;") + '</div></div>' +
+      '<div class="tile"><div class="k">Intervalle moyen</div><div class="v">' + (st.avgGap ? fmtDur(st.avgGap) : "–") + '</div><div class="d">entre deux biberons</div></div>' +
+      '<div class="tile"><div class="k">De 22 h à 6 h</div><div class="v">' + nightPc + '<small>% du lait</small></div><div class="d">' + nf.format(st.night) + ' ml la nuit</div></div>';
+    $("weekAvg").textContent = "";
+    // répartition par personne
+    var by = {}, named = false;
+    st.feeds.forEach(function (f) { var k = f.by || ""; if (k) named = true; by[k] = by[k] || { ml: 0, n: 0 }; by[k].ml += f.ml; by[k].n++; });
+    $("whoSect").hidden = !named;
+    if (named) {
+      var names = Object.keys(by).sort(function (a, b) { return by[b].ml - by[a].ml; });
+      $("whoSplit").innerHTML = names.map(function (k) {
+        return '<span class="' + (k ? personClass(k) : "") + '" style="width:' + (by[k].ml / st.total * 100).toFixed(2) + '%' + (k ? "" : ";--pd:var(--muted)") + '"></span>';
+      }).join("");
+      $("whoLegend").innerHTML = names.map(function (k) {
+        return '<li class="' + (k ? personClass(k) : "") + '"' + (k ? "" : ' style="--pd:var(--muted)"') + '>' + (k ? esc(k) : "Non précisé") + ' <em>' + by[k].n + (by[k].n > 1 ? " biberons" : " biberon") + '</em><b>' + Math.round(by[k].ml / st.total * 100) + ' %</b></li>';
+      }).join("");
+    }
+    // histogramme par heure
+    var cnt = [], h, mx = 1;
+    for (h = 0; h < 24; h++) cnt.push(0);
+    st.feeds.forEach(function (f) { cnt[new Date(f.ts).getHours()]++; });
+    cnt.forEach(function (c) { if (c > mx) mx = c; });
+    var W = 320, H = 110, L = 6, R = 6, T = 8, B = 20, slot = (W - L - R) / 24, ph = H - T - B, g = "";
+    g += '<rect class="night" x="' + L + '" y="' + T + '" width="' + (6 * slot).toFixed(1) + '" height="' + ph + '" rx="4"/><rect class="night" x="' + (L + 22 * slot).toFixed(1) + '" y="' + T + '" width="' + (2 * slot).toFixed(1) + '" height="' + ph + '" rx="4"/>';
+    var best = 0;
+    cnt.forEach(function (c, i) { if (c > cnt[best]) best = i; });
+    cnt.forEach(function (c, i) {
+      if (!c) return;
+      var bh = Math.max(3, c / mx * ph);
+      g += '<rect class="hb' + (i === best ? " top" : "") + '" x="' + (L + i * slot + 2).toFixed(1) + '" y="' + (T + ph - bh).toFixed(1) + '" width="' + (slot - 4).toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="3"/>';
+    });
+    [0, 6, 12, 18].forEach(function (x) { g += '<text x="' + (L + x * slot + slot / 2).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle">' + x + ' h</text>'; });
+    g += '<text x="' + (W - R - slot / 2).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle">23 h</text>';
+    $("hours").innerHTML = '<svg class="hours" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Heure la plus fréquente : ' + best + ' h, ' + cnt[best] + ' biberons.">' + g + '</svg>';
+  }
   function dayDetailHTML(key) {
     var list = [], sum = 0, ts0 = null;
     state.feeds.forEach(function (f, idx) {
@@ -851,13 +1135,13 @@
     });
     var d = parseISO(key), title = dayLabel(d.getTime());
     if (!list.length) return '<div class="day"><div class="day-head"><h3>' + title + '</h3></div><p class="empty">Aucun biberon noté ce jour-là.</p></div>';
-    return '<div class="day"><div class="day-head"><h3>' + title + '</h3><p>' + nf.format(sum) + ' ml · ' + list.length + (list.length > 1 ? " biberons" : " biberon") + '</p></div><ul class="entries">' +
+    return '<div class="day"><div class="day-head"><h3>' + title + '</h3><p>' + nf.format(sum) + ' ml · ' + list.length + (list.length > 1 ? " biberons" : " biberon") + '</p></div>' + stripHTML(list.map(function (it) { return it.f; })) + '<ul class="entries">' +
       list.map(function (it) { return entryHTML(it.f, it.prev); }).join("") + '</ul></div>';
   }
   function renderChart() {
     var pl = planFor(cur()), now = new Date(), days = [], i, map = {};
     for (i = 6; i >= 0; i--) {
-      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i - 7 * weekOff);
       var o = { d: d, key: iso(d), sum: 0, n: 0 };
       days.push(o); map[o.key] = o;
     }
@@ -875,7 +1159,7 @@
     var label = [];
     if (selDay && !map[selDay]) selDay = null;
     days.forEach(function (x, idx) {
-      var cx = L + idx * slot + slot / 2, isToday = idx === 6, sel = x.key === selDay;
+      var cx = L + idx * slot + slot / 2, isToday = weekOff === 0 && idx === 6, sel = x.key === selDay;
       if (sel) s += '<rect class="selbg" x="' + (L + idx * slot + 1).toFixed(1) + '" y="' + (T - 4) + '" width="' + (slot - 2).toFixed(1) + '" height="' + (ph + B + 2) + '" rx="8"/>';
       if (x.sum > 0) {
         s += '<rect class="bar' + (isToday ? " today" : "") + (sel ? " sel" : "") + '" x="' + (cx - bw / 2).toFixed(1) + '" y="' + y(x.sum) + '" width="' + bw + '" height="' + (x.sum / ymax * ph).toFixed(1) + '" rx="4"/>';
@@ -890,22 +1174,32 @@
     });
     s += '<line class="goal-line" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(pl.total) + '" y2="' + y(pl.total) + '"/>';
     s += '<text class="goal-text" x="' + (L + 4) + '" y="' + (+y(pl.total) - 4).toFixed(1) + '">objectif ' + pl.total + '</text>';
-    var past = days.slice(0, 6).filter(function (x) { return x.sum > 0; });
-    if (past.length) {
-      var avgMl = Math.round(past.reduce(function (t, x) { return t + x.sum; }, 0) / past.length / 10) * 10;
-      var avgN = Math.round(past.reduce(function (t, x) { return t + x.n; }, 0) / past.length * 10) / 10;
-      $("weekAvg").textContent = "Moyenne des jours précédents : environ " + nf.format(avgMl) + " ml et " + nf2.format(avgN) + " biberons par jour.";
-    } else { $("weekAvg").textContent = ""; }
+    var oldest = state.feeds.length ? state.feeds[state.feeds.length - 1].ts : Infinity;
+    $("wkPrev").disabled = !(oldest < days[0].d.getTime());
+    $("wkNext").disabled = weekOff === 0;
+    $("weekTitle").textContent = weekOff === 0 ? "7 derniers jours" : (weekOff === 1 ? "Semaine précédente" : "Il y a " + weekOff + " semaines");
+    $("wkLab").textContent = "du " + fmtDate(days[0].d) + " au " + fmtDate(days[6].d);
+    renderStats();
  $("dayDetail").innerHTML = selDay ? dayDetailHTML(selDay) : "";
     $("dayHint").hidden = !!selDay;
     $("chart").innerHTML = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Lait par jour sur 7 jours. ' + label.join(", ") + '. Objectif ' + pl.total + ' ml.">' + s + '</svg>';
   }
 
+  function stripHTML(feeds) {
+    var h = '<div class="strip" aria-hidden="true"><div class="rail"></div><div class="night" style="left:0;width:25%"></div><div class="night" style="left:91.67%;width:8.33%"></div>';
+    [0, 6, 12, 18, 24].forEach(function (x) { h += '<span class="tk" style="left:' + (x / 24 * 100) + '%">' + x + ' h</span>'; });
+    feeds.forEach(function (f) {
+      var d = new Date(f.ts), m = d.getHours() * 60 + d.getMinutes();
+      h += '<i class="' + (f.by ? personClass(f.by) : "") + '" style="left:' + (m / 1440 * 100).toFixed(2) + '%"></i>';
+    });
+    return h + '</div>';
+  }
   function entryHTML(f, prev) {
     var gap = prev ? '<span class="gap"><b>' + fmtDur(f.ts - prev.ts) + '</b> depuis le précédent</span>' : '<span class="gap">Premier biberon du carnet</span>';
-    return '<li><button type="button" class="entry" data-id="' + f.id + '" aria-label="Modifier le biberon de ' + fmtTime(f.ts) + ', ' + f.ml + ' ml">' +
+    var who = f.by ? '<span class="who ' + personClass(f.by) + '">' + esc(f.by) + '</span>' : "";
+    return '<li><span class="swipe-del" aria-hidden="true">Supprimer</span><button type="button" class="entry" data-id="' + f.id + '" aria-label="Modifier le biberon de ' + fmtTime(f.ts) + ', ' + f.ml + ' ml' + (f.by ? ", donné par " + esc(f.by) : "") + '">' +
       '<time>' + fmtTime(f.ts) + '</time>' +
-      '<span class="main"><span class="ml">' + f.ml + ' ml</span>' + gap + '</span>' +
+      '<span class="main"><span class="ml">' + f.ml + ' ml' + who + '</span>' + gap + '</span>' +
       '<span class="chev" aria-hidden="true">›</span></button></li>';
   }
   function renderHistory() {
@@ -924,7 +1218,7 @@
     }
     $("history").innerHTML = groups.map(function (gr) {
       var lis = gr.items.map(function (it) { return entryHTML(it.f, it.prev); }).join("");
-      return '<div class="day"><div class="day-head"><h3>' + dayLabel(gr.ts) + '</h3><p>' + nf.format(gr.sum) + ' ml · ' + gr.items.length + (gr.items.length > 1 ? " biberons" : " biberon") + '</p></div><ul class="entries">' + lis + '</ul></div>';
+      return '<div class="day"><div class="day-head"><h3>' + dayLabel(gr.ts) + '</h3><p>' + nf.format(gr.sum) + ' ml · ' + gr.items.length + (gr.items.length > 1 ? " biberons" : " biberon") + '</p></div>' + stripHTML(gr.items.map(function (it) { return it.f; })) + '<ul class="entries">' + lis + '</ul></div>';
     }).join("");
   }
 
@@ -975,7 +1269,7 @@
   }
 
   function render() {
-    renderHead(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderPlan(); renderFoot(); renderMot(); updateQtyUI();
+    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderPlan(); renderFoot(); renderMot(); updateQtyUI();
   }
 
   /* ---------- Quantité ---------- */
@@ -1024,12 +1318,32 @@
   }
   function flashGive(ts, ml) {
     $("gMain").textContent = "Noté ✓";
+    var gb = $("giveBtn"); gb.classList.remove("done"); void gb.offsetWidth; gb.classList.add("done");
     $("gSub").textContent = ml + " ml à " + fmtTime(ts);
     clearTimeout(flashTimer);
     flashTimer = setTimeout(function () { flashTimer = null; updateQtyUI(); }, 2200);
   }
   async function undoFeed(id) {
     try { await deleteFeed(id); } catch (e) { toast(errMsg(e)); }
+  }
+
+  /* ---------- Thème (couleur + clair/sombre) ---------- */
+  function loadTheme() {
+    try { var t = JSON.parse(localStorage.getItem("carnet-biberons:theme") || "{}"); return { palette: t.palette === "rose" || t.palette === "nuit" ? t.palette : "menthe", mode: t.mode === "light" || t.mode === "dark" ? t.mode : "auto" }; }
+    catch (e) { return { palette: "menthe", mode: "auto" }; }
+  }
+  function applyTheme(t, save) {
+    var r = document.documentElement;
+    if (t.palette === "menthe") r.removeAttribute("data-palette"); else r.setAttribute("data-palette", t.palette);
+    if (t.mode === "auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme", t.mode);
+    if (save) { try { localStorage.setItem("carnet-biberons:theme", JSON.stringify(t)); } catch (e) { /* ignoré */ } }
+    var BG = { menthe: ["#F0F5F3", "#0D1816"], rose: ["#FBF1F0", "#1C1214"], nuit: ["#EFF3FA", "#0E1424"] }[t.palette];
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+      var dk = (m.getAttribute("media") || "").indexOf("dark") >= 0;
+      m.setAttribute("content", t.mode === "light" ? BG[0] : t.mode === "dark" ? BG[1] : (dk ? BG[1] : BG[0]));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-palette].sw"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-palette") === t.palette)); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-mode") === t.mode)); });
   }
 
   /* ---------- Fiche bébé ---------- */
@@ -1041,6 +1355,9 @@
     $("fBirth").max = iso(new Date());
     $("fMot").checked = motOn();
     $("fDefault").value = defaultMl;
+    $("fMe").value = curBy();
+    applyTheme(loadTheme(), false);
+    $("byNote").hidden = !(state.mode === "shared" && noBy());
     $("formErr").hidden = true;
     $("sheet").hidden = false;
     $("fName").focus();
@@ -1056,6 +1373,8 @@
     else if ((today - b) / DAY > 1100) err = "Cette application suit les bébés jusqu'à 3 ans environ.";
     if (err) { $("formErr").textContent = err; $("formErr").hidden = false; return; }
     var p = { name: ($("fName").value.trim() || "Bébé").slice(0, 40), birthDate: birth };
+    var me = cleanBy($("fMe").value);
+    try { if (me) localStorage.setItem("carnet-biberons:moi", me); else localStorage.removeItem("carnet-biberons:moi"); } catch (e3) { /* ignoré */ }
     dm = Math.round(dm / 10) * 10;
     if (dm !== defaultMl) {
       defaultMl = dm;
@@ -1074,17 +1393,28 @@
       $("tab-" + t).hidden = !on;
       $("tabbtn-" + t).setAttribute("aria-selected", on ? "true" : "false");
     });
+    $("dock").hidden = name !== "feeds";
+    var pn = $("tab-" + name);
+    pn.classList.remove("enter"); void pn.offsetWidth; pn.classList.add("enter");
     window.scrollTo(0, 0);
   }
 
   /* ---------- Modifier un biberon ---------- */
-  var editingId = null, delArmed = false, delArmTimer = null;
+  var editingId = null, editingBy = "", delArmed = false, delArmTimer = null, suppressClick = false;
   function findFeed(id) {
     for (var i = 0; i < state.feeds.length; i++) if (state.feeds[i].id === id) return state.feeds[i];
     return null;
   }
   function renderFeedSheet() { $("feedDelete").textContent = delArmed ? "Confirmer la suppression" : "Supprimer"; }
   function feedError(msg) { $("feedErr").textContent = msg; $("feedErr").hidden = false; }
+  function renderFeedBy() {
+    var names = people.slice();
+    if (editingBy && names.indexOf(editingBy) < 0) names.push(editingBy);
+    $("feedByField").hidden = !names.length;
+    $("feedBy").innerHTML = names.map(function (n) {
+      return '<button type="button" class="chip" data-by="' + esc(n) + '" aria-pressed="' + (n === editingBy) + '">' + esc(n) + '</button>';
+    }).join("") + '<button type="button" class="chip" data-by="" aria-pressed="' + (editingBy === "") + '">Personne</button>';
+  }
   function openFeed(id) {
     var f = findFeed(id);
     if (!f) return;
@@ -1093,6 +1423,8 @@
     $("feedTime").value = toLocalInput(f.ts);
     $("feedTime").max = toLocalInput(Date.now());
     $("feedMl").value = f.ml;
+    editingBy = f.by || "";
+    renderFeedBy();
     $("feedErr").hidden = true;
     renderFeedSheet();
     $("feedSheet").hidden = false;
@@ -1116,18 +1448,59 @@
     else if (ts !== f.ts && ts < Date.now() - 14 * DAY) err = "Le journal garde les 14 derniers jours.";
     else if (!(ml >= 5 && ml <= 500)) err = "Entre une quantité entre 5 et 500 ml.";
     if (err) { feedError(err); return; }
-    if (ts === f.ts && ml === f.ml) { closeFeed(); return; }
-    try { await updateFeed(f.id, ts, ml); closeFeed(); toast("Biberon modifié : " + ml + " ml à " + fmtTime(ts)); }
+    if (ts === f.ts && ml === f.ml && editingBy === (f.by || "")) { closeFeed(); return; }
+    try { await updateFeed(f.id, ts, ml, editingBy); closeFeed(); toast("Biberon modifié : " + ml + " ml à " + fmtTime(ts)); }
     catch (ex) { feedError(errMsg(ex)); }
   }
   async function removeFeed() {
     var f = findFeed(editingId);
     closeFeed();
     if (!f) return;
+    return deleteWithUndo(f);
+  }
+  async function deleteWithUndo(f) {
     try {
       await deleteFeed(f.id);
-      toast("Biberon supprimé", function () { addFeed(f.ml, f.ts).catch(function (e) { toast(errMsg(e)); }); });
+      toast("Biberon supprimé", function () { addFeed(f.ml, f.ts, f.by || "").catch(function (e) { toast(errMsg(e)); }); });
     } catch (e) { toast(errMsg(e)); }
+  }
+
+  /* Balayage vers la gauche sur un biberon : suppression, avec « Annuler » pendant 7 secondes. */
+  function bindSwipe(container) {
+    var st = null;
+    container.addEventListener("pointerdown", function (e) {
+      var b = e.target.closest && e.target.closest("button.entry");
+      if (!b || (e.pointerType === "mouse" && e.button !== 0)) return;
+      st = { b: b, x: e.clientX, y: e.clientY, dx: 0, active: false };
+    });
+    container.addEventListener("pointermove", function (e) {
+      if (!st) return;
+      var dx = e.clientX - st.x, dy = e.clientY - st.y;
+      if (!st.active) {
+        if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { st = null; return; }
+        if (dx < -10 && Math.abs(dx) > Math.abs(dy)) {
+          st.active = true; st.b.classList.add("drag"); st.b.parentNode.classList.add("swiping");
+          try { st.b.setPointerCapture(e.pointerId); } catch (x) { /* ignoré */ }
+        } else return;
+      }
+      st.dx = Math.min(0, Math.max(-170, dx));
+      st.b.style.transform = "translateX(" + st.dx + "px)";
+    });
+    function end() {
+      if (!st) return;
+      var c = st; st = null;
+      if (!c.active) return;
+      suppressClick = true; setTimeout(function () { suppressClick = false; }, 400);
+      c.b.classList.remove("drag");
+      var li = c.b.parentNode;
+      if (c.dx <= -90) {
+        var f = findFeed(c.b.getAttribute("data-id"));
+        li.classList.add("gone");
+        setTimeout(function () { if (f) deleteWithUndo(f); }, 200);
+      } else { c.b.style.transform = ""; li.classList.remove("swiping"); }
+    }
+    container.addEventListener("pointerup", end);
+    container.addEventListener("pointercancel", end);
   }
 
   /* ---------- Fenêtre de partage ---------- */
@@ -1211,6 +1584,13 @@
   /* ---------- Événements ---------- */
   function bind() {
     $("restIn").addEventListener("input", updateRest);
+    $("sheet").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-palette], button[data-mode]");
+      if (!b) return;
+      var t = loadTheme();
+      if (b.hasAttribute("data-palette")) t.palette = b.getAttribute("data-palette"); else t.mode = b.getAttribute("data-mode");
+      applyTheme(t, true); render();
+    });
     $("fMot").addEventListener("change", function () { setMot($("fMot").checked); });
     $("motClose").addEventListener("click", function () {
       try { localStorage.setItem("carnet-biberons:mot", iso(new Date())); } catch (e) {}
@@ -1232,6 +1612,7 @@
         var id = await addFeed(ml, now);
         $("restIn").value = ""; updateRest();
         flashGive(now, ml);
+        try { if (navigator.vibrate) navigator.vibrate(18); } catch (e2) { /* ignoré */ }
         toast("Biberon de " + ml + " ml noté à " + fmtTime(now), function () { undoFeed(id); });
       } catch (e) { toast(errMsg(e)); }
     });
@@ -1250,11 +1631,29 @@
     });
     $("history").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-id]");
-      if (b) openFeed(b.getAttribute("data-id"));
+      if (b && !suppressClick) openFeed(b.getAttribute("data-id"));
     });
     $("dayDetail").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-id]");
-      if (b) openFeed(b.getAttribute("data-id"));
+      if (b && !suppressClick) openFeed(b.getAttribute("data-id"));
+    });
+    bindSwipe($("history")); bindSwipe($("dayDetail"));
+    $("feedAdj").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-min]");
+      if (!b) return;
+      var cur0 = new Date($("feedTime").value).getTime();
+      if (!isFinite(cur0)) { var f0 = findFeed(editingId); cur0 = f0 ? f0.ts : Date.now(); }
+      var t = Math.min(Date.now(), cur0 + (+b.getAttribute("data-min")) * 60000);
+      $("feedTime").value = toLocalInput(t);
+    });
+    $("feedMlChips").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-v]");
+      if (b) $("feedMl").value = b.getAttribute("data-v");
+    });
+    $("feedBy").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-by]");
+      if (!b) return;
+      editingBy = b.getAttribute("data-by"); renderFeedBy();
     });
     function pickDay(el) {
       var k = el && el.getAttribute && el.getAttribute("data-day");
@@ -1264,6 +1663,8 @@
       var again = $("chart").querySelector('[data-day="' + k + '"]');
       if (again && selDay) again.focus();
     }
+    $("wkPrev").addEventListener("click", function () { weekOff++; selDay = null; renderChart(); });
+    $("wkNext").addEventListener("click", function () { if (weekOff > 0) weekOff--; selDay = null; renderChart(); });
     $("chart").addEventListener("click", function (e) { pickDay(e.target.closest && e.target.closest("[data-day]")); });
     $("chart").addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { var t = e.target.closest && e.target.closest("[data-day]"); if (t) { e.preventDefault(); pickDay(t); } }
@@ -1326,12 +1727,13 @@
   }
 
   /* ---------- Démarrage ---------- */
+  applyTheme(loadTheme(), false);
   loadLocal();
   try { var savedCode = normCode(localStorage.getItem(LS_CODE)); if (validCode(savedCode)) state.code = savedCode; } catch (e) { /* ignoré */ }
   bind();
   render();
   setInterval(render, 60000);
-  setInterval(renderNow, 15000);
+  setInterval(function () { renderNow(); renderHero(); }, 15000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) render(); });
   window.addEventListener("pageshow", render);
   window.addEventListener("online", function () { renderFoot(); tryConnect(); });
