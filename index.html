@@ -991,7 +991,7 @@
     HEADIMG +
     '<g transform="translate(62 60) rotate(14)"><rect x="0" y="6" width="15" height="23" rx="5.500" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.500"/>' +
     '<path d="M3.500 6V3h8v3" fill="none" stroke="var(--accent)" stroke-width="2.500" stroke-linejoin="round"/><path d="M4.500 14h4.500M4.500 19.500h3" stroke="var(--accent)" stroke-width="2.300" stroke-linecap="round"/></g></svg>';
-  var MOT_ILL = '<circle cx="48" cy="48" r="46" fill="var(--surface)" opacity=".75"/>' + HEADIMG + '<path transform="translate(8 9) scale(1.15)" d="M7 12.5C7 12.5 0 8.5 0 4.2 0 1.5 2 0 4 0c1.300 0 2.500.7 3 1.800C7.500.7 8.700 0 10 0c2 0 4 1.500 4 4.200 0 4.300-7 8.300-7 8.300z" fill="var(--accent)"/>';
+  var MOT_ILL = '<image href="baby-head.webp" x="2" y="4" width="92" height="92"/>' + '<path transform="translate(8 9) scale(1.15)" d="M7 12.5C7 12.5 0 8.5 0 4.2 0 1.5 2 0 4 0c1.300 0 2.500.7 3 1.800C7.500.7 8.700 0 10 0c2 0 4 1.500 4 4.200 0 4.300-7 8.300-7 8.300z" fill="var(--accent)"/>';
   function renderHero() {
     var el = $("hero"), pl = planFor(cur()), now = Date.now(), t0 = midnight(now).getTime(), last = state.feeds[0];
     if (!last) {
