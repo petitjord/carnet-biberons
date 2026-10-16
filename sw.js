@@ -1,6 +1,6 @@
 /* Service worker : permet d'ouvrir le carnet sans connexion. */
-var CACHE = "carnet-biberons-v8";
-var ASSETS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
+var CACHE = "carnet-biberons-v9";
+var ASSETS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "baby-head.webp", "baby-sleep.webp"];
 
 self.addEventListener("install", function (event) {
   event.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }));
