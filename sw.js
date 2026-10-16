@@ -1,5 +1,5 @@
 /* Service worker : permet d'ouvrir le carnet sans connexion. */
-var CACHE = "carnet-biberons-v5";
+var CACHE = "carnet-biberons-v6";
 var ASSETS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", function (event) {
