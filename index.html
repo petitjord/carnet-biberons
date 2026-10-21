@@ -582,7 +582,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 15</p>
+      <p class="ver">Version 16</p>
     </footer>
   </div>
 
@@ -784,38 +784,47 @@
     return DEFAULT_ML;
   }
   var defaultMl = loadDefaultMl();
+  /* Mots de bébé à sa maman. {nom}, {age}, {jours} viennent de la fiche ; {ml} et {nb} du jour (ces mots n'apparaissent qu'une fois un biberon noté). */
   var MOTS = [
-    "Bonjour Maman ! Je n'ai pas encore beaucoup de mots, mais « je t'aime » est déjà mon préféré.",
-    "Maman, ton odeur est la meilleure du monde. Je te reconnaîtrais les yeux fermés.",
-    "Tu sais, quand tu me regardes, je ne vois plus que toi.",
-    "Merci d'être venue me chercher à chaque fois que j'ai pleuré, Maman.",
-    "Dans tes bras, c'est mon endroit préféré de toute la planète.",
-    "J'ai fait un grand sourire pour toi aujourd'hui. Fais comme si c'était la première fois.",
-    "Maman, même fatiguée, tu es la plus belle chose que j'aie vue.",
-    "Je ne sais pas encore dire « merci », alors je te serre le doigt très fort.",
-    "Ta voix, c'est ma chanson préférée, Maman. Chante-moi encore.",
-    "Je grandis un peu plus chaque jour, mais je serai toujours ton bébé.",
-    "Quand j'entends ton cœur, je me sens en sécurité. Reste encore un peu.",
-    "Maman, tu es mon héroïne. Et en plus tu sens bon.",
-    "Aujourd'hui j'ai décidé de t'aimer encore plus qu'hier. C'est mon projet de la journée.",
-    "Tu m'as donné mon premier câlin. Je n'ai jamais voulu en sortir.",
-    "Je te promets de faire ma nuit… un de ces jours. En attendant, je t'aime.",
-    "Merci pour les biberons, les câlins et les chatouilles. Tu es la meilleure équipe.",
-    "Chaque fois que tu me souris, mon cœur fait des petits bonds.",
-    "Maman, je suis fier de ce qu'on construit ensemble : toi, Papa et moi.",
-    "Je t'ai choisie, tu sais. Dès le début, c'était toi.",
-    "Quand je t'ai vue pour la première fois, j'ai su que j'étais arrivé au bon endroit.",
-    "Si tu as eu une journée difficile, pose-toi : je te fais un énorme câlin de bébé.",
-    "Tu m'apprends tout, Maman. Moi, je t'apprends juste à tomber amoureuse tous les jours.",
-    "Ne t'inquiète pas, tu t'en sors à merveille. Je le sais, je suis ton meilleur juge.",
-    "Papa et toi, vous êtes mes deux personnes préférées. Mais toi, tu as le câlin magique.",
-    "Je t'aime jusqu'à la lune, et même jusqu'à la prochaine tétée.",
-    "Bonne journée, Maman. Je pense à toi, même quand je dors.",
-    "Merci de me porter, de me bercer, de m'aimer. Je te le dirai mieux quand je saurai parler.",
-    "Tes yeux sont la première chose que j'ai aimée. Ils le sont toujours.",
-    "Maman, avec toi, je n'ai peur de rien.",
-    "Je ne suis pas très grand, mais mon amour pour toi, lui, est immense."
+    "Bonjour Maman, c'est {nom} ! J'ai {age} et je t'aime depuis le tout premier jour.",
+    "Ça fait {jours} jours que tu es ma maman. Je les ai tous adorés.",
+    {d: 1, t: "Aujourd'hui, j'ai déjà bu {ml} ml. C'est toi, le meilleur restaurant du quartier."},
+    {d: 1, t: "Déjà {nb} biberon{s} aujourd'hui ! Tu vois, je grandis bien. Merci Maman."},
+    "À {age}, je ne sais pas encore dire « je t'aime ». Alors je t'attrape le doigt très fort.",
+    "{nom} te le confirme : tu es ma personne préférée. Et je suis très difficile.",
+    "Il y a {jours} jours, tu me serrais dans tes bras pour la première fois. Je n'ai pas oublié.",
+    {d: 1, t: "{ml} ml avalés aujourd'hui, et pas une goutte de patience. Désolé Maman, je m'améliorerai."},
+    "Maman, quand tu me chantes quelque chose, je fais semblant de dormir pour que tu continues.",
+    "Avec mes {age}, j'ai déjà tout compris : le meilleur endroit du monde, c'est contre toi.",
+    "Tu es la première personne que j'ai reconnue. Je te reconnaîtrais entre mille.",
+    {d: 1, t: "Je te dois {nb} merci{s} aujourd'hui, un par biberon. Je rembourserai en sourires."},
+    "Tu es fatiguée, je le vois. Mais pour moi, tu restes la plus belle des mamans.",
+    "Chaque fois que j'entends tes pas, mon cœur de {age} fait un petit bond.",
+    "Maman, c'est {nom} qui parle : tu fais tout très bien, même quand tu en doutes.",
+    "Je te promets que je ferai ma nuit un de ces jours. En attendant, je t'aime très fort.",
+    "{jours} jours que je suis arrivé, et chaque jour tu me donnes une raison de plus de rester.",
+    "Papa et toi, vous êtes mon équipe préférée. Toi, tu as juste le câlin magique en plus.",
+    {d: 1, t: "Pendant que je bois mes {ml} ml, je te regarde. Tu le sais, ça ?"},
+    "Je n'ai pas encore de mots, alors j'utilise les gros yeux et les grands sourires. Ils marchent, non ?",
+    "À {age}, j'ai choisi mon métier : câliner Maman à plein temps.",
+    "Maman, ne t'inquiète pas : je sens que tu fais de ton mieux, et c'est parfait pour moi.",
+    "Tes bras, c'est ma maison. Ça tombe bien, j'ai {age} et je n'ai pas l'intention de déménager.",
+    "Quand tu me regardes comme ça, je me dis que j'ai eu beaucoup de chance de t'avoir.",
+    "{nom} te souhaite une belle journée. Et un petit moment rien qu'à toi, si Papa le permet.",
+    "Tu sais, je ne comprends pas tout, mais je comprends quand tu me dis que tu m'aimes.",
+    "Maman, ce soir, si je pleure un peu, c'est que j'ai besoin de ton odeur. Pas besoin d'autre chose.",
+    "Je grandis vite, mais je garderai toujours une place pour tes bisous du matin.",
+    {d: 1, t: "Aujourd'hui : {nb} biberon{s}, {ml} ml, et mille câlins. Tu vois, je tiens mes comptes."},
+    "Je suis petit, mais mon amour pour toi, lui, est déjà énorme. Bonne journée, Maman."
   ];
+  function motDuJour(n) {
+    var p = cur(), pl = planFor(p), todays = todayFeeds(), nb = todays.length, ml = sumMl(todays);
+    var pool = MOTS.filter(function (m) { return typeof m === "string" || nb > 0; });
+    var m = pool[n % pool.length], t = typeof m === "string" ? m : m.t;
+    var total = pl.age.total;
+    return t.replace(/\{nom\}/g, p.name || "Bébé").replace(/\{age\}/g, ageText(pl.age)).replace(/\{jours\}/g, total)
+      .replace(/\{ml\}/g, nf.format(ml)).replace(/\{nb\}/g, nb).replace(/\{s\}/g, nb > 1 ? "s" : "");
+  }
   var nf = new Intl.NumberFormat("fr-FR");
   var nf2 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
   var $ = function (id) { return document.getElementById(id); };
@@ -1402,7 +1411,7 @@
     var now = new Date(), key = iso(now), n = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / DAY);
     var hidden = false;
     try { hidden = localStorage.getItem("carnet-biberons:motActif") === "0" || localStorage.getItem("carnet-biberons:mot") === key; } catch (e) {}
-    $("motText").textContent = MOTS[n % MOTS.length];
+    $("motText").textContent = motDuJour(n);
     $("mot").hidden = hidden;
   }
   function renderFoot() {
