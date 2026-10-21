@@ -541,7 +541,7 @@
   <section class="hero" id="hero" aria-label="Dernier biberon" aria-live="off"></section>
 
   <aside class="mot" id="mot" hidden aria-labelledby="motTitle">
-    <div class="mot-head"><span id="motTitle">Mot doux du jour</span><button type="button" id="motClose" aria-label="Masquer le mot doux du jour">×</button></div>
+    <div class="mot-head"><span id="motTitle">Le mot de bébé</span><button type="button" id="motClose" aria-label="Masquer le mot de bébé">×</button></div>
     <p id="motText"></p>
     <svg class="mot-ill" id="motIll" viewBox="0 0 96 96" aria-hidden="true"></svg>
   </aside>
@@ -568,25 +568,21 @@
     </details>
   </section>
 
-    <section aria-labelledby="todayTitle">
+    <section aria-labelledby="logTitle">
       <div class="sec-head">
         <div>
-          <h2 id="todayTitle">Aujourd'hui</h2>
+          <h2 id="logTitle">Aujourd'hui</h2>
           <p id="todayCount"></p>
         </div>
         <p class="big" id="todayBig"></p>
       </div>
-    </section>
-
-    <section aria-labelledby="logTitle">
-      <h2 id="logTitle">Biberons d'aujourd'hui</h2>
       <p class="sub" id="logHint"></p>
       <div class="history" id="history"></div>
     </section>
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 14</p>
+      <p class="ver">Version 15</p>
     </footer>
   </div>
 
@@ -695,7 +691,7 @@
         <button type="button" data-mode="dark" aria-pressed="false">Sombre</button>
       </div>
     </div>
-    <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot doux du jour »</span></label>
+    <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot de bébé du jour »</span></label>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
       <button class="ghost" type="button" id="fCancel">Annuler</button>
@@ -789,36 +785,36 @@
   }
   var defaultMl = loadDefaultMl();
   var MOTS = [
-    "Bonjour. Merci d'être là, chaque jour, avec nous.",
-    "Réveil du jour : on a de la chance de s'avoir.",
-    "Le plus beau de ma vie : toi et notre bébé. ❤️",
-    "Chaque matin, je referais tous mes choix pour arriver jusqu'à toi.",
-    "Même avec les yeux qui piquent, tu es magnifique.",
-    "Merci pour tout ce que tu fais, ce qu'on voit et ce qu'on ne dit pas.",
-    "Je pense à toi, là, maintenant. Rien de plus, rien de moins.",
-    "Te voir avec notre bébé, c'est retomber amoureux une fois de plus.",
-    "Tu rends les journées difficiles plus légères. Je ne te le dis pas assez.",
-    "Notre vie n'est pas parfaite, mais c'est exactement celle que je voulais avec toi.",
-    "Tu es mon endroit préféré au monde.",
-    "Je t'aime pour ce que tu es, ce que tu fais et ce que tu rends possible.",
-    "Belle journée, mon cœur. J'ai hâte de te retrouver ce soir.",
-    "Je me sens chez moi partout où tu es.",
-    "Merci d'être une maman aussi tendre et aussi présente.",
-    "Si je pouvais ralentir le temps, je garderais ces petites journées à trois.",
-    "Je ne te le dis jamais assez : tu comptes plus que tout.",
-    "Chaque jour avec toi est un cadeau que je n'oublie pas d'ouvrir.",
-    "Tu es mon calme dans les journées agitées.",
-    "Je t'aime plus qu'hier et un peu moins que demain.",
-    "Notre petite famille se construit doucement, et j'en suis fier.",
-    "Je ne sais pas toujours comment te remercier. Alors je t'aime, c'est déjà ça.",
-    "Tu fais battre mon cœur plus calmement et plus fort à la fois.",
-    "Bonne journée à celle qui rend notre maison pleine de vie.",
-    "Je t'ai choisie une fois. Je te choisirais encore tous les matins.",
-    "Avec toi, même les nuits courtes ont du bon.",
-    "Belle journée, remplie de petites joies et de pensées pour toi.",
-    "On a changé, mais mon amour pour toi a grandi avec nous.",
-    "Si un jour tu doutes, souviens-toi que je suis là, de ton côté, toujours.",
-    "Bonjour toi, mon amour, ma force et mon plus beau projet."
+    "Bonjour Maman ! Je n'ai pas encore beaucoup de mots, mais « je t'aime » est déjà mon préféré.",
+    "Maman, ton odeur est la meilleure du monde. Je te reconnaîtrais les yeux fermés.",
+    "Tu sais, quand tu me regardes, je ne vois plus que toi.",
+    "Merci d'être venue me chercher à chaque fois que j'ai pleuré, Maman.",
+    "Dans tes bras, c'est mon endroit préféré de toute la planète.",
+    "J'ai fait un grand sourire pour toi aujourd'hui. Fais comme si c'était la première fois.",
+    "Maman, même fatiguée, tu es la plus belle chose que j'aie vue.",
+    "Je ne sais pas encore dire « merci », alors je te serre le doigt très fort.",
+    "Ta voix, c'est ma chanson préférée, Maman. Chante-moi encore.",
+    "Je grandis un peu plus chaque jour, mais je serai toujours ton bébé.",
+    "Quand j'entends ton cœur, je me sens en sécurité. Reste encore un peu.",
+    "Maman, tu es mon héroïne. Et en plus tu sens bon.",
+    "Aujourd'hui j'ai décidé de t'aimer encore plus qu'hier. C'est mon projet de la journée.",
+    "Tu m'as donné mon premier câlin. Je n'ai jamais voulu en sortir.",
+    "Je te promets de faire ma nuit… un de ces jours. En attendant, je t'aime.",
+    "Merci pour les biberons, les câlins et les chatouilles. Tu es la meilleure équipe.",
+    "Chaque fois que tu me souris, mon cœur fait des petits bonds.",
+    "Maman, je suis fier de ce qu'on construit ensemble : toi, Papa et moi.",
+    "Je t'ai choisie, tu sais. Dès le début, c'était toi.",
+    "Quand je t'ai vue pour la première fois, j'ai su que j'étais arrivé au bon endroit.",
+    "Si tu as eu une journée difficile, pose-toi : je te fais un énorme câlin de bébé.",
+    "Tu m'apprends tout, Maman. Moi, je t'apprends juste à tomber amoureuse tous les jours.",
+    "Ne t'inquiète pas, tu t'en sors à merveille. Je le sais, je suis ton meilleur juge.",
+    "Papa et toi, vous êtes mes deux personnes préférées. Mais toi, tu as le câlin magique.",
+    "Je t'aime jusqu'à la lune, et même jusqu'à la prochaine tétée.",
+    "Bonne journée, Maman. Je pense à toi, même quand je dors.",
+    "Merci de me porter, de me bercer, de m'aimer. Je te le dirai mieux quand je saurai parler.",
+    "Tes yeux sont la première chose que j'ai aimée. Ils le sont toujours.",
+    "Maman, avec toi, je n'ai peur de rien.",
+    "Je ne suis pas très grand, mais mon amour pour toi, lui, est immense."
   ];
   var nf = new Intl.NumberFormat("fr-FR");
   var nf2 = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
