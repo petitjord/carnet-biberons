@@ -1,5 +1,5 @@
 /* Service worker : permet d'ouvrir le carnet sans connexion. */
-var CACHE = "carnet-biberons-v11";
+var CACHE = "carnet-biberons-v12";
 var ASSETS = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "baby-head.webp", "baby-sleep.webp"];
 
 self.addEventListener("install", function (event) {
@@ -29,7 +29,7 @@ self.addEventListener("fetch", function (event) {
   var isPage = sameOrigin && (req.mode === "navigate" || url.pathname.endsWith("/") || url.pathname.endsWith("index.html"));
   if (isPage) {
     event.respondWith(
-      fetch(req).then(function (res) {
+      fetch(req, { cache: "no-store" }).then(function (res) {
         if (res && res.ok) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); }
         return res;
       }).catch(function () {
