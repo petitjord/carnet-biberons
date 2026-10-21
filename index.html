@@ -579,14 +579,14 @@
     </section>
 
     <section aria-labelledby="logTitle">
-      <h2 id="logTitle">Journal des biberons</h2>
+      <h2 id="logTitle">Biberons d'aujourd'hui</h2>
       <p class="sub" id="logHint"></p>
       <div class="history" id="history"></div>
     </section>
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 13 · premium+</p>
+      <p class="ver">Version 14</p>
     </footer>
   </div>
 
@@ -1352,7 +1352,7 @@
       '<span class="chev" aria-hidden="true">›</span></button></li>';
   }
   function renderHistory() {
-    var cut = midnight(Date.now()).getTime() - 13 * DAY, groups = [], g = null;
+    var cut = midnight(Date.now()).getTime(), groups = [], g = null;
     state.feeds.forEach(function (f, idx) {
       if (f.ts < cut) return;
       var k = dayKey(f.ts);
@@ -1360,14 +1360,14 @@
       g.sum += f.ml;
       g.items.push({ f: f, prev: state.feeds[idx + 1] || null });
     });
-    $("logHint").textContent = groups.length ? "Touche un biberon pour modifier l'heure ou la quantité. L'intervalle compte les heures depuis le biberon précédent." : "";
+    $("logHint").textContent = groups.length ? "Touche un biberon pour le modifier. Glisse vers la gauche pour le supprimer." : "";
     if (!groups.length) {
-      $("history").innerHTML = '<div class="empty-state">' + SLEEPIMG + '<p>Aucun biberon noté pour l\'instant. Appuie sur « Biberon donné » pour enregistrer le premier : la date et l\'heure s\'ajoutent toutes seules.</p></div>';
+      $("history").innerHTML = '<div class="empty-state">' + SLEEPIMG + '<p>Aucun biberon noté aujourd\'hui. Appuie sur « Biberon donné » pour enregistrer le premier : la date et l\'heure s\'ajoutent toutes seules. Les jours précédents sont dans l\'onglet Bilan.</p></div>';
       return;
     }
     $("history").innerHTML = groups.map(function (gr) {
       var lis = gr.items.map(function (it) { return entryHTML(it.f, it.prev); }).join("");
-      return '<div class="day"><div class="day-head"><h3>' + dayLabel(gr.ts) + '</h3><p>' + nf.format(gr.sum) + ' ml · ' + gr.items.length + (gr.items.length > 1 ? " biberons" : " biberon") + '</p></div>' + stripHTML(gr.items.map(function (it) { return it.f; })) + '<ul class="entries">' + lis + '</ul></div>';
+      return '<div class="day">' + stripHTML(gr.items.map(function (it) { return it.f; })) + '<ul class="entries">' + lis + '</ul></div>';
     }).join("");
   }
 
