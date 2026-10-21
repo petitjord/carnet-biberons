@@ -464,6 +464,54 @@
   .tabpanel > *:nth-child(2) { animation-delay: .05s; } .tabpanel > *:nth-child(3) { animation-delay: .1s; }
   .tabpanel > *:nth-child(4) { animation-delay: .15s; } .tabpanel > *:nth-child(5) { animation-delay: .2s; }
   @media (prefers-reduced-motion: reduce) { .tabpanel > *, .tabpanel > section > * { animation: none; } }
+
+  /* ===== Premium, niveau 2 : carte héros sombre, aurore, barre flottante ===== */
+  body {
+    background:
+      radial-gradient(70% 38% at 90% -6%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 70%),
+      radial-gradient(60% 34% at -8% 22%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+      radial-gradient(80% 40% at 50% 112%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+      var(--bg);
+    background-attachment: fixed;
+  }
+  h1 { font-size: 46px; background: linear-gradient(180deg, var(--ink), color-mix(in srgb, var(--ink) 62%, var(--accent))); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  h2 { font-size: 24px; }
+  section[aria-labelledby] > .sec-head h2::before, section[aria-labelledby] > h2::before, .wk-head h2::before { content: ""; display: inline-block; width: 6px; height: .8em; margin-right: 10px; border-radius: 3px; vertical-align: -0.05em; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 70%, #fff), var(--accent)); box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent); }
+
+  /* Carte héros : verre sombre */
+  .hero {
+    color: #EAF6F3; border: 1px solid rgba(255,255,255,.14); border-radius: 30px; padding: 22px 20px;
+    background:
+      radial-gradient(80% 90% at 100% 0%, color-mix(in srgb, var(--accent) 70%, #fff 0%), transparent 62%),
+      radial-gradient(70% 80% at 0% 100%, color-mix(in srgb, var(--accent) 45%, #000), transparent 70%),
+      linear-gradient(155deg, color-mix(in srgb, var(--accent) 38%, #06161A), color-mix(in srgb, var(--accent) 18%, #04100F));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -20px 40px -30px rgba(0,0,0,.5), 0 30px 60px -26px color-mix(in srgb, var(--accent) 70%, #000), 0 8px 18px -10px rgba(0,0,0,.5);
+  }
+  .hero .ring-bg { stroke: rgba(255,255,255,.14); }
+  .hero .ring-fg { stroke: #fff; filter: none; }
+  .hero.late .ring-fg { stroke: #FFC09A; filter: none; }
+  .hero .ring-k, .hero .hero-txt .k { color: rgba(234,246,243,.68); }
+  .hero .ring-v, .hero .hero-txt .v { color: #fff; }
+  .hero .hero-txt .v.late { color: #FFC09A; }
+  .hero .hero-txt .s { color: rgba(234,246,243,.72); }
+  .hero .who { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.2); }
+  .hero.empty svg.ill circle:first-child { fill: rgba(255,255,255,.14); }
+
+  /* Barre d'onglets flottante */
+  .tabbar { left: 14px; right: 14px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); border: 1px solid color-mix(in srgb, var(--line) 55%, rgba(255,255,255,.4)); border-radius: 28px; padding-bottom: 0; max-width: 452px; margin: 0 auto; box-shadow: 0 20px 40px -16px var(--sh), inset 0 1px 0 rgba(255,255,255,var(--hi)); }
+  .tab { min-height: 62px; }
+  .dock { bottom: calc(82px + env(safe-area-inset-bottom, 0px)); }
+  .toast { bottom: calc(180px + env(safe-area-inset-bottom, 0px)); }
+  .app { padding-bottom: 210px; }
+
+  .give { min-height: 80px; border-radius: 26px; box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 -3px 0 rgba(0,0,0,.14), 0 22px 40px -14px var(--accent), 0 0 0 1px color-mix(in srgb, var(--accent) 60%, #000); }
+  .g-main { font-size: 24px; }
+  .qval { background: linear-gradient(180deg, var(--ink) 30%, color-mix(in srgb, var(--ink) 55%, var(--accent))); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .qval span { -webkit-text-fill-color: var(--muted); }
+  .tile .v, .plan-grid dd, .big { background: linear-gradient(180deg, var(--ink) 40%, color-mix(in srgb, var(--ink) 55%, var(--accent))); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .tile .v small, .plan-grid dd small, .big small { -webkit-text-fill-color: var(--muted); }
+  .chart .bar { fill: color-mix(in srgb, var(--accent) 38%, var(--surface)); }
+  .chart .bar.today, .chart .bar.sel { fill: var(--accent); filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--accent) 55%, transparent)); }
 </style>
 </head>
 <body>
@@ -538,7 +586,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 12 · design premium</p>
+      <p class="ver">Version 13 · premium+</p>
     </footer>
   </div>
 
