@@ -621,7 +621,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 18</p>
+      <p class="ver">Version 19</p>
     </footer>
   </div>
 
@@ -1617,7 +1617,7 @@
     var t0 = midnight(Date.now()).getTime();
     $("careBtns").innerHTML = EV_ORDER.map(function (k) {
       var last = null;
-      for (var i = 0; i < state.events.length; i++) if (state.events[i].kind === k) { last = state.events[i]; break; }
+      for (var i = 0; i < state.events.length; i++) if (k === "temp" ? state.events[i].temp !== null : state.events[i].kind === k) { last = state.events[i]; break; }
       var sub = last ? agoText(last.ts) + (last.temp !== null ? " · " + fmtTemp(last.temp) : "") : "Aucun noté";
       return '<button type="button" class="care-btn" data-kind="' + k + '" aria-label="Noter : ' + EVT[k].label + '">' +
         '<span class="care-ic k-' + k + '">' + IC[k] + '</span><span class="care-l">' + EVT[k].label + '</span><span class="care-s">' + sub + '</span></button>';
