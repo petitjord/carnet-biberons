@@ -512,6 +512,39 @@
   .tile .v small, .plan-grid dd small, .big small { -webkit-text-fill-color: var(--muted); }
   .chart .bar { fill: color-mix(in srgb, var(--accent) 38%, var(--surface)); }
   .chart .bar.today, .chart .bar.sel { fill: var(--accent); filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--accent) 55%, transparent)); }
+
+  /* Santé et couches */
+  section.care, section[aria-labelledby="careStatsTitle"] { background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 94%, var(--accent) 6%)); border: 1px solid color-mix(in srgb, var(--line) 65%, transparent); border-radius: 26px; padding: 22px 18px 20px; box-shadow: inset 0 1px 0 rgba(255,255,255,var(--hi)), 0 8px 16px -10px color-mix(in srgb, var(--sh) 55%, transparent), 0 28px 50px -28px var(--sh); }
+  section.care > h2::before, section[aria-labelledby="careStatsTitle"] h2::before { content: ""; display: inline-block; width: 6px; height: .8em; margin-right: 10px; border-radius: 3px; vertical-align: -0.05em; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 70%, #fff), var(--accent)); }
+  .care-btns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  .care-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px 12px; border-radius: 20px; border: 1px solid color-mix(in srgb, var(--line) 70%, transparent); background: color-mix(in srgb, var(--surface) 80%, var(--milk)); text-align: center; transition: transform .12s ease; }
+  .care-btn:active { transform: scale(.97); }
+  .care-l { font-weight: 700; font-size: 14px; }
+  .care-s { font-size: 11.5px; color: var(--muted); line-height: 1.25; min-height: 2.5em; }
+  .care-ic { width: 44px; height: 44px; border-radius: 15px; display: grid; place-items: center; color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 8px 14px -8px rgba(0,0,0,.4); }
+  .care-ic svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .care-ic.sm { width: 36px; height: 36px; border-radius: 12px; } .care-ic.sm svg { width: 20px; height: 20px; }
+  .care-ic.k-dose { background: linear-gradient(160deg, #F4A261, #D9672E); }
+  .care-ic.k-temp { background: linear-gradient(160deg, #E76F6F, #C13F4A); }
+  .care-ic.k-poop { background: linear-gradient(160deg, #B98B5E, #7E5632); }
+  .care-list { list-style: none; padding: 0; margin: 12px 0 0; }
+  .care-none { padding: 4px 0 0; }
+  .ev-row { width: 100%; min-height: 56px; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 6px 0; border: 0; border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent); background: transparent; text-align: left; }
+  .ev-row time { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ev-row .chev { color: var(--muted); font-size: 24px; line-height: 1; }
+  .ev-main b { font-weight: 600; }
+  .tile .v.sm { font-size: 19px; line-height: 1.5; }
+  .insights { list-style: none; padding: 0; margin: 10px 0 8px; display: flex; flex-direction: column; gap: 10px; }
+  .insights li { position: relative; padding-left: 18px; font-size: 15px; line-height: 1.4; }
+  .insights li::before { content: ""; position: absolute; left: 0; top: .5em; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .chart .tline { stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; opacity: .7; }
+  .chart .tpt { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+  .chart .tpt.dose { fill: var(--peach); }
+  .chart .dmark { fill: var(--peach); }
+  .chart .vday { stroke-dasharray: 2 4; opacity: .6; }
+  .legend2 { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .legend2 .lg { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-left: 6px; }
+  .legend2 .lg.dm { background: var(--peach); border-radius: 2px; transform: rotate(45deg); }
 </style>
 </head>
 <body>
@@ -568,6 +601,12 @@
     </details>
   </section>
 
+    <section class="care" aria-labelledby="careTitle">
+      <h2 id="careTitle">Santé et couches</h2>
+      <div class="care-btns" id="careBtns"></div>
+      <ul class="care-list" id="careList"></ul>
+    </section>
+
     <section aria-labelledby="logTitle">
       <div class="sec-head">
         <div>
@@ -582,7 +621,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 17</p>
+      <p class="ver">Version 18</p>
     </footer>
   </div>
 
@@ -623,6 +662,11 @@
         <p class="sub">Nombre de biberons à chaque heure de la journée, sur ces 7 jours.</p>
         <div id="hours"></div>
       </div>
+    </section>
+
+    <section aria-labelledby="careStatsTitle">
+      <div class="wk-head"><div><h2 id="careStatsTitle">Santé et couches</h2><p class="wk-lab" id="careLab"></p></div></div>
+      <div id="careStats"></div>
     </section>
   </div>
 
@@ -725,6 +769,37 @@
       <button class="ghost leave" type="button" id="feedDelete">Supprimer</button>
       <div class="right">
         <button class="ghost" type="button" id="feedCancel">Annuler</button>
+        <button class="solid" type="submit">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="sheet" id="evSheet" hidden>
+  <div class="backdrop" id="evBack"></div>
+  <form class="panel" id="evForm" role="dialog" aria-modal="true" aria-labelledby="evTitle" novalidate>
+    <h2 id="evTitle">Doliprane</h2>
+    <div class="field"><label for="evTime">Date et heure</label><input id="evTime" type="datetime-local">
+      <div class="adj" id="evAdj" role="group" aria-label="Décaler l'heure">
+        <button type="button" class="chip" data-min="-30">−30 min</button><button type="button" class="chip" data-min="-15">−15 min</button>
+        <button type="button" class="chip" data-min="-5">−5 min</button><button type="button" class="chip" data-min="5">+5 min</button>
+      </div>
+    </div>
+    <div class="field" id="evTempField">
+      <label for="evTemp" id="evTempLab">Température (°C)</label>
+      <div class="qty-edit">
+        <button class="step small" type="button" id="evMinus" aria-label="Baisser de 0,1 degré">−</button>
+        <input id="evTemp" type="text" inputmode="decimal" autocomplete="off" placeholder="38,5">
+        <button class="step small" type="button" id="evPlus" aria-label="Monter de 0,1 degré">+</button>
+      </div>
+    </div>
+    <div class="field" id="evByField"><label id="evByLab">Noté par</label><div class="who-pick" id="evBy" role="group" aria-labelledby="evByLab"></div></div>
+    <p class="note" id="evNote" hidden></p>
+    <p class="err" id="evErr" role="alert" hidden></p>
+    <div class="actions between">
+      <button class="ghost leave" type="button" id="evDelete" hidden>Supprimer</button>
+      <div class="right">
+        <button class="ghost" type="button" id="evCancel">Annuler</button>
         <button class="solid" type="submit">Enregistrer</button>
       </div>
     </div>
@@ -857,7 +932,7 @@
     { m: 12, nb: [2, 3], ml: [210, 270], n: 2, per: 270 }
   ];
 
-  var state = { profile: null, profileLocal: false, feeds: [], mode: "local", code: null, sync: "none" };
+  var state = { profile: null, profileLocal: false, feeds: [], events: [], evDenied: false, evToast: false, mode: "local", code: null, sync: "none" };
   var qty = defaultMl;
   var lastPress = 0, flashTimer = null, toastTimer = null;
 
@@ -946,10 +1021,12 @@
       state.profileLocal = !!o.profileLocal && !!state.profile;
       state.feeds = (o.feeds || []).map(function (f) { return { id: String(f.id), ts: Number(f.ts), ml: Number(f.ml), by: cleanBy(f.by), local: !!f.local }; }).filter(validFeed);
       sortFeeds();
+      state.events = (o.events || []).map(function (x) { return cleanEvent(x, !!x.local); }).filter(validEvent);
+      sortEvents();
     } catch (e) { /* stockage indisponible */ }
   }
   function persistLocal() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, profileLocal: state.profileLocal, feeds: state.feeds })); } catch (e) { /* ignoré */ }
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, profileLocal: state.profileLocal, feeds: state.feeds, events: state.events })); } catch (e) { /* ignoré */ }
   }
 
   /* ---------- Code famille ---------- */
@@ -1030,10 +1107,13 @@
       f.local = false;
       sendFeed(fsm.doc(feedsCol(), f.id), f.ts, f.ml, f.by);
     });
-    if (pend.length) persistLocal();
+    var pendEv = state.events.filter(function (x) { return x.local; });
+    if (!state.evDenied) pendEv.forEach(function (x) { x.local = false; sendEvent(fsm.doc(eventsCol(), x.id), x); });
+    if (pend.length || pendEv.length) persistLocal();
     unsubs.push(fsm.onSnapshot(profileRef(), { includeMetadataChanges: true }, onProfileSnap, onSyncError));
     var q = fsm.query(feedsCol(), fsm.orderBy("ts", "desc"), fsm.limit(500));
     unsubs.push(fsm.onSnapshot(q, { includeMetadataChanges: true }, onFeedsSnap, onSyncError));
+    unsubs.push(fsm.onSnapshot(fsm.query(eventsCol(), fsm.orderBy("ts", "desc"), fsm.limit(500)), { includeMetadataChanges: true }, onEventsSnap, onEventsError));
     render();
   }
   function onProfileSnap(snap) {
@@ -1435,7 +1515,304 @@
   }
 
   function render() {
-    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderPlan(); renderFoot(); renderMot(); updateQtyUI();
+    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderCare(); renderCareStats(); renderPlan(); renderFoot(); renderMot(); updateQtyUI();
+  }
+
+  /* ---------- Santé et couches : Doliprane, température, caca ---------- */
+  var IC = {
+    dose: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8.500" width="18" height="7" rx="3.500" transform="rotate(-40 12 12)"/><path d="M9.200 9.200l5.600 5.600"/></svg>',
+    temp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14.600V5a2 2 0 014 0v9.600a4 4 0 11-4 0z"/><path d="M12 9.500v7"/></svg>',
+    poop: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.500 19c-2.500 0-4-1.300-4-3.100 0-1.300.9-2.400 2.300-2.800-.1-1.700 1.300-3.200 3.100-3.200C8.700 7.800 10 6 12 4.500c.2 1.600 1.300 2.400 2.600 2.700 1.700.4 2.700 1.700 2.600 3.400 1.800.4 3.300 1.600 3.300 3.300 0 2.100-1.800 3.100-4 3.100z"/><path d="M9.300 16.100h.01M14.700 16.100h.01"/></svg>'
+  };
+  var EVT = {
+    dose: { label: "Doliprane", sub: "prise", temp: "opt" },
+    temp: { label: "Température", sub: "relevé", temp: "req" },
+    poop: { label: "Caca", sub: "couche", temp: "" }
+  };
+  var EV_ORDER = ["dose", "temp", "poop"];
+  function fmtTemp(t) { return (Math.round(t * 10) / 10).toFixed(1).replace(".", ",") + " °C"; }
+  function agoText(ts) {
+    var m = Math.max(0, Math.round((Date.now() - ts) / 60000));
+    if (m < 1) return "à l'instant";
+    if (m < 60) return "il y a " + m + " min";
+    var h = Math.floor(m / 60);
+    if (h < 24) return "il y a " + h + " h" + (m % 60 ? " " + pad(m % 60) : "");
+    var d = Math.floor(h / 24);
+    return "il y a " + d + (d > 1 ? " jours" : " jour");
+  }
+  function validEvent(e) {
+    return isFinite(e.ts) && e.ts > 0 && EVT[e.kind] && (e.temp === null || (isFinite(e.temp) && e.temp >= 34 && e.temp <= 43)) && !(EVT[e.kind].temp === "req" && e.temp === null);
+  }
+  function cleanEvent(x, local) {
+    x = x || {};
+    var k = EVT[x.kind] ? x.kind : "", t = x.temp === null || x.temp === undefined || x.temp === "" ? null : Number(x.temp);
+    if (k === "poop") t = null;
+    return { id: String(x.id), ts: Number(x.ts), kind: k, temp: t, by: cleanBy(x.by), local: !!local };
+  }
+  function sortEvents() { state.events.sort(function (a, b) { return b.ts - a.ts; }); }
+  function eventsCol() { return fsm.collection(fsDb, "families", state.code, "events"); }
+  function sendEvent(ref, e) {
+    var data = { ts: e.ts, kind: e.kind };
+    if (e.temp !== null) data.temp = e.temp;
+    if (e.by && !noBy()) data.by = e.by;
+    return fsm.setDoc(ref, data).catch(function (err) {
+      if (err && err.code === "permission-denied") { evDenied(e, ref.id); return; }
+      writeFailed(err);
+    });
+  }
+  /* Règles Firestore pas encore mises à jour : le suivi reste sur ce téléphone en attendant. */
+  function evDenied(e, id) {
+    state.evDenied = true;
+    var found = false;
+    state.events.forEach(function (x) { if (x.id === id) { x.local = true; found = true; } });
+    if (!found) { state.events.push({ id: id, ts: e.ts, kind: e.kind, temp: e.temp, by: e.by, local: true }); sortEvents(); }
+    persistLocal(); render();
+    if (!state.evToast) { state.evToast = true; toast("Doliprane, températures et couches restent sur ce téléphone : mets à jour les règles Firestore pour les partager."); }
+  }
+  function onEventsSnap(snap) {
+    var m = snap.metadata;
+    if (m.fromCache && snap.empty && !m.hasPendingWrites && state.events.length) return;
+    var keep = state.events.filter(function (x) { return x.local; });
+    state.events = snap.docs.map(function (d) { var x = Object.assign({}, d.data() || {}, { id: d.id }); return cleanEvent(x, false); }).filter(validEvent).concat(keep.filter(function (k) {
+      return !snap.docs.some(function (d) { return d.id === k.id; });
+    }));
+    sortEvents(); persistLocal(); render();
+  }
+  function onEventsError(e) {
+    if (e && e.code === "permission-denied") {
+      state.evDenied = true;
+      if (!state.evToast) { state.evToast = true; toast("Doliprane, températures et couches restent sur ce téléphone : mets à jour les règles Firestore pour les partager."); }
+    }
+    render();
+  }
+  async function addEvent(kind, ts, temp, by) {
+    if (by === undefined) by = curBy();
+    var e = { kind: kind, ts: ts, temp: temp, by: by };
+    if (state.mode === "shared" && fsm && !state.evDenied) {
+      var ref = fsm.doc(eventsCol());
+      sendEvent(ref, e);
+      return ref.id;
+    }
+    var id = uid();
+    state.events.push({ id: id, ts: ts, kind: kind, temp: temp, by: by, local: true });
+    sortEvents(); persistLocal(); render();
+    return id;
+  }
+  async function updateEvent(id, kind, ts, temp, by) {
+    var ex = findEvent(id), e = { kind: kind, ts: ts, temp: temp, by: by };
+    if (state.mode === "shared" && fsm && !state.evDenied && ex && !ex.local) { sendEvent(fsm.doc(eventsCol(), id), e); return; }
+    state.events = state.events.map(function (x) { return x.id === id ? { id: id, ts: ts, kind: kind, temp: temp, by: by, local: x.local } : x; });
+    sortEvents(); persistLocal(); render();
+  }
+  async function deleteEvent(id) {
+    var ex = findEvent(id);
+    if (state.mode === "shared" && fsm && !state.evDenied && ex && !ex.local) { fsm.deleteDoc(fsm.doc(eventsCol(), id)).catch(writeFailed); return; }
+    state.events = state.events.filter(function (x) { return x.id !== id; });
+    persistLocal(); render();
+  }
+  function findEvent(id) { for (var i = 0; i < state.events.length; i++) if (state.events[i].id === id) return state.events[i]; return null; }
+
+  function evWho(e) { return e.by ? '<span class="who ' + personClass(e.by) + '">' + esc(e.by) + '</span>' : ""; }
+  function renderCare() {
+    var t0 = midnight(Date.now()).getTime();
+    $("careBtns").innerHTML = EV_ORDER.map(function (k) {
+      var last = null;
+      for (var i = 0; i < state.events.length; i++) if (state.events[i].kind === k) { last = state.events[i]; break; }
+      var sub = last ? agoText(last.ts) + (last.temp !== null ? " · " + fmtTemp(last.temp) : "") : "Aucun noté";
+      return '<button type="button" class="care-btn" data-kind="' + k + '" aria-label="Noter : ' + EVT[k].label + '">' +
+        '<span class="care-ic k-' + k + '">' + IC[k] + '</span><span class="care-l">' + EVT[k].label + '</span><span class="care-s">' + sub + '</span></button>';
+    }).join("");
+    var today = state.events.filter(function (e) { return e.ts >= t0; });
+    $("careList").innerHTML = today.length ? today.map(function (e) {
+      var d = EVT[e.kind].label + (e.temp !== null ? " · " + fmtTemp(e.temp) : "");
+      return '<li><button type="button" class="ev-row" data-ev="' + e.id + '" aria-label="Modifier : ' + esc(d) + ' à ' + fmtTime(e.ts) + '">' +
+        '<span class="care-ic k-' + e.kind + ' sm">' + IC[e.kind] + '</span>' +
+        '<span class="ev-main"><b>' + d + '</b>' + evWho(e) + '</span><time>' + fmtTime(e.ts) + '</time><span class="chev" aria-hidden="true">›</span></button></li>';
+    }).join("") : '<li class="sub care-none">Rien de noté aujourd\'hui.</li>';
+  }
+
+  /* Fenêtre « Santé » du Bilan : mêmes 7 jours que le graphique des biberons. */
+  function median(a) { var s = a.slice().sort(function (x, y) { return x - y; }), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; }
+  function renderCareStats() {
+    var r = windowRange(weekOff), t0 = r.a.getTime(), t1 = r.b.getTime(), now = Date.now();
+    $("careLab").textContent = $("wkLab").textContent;
+    var list = state.events.filter(function (e) { return e.ts >= t0 && e.ts < t1; }), days = [], i;
+    for (i = 0; i < 7; i++) { var d = new Date(r.a.getFullYear(), r.a.getMonth(), r.a.getDate() + i); days.push({ key: iso(d), d: d, poop: 0 }); }
+    var byKey = {}; days.forEach(function (x) { byKey[x.key] = x; });
+    var poops = list.filter(function (e) { return e.kind === "poop"; });
+    var doses = list.filter(function (e) { return e.kind === "dose"; });
+    var reads = list.filter(function (e) { return e.temp !== null; }).sort(function (a, b) { return a.ts - b.ts; });
+    poops.forEach(function (e) { var x = byKey[dayKey(e.ts)]; if (x) x.poop++; });
+    if (!list.length) {
+      $("careStats").innerHTML = '<p class="sub">Rien de noté sur cette période. Note un Doliprane, une température ou un caca depuis la 1re page : l\'analyse apparaît ici.</p>';
+      return;
+    }
+    var oldest = state.events.length ? midnight(state.events[state.events.length - 1].ts).getTime() : t0;
+    var from = Math.max(t0, oldest), to = Math.min(t1, midnight(now).getTime() + DAY);
+    var span = Math.max(1, Math.round((to - from) / DAY));
+    var avg = poops.length / span, maxT = reads.length ? reads.reduce(function (m, e) { return e.temp > m.temp ? e : m; }) : null;
+    var lastPoop = null; for (i = 0; i < state.events.length; i++) if (state.events[i].kind === "poop") { lastPoop = state.events[i]; break; }
+    var html = '<div class="tiles">' +
+      '<div class="tile"><div class="k">Caca / jour</div><div class="v">' + (Math.round(avg * 10) / 10).toString().replace(".", ",") + '</div><div class="d">' + poops.length + ' sur la période</div></div>' +
+      '<div class="tile"><div class="k">Dernier caca</div><div class="v sm">' + (lastPoop ? agoText(lastPoop.ts).replace("il y a ", "") : "—") + '</div><div class="d">' + (lastPoop ? "à " + fmtTime(lastPoop.ts) : "aucun noté") + '</div></div>' +
+      '<div class="tile"><div class="k">Doliprane</div><div class="v">' + doses.length + '</div><div class="d">prise' + (doses.length > 1 ? "s" : "") + ' sur la période</div></div>' +
+      '<div class="tile"><div class="k">Température max</div><div class="v">' + (maxT ? fmtTemp(maxT.temp).replace(" °C", "") + '<small>°C</small>' : "—") + '</div><div class="d">' + (maxT ? dayLabel(maxT.ts) + " " + fmtTime(maxT.ts) : "aucun relevé") + '</div></div></div>';
+    /* Graphique 1 : couches par jour */
+    var W = 320, H = 118, L = 8, slot = (W - 2 * L) / 7, mx = Math.max(3, Math.max.apply(null, days.map(function (x) { return x.poop; })));
+    var svg = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Nombre de couches par jour">';
+    days.forEach(function (x, idx) {
+      var bh = Math.round(x.poop / mx * 70), cx = L + idx * slot + slot / 2, isToday = weekOff === 0 && idx === 6;
+      svg += '<rect class="bar' + (isToday ? " today" : "") + '" x="' + (cx - 13) + '" y="' + (86 - bh) + '" width="26" height="' + Math.max(bh, x.poop ? 3 : 0) + '" rx="6"/>' +
+        '<rect class="stub" x="' + (cx - 13) + '" y="86" width="26" height="0"/>' +
+        (x.poop ? '<text class="val" x="' + cx + '" y="' + (80 - bh) + '" text-anchor="middle">' + x.poop + '</text>' : "") +
+        '<text class="dlabel' + (isToday ? " today" : "") + '" x="' + cx + '" y="106" text-anchor="middle">' + (isToday ? "auj." : x.d.toLocaleDateString("fr-FR", { weekday: "short" })) + '</text>';
+    });
+    svg += '<line class="grid" x1="0" x2="' + W + '" y1="86.500" y2="86.500"/></svg>';
+    html += '<div class="sect"><h3>Couches par jour</h3>' + svg + '</div>';
+    /* Graphique 2 : températures et prises */
+    var tmin = 36.5, tmax = 39.5;
+    reads.forEach(function (e) { tmin = Math.min(tmin, Math.floor(e.temp * 2) / 2 - 0.5); tmax = Math.max(tmax, Math.ceil(e.temp * 2) / 2 + 0.5); });
+    var H2 = 170, T = 14, B = 150, PL = 34, PR = 10, w2 = W - PL - PR;
+    function X(ts) { return PL + (ts - t0) / (t1 - t0) * w2; }
+    function Y(t) { return B - (t - tmin) / (tmax - tmin) * (B - T); }
+    var s2 = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H2 + '" role="img" aria-label="Températures et prises de Doliprane">';
+    for (var g = Math.ceil(tmin); g <= tmax; g++) s2 += '<line class="grid" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + Y(g) + '" y2="' + Y(g) + '"/><text class="axis" x="' + (PL - 6) + '" y="' + (Y(g) + 4) + '" text-anchor="end">' + g + '°</text>';
+    if (38 >= tmin && 38 <= tmax) s2 += '<line class="goal-line" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + Y(38) + '" y2="' + Y(38) + '"/><text class="goal-text" x="' + (W - PR) + '" y="' + (Y(38) - 4) + '" text-anchor="end">38 °C</text>';
+    days.forEach(function (x, idx) {
+      s2 += '<text class="dlabel' + (weekOff === 0 && idx === 6 ? " today" : "") + '" x="' + X(x.d.getTime() + DAY / 2) + '" y="' + (H2 - 6) + '" text-anchor="middle">' + (weekOff === 0 && idx === 6 ? "auj." : x.d.toLocaleDateString("fr-FR", { weekday: "short" })) + '</text>';
+      if (idx) s2 += '<line class="grid vday" x1="' + X(x.d.getTime()) + '" x2="' + X(x.d.getTime()) + '" y1="' + T + '" y2="' + B + '"/>';
+    });
+    if (reads.length > 1) s2 += '<polyline class="tline" fill="none" points="' + reads.map(function (e) { return X(e.ts).toFixed(1) + "," + Y(e.temp).toFixed(1); }).join(" ") + '"/>';
+    reads.forEach(function (e) { s2 += '<circle class="tpt' + (e.kind === "dose" ? " dose" : "") + '" cx="' + X(e.ts).toFixed(1) + '" cy="' + Y(e.temp).toFixed(1) + '" r="4.500"/>'; });
+    doses.forEach(function (e) { var x = X(e.ts); s2 += '<path class="dmark" d="M' + (x - 4.500) + ' ' + (B + 1) + 'l4.500 -8l4.500 8z"/>'; });
+    s2 += '</svg><p class="sub legend2"><span class="lg pt"></span>Température <span class="lg dm"></span>Prise de Doliprane</p>';
+    html += '<div class="sect"><h3>Températures et Doliprane</h3>' + (reads.length || doses.length ? s2 : '<p class="sub">Aucune température ni prise sur cette période.</p>') + '</div>';
+    /* Lecture des données */
+    var ins = [];
+    if (poops.length) {
+      var perDay = days.map(function (x) { return x.poop; }).slice(Math.max(0, 7 - span));
+      ins.push("Caca : " + poops.length + " sur la période, environ " + (Math.round(avg * 10) / 10).toString().replace(".", ",") + " par jour (de " + Math.min.apply(null, perDay) + " à " + Math.max.apply(null, perDay) + " selon les jours).");
+      if (poops.length >= 4) {
+        var blocks = [["la nuit (0 h à 6 h)", 0, 6], ["le matin (6 h à 12 h)", 6, 12], ["l'après-midi (12 h à 18 h)", 12, 18], ["le soir (18 h à minuit)", 18, 24]], best = null;
+        blocks.forEach(function (b) { b.n = poops.filter(function (e) { var h = new Date(e.ts).getHours(); return h >= b[1] && h < b[2]; }).length; if (!best || b.n > best.n) best = b; });
+        ins.push("Ça arrive surtout " + best[0] + " (" + Math.round(best.n / poops.length * 100) + " % des couches).");
+      }
+      var gaps = [];
+      poops.forEach(function (e) { var f = null; for (var j = 0; j < state.feeds.length; j++) if (state.feeds[j].ts <= e.ts) { f = state.feeds[j]; break; } if (f && e.ts - f.ts <= 6 * 3600000) gaps.push(e.ts - f.ts); });
+      if (gaps.length >= 3) ins.push("En général, environ " + fmtDur(median(gaps)) + " après un biberon (sur " + gaps.length + " couches).");
+    } else ins.push("Aucun caca noté sur cette période.");
+    if (weekOff === 0 && lastPoop && now - lastPoop.ts > 2 * DAY) ins.push("Dernier caca : " + agoText(lastPoop.ts) + ". Si bébé est inconfortable, a le ventre dur ou pleure plus que d'habitude, demande conseil à ton médecin.");
+    if (reads.length) {
+      var sum = reads.reduce(function (t, e) { return t + e.temp; }, 0);
+      ins.push("Température : " + reads.length + " relevé" + (reads.length > 1 ? "s" : "") + ", moyenne " + fmtTemp(sum / reads.length) + ", maximum " + fmtTemp(maxT.temp) + " (" + dayLabel(maxT.ts).toLowerCase() + " à " + fmtTime(maxT.ts) + ").");
+      if (maxT.temp >= 38) ins.push("Au moins un relevé à 38 °C ou plus. Chez un nourrisson, une fièvre se surveille de près : contacte ton médecin (ou le 15 en cas de doute ou d'inquiétude).");
+    }
+    if (doses.length) {
+      var n24 = state.events.filter(function (e) { return e.kind === "dose" && e.ts > now - DAY; }).length;
+      ins.push("Doliprane : " + doses.length + " prise" + (doses.length > 1 ? "s" : "") + " sur la période" + (weekOff === 0 ? ", dont " + n24 + " sur les dernières 24 h." : "."));
+      if (weekOff === 0 && n24 >= 3) ins.push("Vérifie le nombre maximal de prises et l'intervalle indiqués sur la notice ou par ton médecin.");
+      var dl = [];
+      doses.forEach(function (d) {
+        if (d.temp === null) return;
+        var nx = null; for (var j = 0; j < reads.length; j++) if (reads[j].ts > d.ts + 45 * 60000 && reads[j].ts <= d.ts + 6 * 3600000) { nx = reads[j]; break; }
+        if (nx) dl.push(nx.temp - d.temp);
+      });
+      if (dl.length) {
+        var dm = dl.reduce(function (t, x) { return t + x; }, 0) / dl.length;
+        ins.push("Après une prise, la température suivante (1 à 6 h plus tard) a " + (dm <= 0 ? "baissé" : "augmenté") + " de " + Math.abs(Math.round(dm * 10) / 10).toString().replace(".", ",") + " °C en moyenne (" + dl.length + " comparaison" + (dl.length > 1 ? "s" : "") + ").");
+      }
+    }
+    html += '<div class="sect"><h3>Ce qu\'on en tire</h3><ul class="insights">' + ins.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul><p class="sub">Ces repères sont informatifs et ne remplacent pas l\'avis d\'un professionnel de santé.</p></div>';
+    $("careStats").innerHTML = html;
+  }
+
+  /* Feuille de saisie */
+  var evEditId = null, evKind = "dose", evBy = "", evDelArmed = false, evDelTimer = null;
+  function renderEvBy() {
+    var names = people.slice();
+    if (evBy && names.indexOf(evBy) < 0) names.push(evBy);
+    $("evByField").hidden = !names.length;
+    $("evBy").innerHTML = names.map(function (n) {
+      return '<button type="button" class="chip" data-by="' + esc(n) + '" aria-pressed="' + (n === evBy) + '">' + esc(n) + '</button>';
+    }).join("") + '<button type="button" class="chip" data-by="" aria-pressed="' + (evBy === "") + '">Personne</button>';
+  }
+  function renderEvSheet() {
+    var k = EVT[evKind], hasT = !!k.temp;
+    $("evTitle").textContent = (evEditId ? "Modifier : " : "Noter : ") + k.label;
+    $("evTempField").hidden = !hasT;
+    $("evTempLab").textContent = k.temp === "req" ? "Température (°C)" : "Température au moment de la prise (°C), facultatif";
+    $("evNote").hidden = evKind !== "dose";
+    $("evNote").textContent = "Respecte la dose et l'intervalle indiqués par la notice ou par ton médecin.";
+    $("evDelete").hidden = !evEditId;
+    $("evDelete").textContent = evDelArmed ? "Confirmer" : "Supprimer";
+    $("evByLab").textContent = evKind === "dose" ? "Donné par" : "Noté par";
+  }
+  function openEv(kind, id) {
+    var e = id ? findEvent(id) : null;
+    if (id && !e) return;
+    hideToast();
+    evEditId = id || null; evKind = e ? e.kind : kind; evDelArmed = false; clearTimeout(evDelTimer);
+    $("evTime").value = toLocalInput(e ? e.ts : Date.now());
+    $("evTime").max = toLocalInput(Date.now());
+    var last = null; for (var i = 0; i < state.events.length; i++) if (state.events[i].temp !== null) { last = state.events[i]; break; }
+    $("evTemp").value = e ? (e.temp !== null ? String(e.temp).replace(".", ",") : "") : (evKind === "temp" ? "38,0" : "");
+    evBy = e ? (e.by || "") : curBy();
+    renderEvBy(); renderEvSheet();
+    $("evErr").hidden = true;
+    $("evSheet").hidden = false;
+    $("evCancel").focus();
+  }
+  function closeEv() { $("evSheet").hidden = true; evEditId = null; evDelArmed = false; clearTimeout(evDelTimer); }
+  function parseTemp() { var v = String($("evTemp").value).trim().replace(",", "."); return v === "" ? null : parseFloat(v); }
+  function stepTemp(d) {
+    var v = parseTemp(); if (v === null || !isFinite(v)) v = 38;
+    v = Math.min(43, Math.max(34, Math.round((v + d) * 10) / 10));
+    $("evTemp").value = String(v).replace(".", ",");
+  }
+  async function submitEv(e) {
+    e.preventDefault();
+    var existing = evEditId ? findEvent(evEditId) : null, v = $("evTime").value, ts = new Date(v).getTime(), err = "";
+    var t = EVT[evKind].temp ? parseTemp() : null;
+    if (existing && v === toLocalInput(existing.ts)) ts = existing.ts;
+    if (!isFinite(ts)) err = "Choisis la date et l'heure.";
+    else if ((!existing || ts !== existing.ts) && ts > Date.now() + 60000) err = "Cette heure est dans le futur.";
+    else if (EVT[evKind].temp === "req" && (t === null || !isFinite(t))) err = "Entre la température (par exemple 38,5).";
+    else if (t !== null && (!isFinite(t) || t < 34 || t > 43)) err = "Entre une température entre 34 et 43 °C.";
+    if (err) { $("evErr").textContent = err; $("evErr").hidden = false; return; }
+    var label = EVT[evKind].label;
+    try {
+      if (existing) await updateEvent(existing.id, evKind, ts, t, evBy); else await addEvent(evKind, ts, t, evBy);
+      closeEv();
+      toast(label + (t !== null ? " · " + fmtTemp(t) : "") + " noté à " + fmtTime(ts));
+    } catch (ex) { $("evErr").textContent = errMsg(ex); $("evErr").hidden = false; }
+  }
+  function removeEv() {
+    var e = findEvent(evEditId);
+    closeEv();
+    if (!e) return;
+    deleteEvent(e.id).then(function () {
+      toast(EVT[e.kind].label + " supprimé", function () { addEvent(e.kind, e.ts, e.temp, e.by || "").catch(function (x) { toast(errMsg(x)); }); });
+    });
+  }
+  function bindCare() {
+    $("careBtns").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("button[data-kind]"); if (b) openEv(b.getAttribute("data-kind")); });
+    $("careList").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("button[data-ev]"); if (b) openEv(null, b.getAttribute("data-ev")); });
+    $("evForm").addEventListener("submit", submitEv);
+    $("evCancel").addEventListener("click", closeEv);
+    $("evBack").addEventListener("click", closeEv);
+    $("evMinus").addEventListener("click", function () { stepTemp(-0.1); });
+    $("evPlus").addEventListener("click", function () { stepTemp(0.1); });
+    $("evAdj").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button[data-min]"); if (!b) return;
+      var c0 = new Date($("evTime").value).getTime(); if (!isFinite(c0)) c0 = Date.now();
+      $("evTime").value = toLocalInput(Math.min(Date.now(), c0 + (+b.getAttribute("data-min")) * 60000));
+    });
+    $("evBy").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("button[data-by]"); if (!b) return; evBy = b.getAttribute("data-by"); renderEvBy(); });
+    $("evDelete").addEventListener("click", function () {
+      clearTimeout(evDelTimer);
+      if (!evDelArmed) { evDelArmed = true; renderEvSheet(); evDelTimer = setTimeout(function () { evDelArmed = false; renderEvSheet(); }, 4000); }
+      else removeEv();
+    });
   }
 
   /* ---------- Quantité ---------- */
@@ -1692,11 +2069,12 @@
   function useCode(code) {
     if (state.mode === "shared") {
       stopSync();
-      state.feeds = []; state.profile = null; state.profileLocal = false;
+      state.feeds = []; state.events = []; state.evDenied = false; state.profile = null; state.profileLocal = false;
       state.mode = "local"; syncedCode = null;
     }
     if (state.mode !== "shared") {
       state.feeds.forEach(function (f) { f.local = true; });
+      state.events.forEach(function (x) { x.local = true; });
       if (state.profile) state.profileLocal = true;
     }
     state.code = code;
@@ -1710,6 +2088,7 @@
   function leaveShare() {
     stopSync(); syncedCode = null;
     state.feeds.forEach(function (f) { f.local = true; });
+    state.events.forEach(function (x) { x.local = true; });
     state.profileLocal = !!state.profile;
     state.code = null; state.mode = "local"; state.sync = "none";
     try { localStorage.removeItem(LS_CODE); } catch (e) { /* ignoré */ }
@@ -1803,7 +2182,7 @@
       var b = e.target.closest && e.target.closest("button[data-id]");
       if (b && !suppressClick) openFeed(b.getAttribute("data-id"));
     });
-    bindSwipe($("history")); bindSwipe($("dayDetail"));
+    bindSwipe($("history")); bindSwipe($("dayDetail")); bindCare();
     $("feedAdj").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-min]");
       if (!b) return;
@@ -1887,6 +2266,7 @@
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       if (!$("sheet").hidden) closeSheet();
+      else if (!$("evSheet").hidden) closeEv();
       else if (!$("feedSheet").hidden) closeFeed();
       else if (!$("shareSheet").hidden) closeShare();
     });

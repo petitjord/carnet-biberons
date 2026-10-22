@@ -16,6 +16,20 @@ service cloud.firestore {
             || (request.resource.data.by is string && request.resource.data.by.size() <= 20));
     }
 
+    // Santé et couches : Doliprane, température, caca.
+    match /families/{code}/events/{eventId} {
+      allow read, delete: if code.size() >= 16;
+      allow create, update: if code.size() >= 16
+        && request.resource.data.keys().hasOnly(['ts', 'kind', 'temp', 'by'])
+        && request.resource.data.keys().hasAll(['ts', 'kind'])
+        && request.resource.data.ts is number
+        && request.resource.data.kind in ['dose', 'temp', 'poop']
+        && (!('temp' in request.resource.data)
+            || (request.resource.data.temp is number && request.resource.data.temp >= 34 && request.resource.data.temp <= 43))
+        && (!('by' in request.resource.data)
+            || (request.resource.data.by is string && request.resource.data.by.size() <= 20));
+    }
+
     // Fiche du bébé
     match /families/{code}/baby/profile {
       allow read: if code.size() >= 16;
