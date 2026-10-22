@@ -1677,7 +1677,7 @@
     function Y(t) { return B - (t - tmin) / (tmax - tmin) * (B - T); }
     var s2 = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H2 + '" role="img" aria-label="Températures et prises de Doliprane">';
     for (var g = Math.ceil(tmin); g <= tmax; g++) s2 += '<line class="grid" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + Y(g) + '" y2="' + Y(g) + '"/><text class="axis" x="' + (PL - 6) + '" y="' + (Y(g) + 4) + '" text-anchor="end">' + g + '°</text>';
-    if (38 >= tmin && 38 <= tmax) s2 += '<line class="goal-line" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + Y(38) + '" y2="' + Y(38) + '"/><text class="goal-text" x="' + (W - PR) + '" y="' + (Y(38) - 4) + '" text-anchor="end">38 °C</text>';
+    if (38 >= tmin && 38 <= tmax) s2 += '<line class="goal-line" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + Y(38) + '" y2="' + Y(38) + '"/><text class="goal-text" x="' + (PL + 4) + '" y="' + (Y(38) - 4) + '" text-anchor="start">38 °C</text>';
     days.forEach(function (x, idx) {
       s2 += '<text class="dlabel' + (weekOff === 0 && idx === 6 ? " today" : "") + '" x="' + X(x.d.getTime() + DAY / 2) + '" y="' + (H2 - 6) + '" text-anchor="middle">' + (weekOff === 0 && idx === 6 ? "auj." : x.d.toLocaleDateString("fr-FR", { weekday: "short" })) + '</text>';
       if (idx) s2 += '<line class="grid vday" x1="' + X(x.d.getTime()) + '" x2="' + X(x.d.getTime()) + '" y1="' + T + '" y2="' + B + '"/>';
