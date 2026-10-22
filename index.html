@@ -457,7 +457,7 @@
   .entry { background: color-mix(in srgb, var(--surface) 97%, var(--accent) 3%); }
   .ghost { border-radius: 12px; background: color-mix(in srgb, var(--surface) 60%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 
-  .ver { opacity: .55; font-size: 12px; text-align: center; letter-spacing: .04em; }
+  .ver { opacity: .38; font: italic 400 10.5px/1.5 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; text-align: center; letter-spacing: .06em; margin-top: 4px; }
   /* Entrée en douceur, par étapes */
   @keyframes prem-in { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
   .tabpanel > *, .tabpanel > section > * { animation: prem-in .55s cubic-bezier(.2,.8,.2,1) both; }
@@ -621,7 +621,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">Version 19<br>Developped by J. PETIT</p>
+      <p class="ver">v19 · Developped by J. PETIT</p>
     </footer>
   </div>
 
