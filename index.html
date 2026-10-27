@@ -545,6 +545,25 @@
   .legend2 { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
   .legend2 .lg { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-left: 6px; }
   .legend2 .lg.dm { background: var(--peach); border-radius: 2px; transform: rotate(45deg); }
+
+  /* Mois-anniversaire */
+  .fete { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: radial-gradient(90% 70% at 50% 30%, color-mix(in srgb, var(--accent) 55%, #0a1f1c), color-mix(in srgb, var(--accent) 20%, #050f0e) 70%); animation: fete-bg .5s ease both; overflow: hidden; }
+  .fete canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .fete-card { position: relative; width: min(100%, 380px); text-align: center; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 10px; animation: fete-pop .9s cubic-bezier(.2,1.3,.3,1) .1s both; }
+  .fete-pic { position: relative; width: 170px; height: 170px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.95), rgba(255,255,255,.7)); box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 24px 60px -10px rgba(0,0,0,.5); display: grid; place-items: center; animation: fete-bob 2.4s ease-in-out 1s infinite; }
+  .fete-pic img { width: 150px; height: 150px; object-fit: contain; }
+  .fete-rings { position: absolute; top: 85px; left: 50%; width: 0; height: 0; }
+  .fete-rings i { position: absolute; left: -85px; top: -85px; width: 170px; height: 170px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); animation: fete-ring 2.6s ease-out infinite; }
+  .fete-rings i:nth-child(2) { animation-delay: .85s; } .fete-rings i:nth-child(3) { animation-delay: 1.7s; }
+  .fete-k { margin-top: 14px; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+  .fete h2 { font: 700 36px/1.1 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; text-shadow: 0 4px 24px rgba(0,0,0,.35); }
+  .fete-msg { font-size: 17px; line-height: 1.45; color: rgba(255,255,255,.92); text-wrap: balance; max-width: 32ch; }
+  .fete-ok { margin-top: 16px; min-height: 52px; padding: 12px 28px; border-radius: 999px; background: #fff; color: #0c3a34; font-weight: 700; font-size: 17px; box-shadow: 0 12px 30px -10px rgba(0,0,0,.5); }
+  @keyframes fete-bg { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fete-pop { from { opacity: 0; transform: translateY(40px) scale(.7); } to { opacity: 1; transform: none; } }
+  @keyframes fete-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+  @keyframes fete-ring { from { transform: scale(1); opacity: .8; } to { transform: scale(1.9); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .fete-pic, .fete-rings i { animation: none; } .fete-rings { display: none; } }
 </style>
 </head>
 <body>
@@ -621,7 +640,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">v19 · Developped by J. PETIT</p>
+      <p class="ver">v21 · Developped by J. PETIT</p>
     </footer>
   </div>
 
@@ -736,6 +755,7 @@
       </div>
     </div>
     <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot de bébé du jour »</span></label>
+    <button type="button" class="ghost" id="fetePreview">Voir l'animation du mois-anniversaire</button>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
       <button class="ghost" type="button" id="fCancel">Annuler</button>
@@ -773,6 +793,18 @@
       </div>
     </div>
   </form>
+</div>
+
+<div class="fete" id="fete" hidden role="dialog" aria-modal="true" aria-labelledby="feteTitle">
+  <canvas id="feteCanvas" aria-hidden="true"></canvas>
+  <div class="fete-card" id="feteCard">
+    <div class="fete-rings" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="fete-pic"><img src="baby-head.webp" alt="" width="150" height="150"></div>
+    <p class="fete-k" id="feteKicker">Joyeux mois-anniversaire</p>
+    <h2 id="feteTitle">J'ai 4 mois aujourd'hui !</h2>
+    <p class="fete-msg" id="feteMsg"></p>
+    <button type="button" class="solid fete-ok" id="feteOk">Merci, mon cœur</button>
+  </div>
 </div>
 
 <div class="sheet" id="evSheet" hidden>
@@ -1515,7 +1547,7 @@
   }
 
   function render() {
-    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderCare(); renderCareStats(); renderPlan(); renderFoot(); renderMot(); updateQtyUI();
+    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderCare(); renderCareStats(); renderPlan(); renderFoot(); renderMot(); updateQtyUI(); checkFete();
   }
 
   /* ---------- Santé et couches : Doliprane, température, caca ---------- */
@@ -1815,6 +1847,91 @@
     });
   }
 
+
+  /* ---------- Mois-anniversaire ---------- */
+  function monthsText(m) {
+    if (m < 12) return m + " mois";
+    var y = Math.floor(m / 12), r = m % 12;
+    return y + (y > 1 ? " ans" : " an") + (r ? " et " + r + " mois" : "");
+  }
+  var FETE_MSG = {
+    1: "Mon tout premier mois avec vous ! Merci de m'avoir accueilli avec tant d'amour.",
+    2: "Deux mois de câlins, de biberons et de grimaces. Et ce n'est que le début !",
+    3: "Je commence à bien vous connaître. Et je vous aime de plus en plus fort.",
+    4: "Je grandis, je gazouille, je vous regarde : vous êtes mon monde entier.",
+    5: "Cinq mois de bonheur ! Merci Maman, merci Papa, vous assurez.",
+    6: "Un demi-an déjà ! Je vais bientôt goûter à plein de nouvelles choses, mais le meilleur reste vos bras.",
+    9: "Neuf mois dehors, autant qu'au chaud dedans. Et toujours autant d'amour.",
+    12: "Mon premier anniversaire ! Merci pour cette première année extraordinaire."
+  };
+  var FETE_DEF = [
+    "Un mois de plus avec vous, et mon cœur déborde. Merci Maman, merci Papa !",
+    "Chaque mois, je vous aime un peu plus. Aujourd'hui, c'est une belle étape !",
+    "Merci de prendre soin de moi chaque jour. Vous êtes les meilleurs parents du monde."
+  ];
+  function monthiversary() {
+    var p = state.profile; if (!p) return 0;
+    var birth = parseISO(p.birthDate), today = dayKey(Date.now()), m;
+    for (m = 1; m <= 60; m++) {
+      var d = addMonths(birth, m);
+      if (iso(d) === today) return m;
+      if (d.getTime() > Date.now() + DAY) break;
+    }
+    return 0;
+  }
+  var feteRaf = 0, feteParts = [];
+  function confetti() {
+    var cv = $("feteCanvas"), cx = cv.getContext("2d"), dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
+    function size() { W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+    size();
+    var cols = ["#FFD166", "#EF476F", "#06D6A0", "#4CC9F0", "#FFFFFF", "#F78C6B", "#B388EB"], t0 = performance.now(), last = t0;
+    feteParts = [];
+    function burst(n, x, y, spread) {
+      for (var i = 0; i < n; i++) {
+        var a = (Math.random() - .5) * spread - Math.PI / 2, v = 6 + Math.random() * 9;
+        feteParts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, w: 6 + Math.random() * 7, h: 4 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[(Math.random() * cols.length) | 0], heart: Math.random() < .14 });
+      }
+    }
+    burst(90, W * .2, H * .8, 1.6); burst(90, W * .8, H * .8, 1.6);
+    var more = [600, 1300, 2200];
+    cancelAnimationFrame(feteRaf);
+    function frame(now) {
+      var dt = Math.min(2, (now - last) / 16.7); last = now;
+      var el = now - t0;
+      while (more.length && el > more[0]) { more.shift(); burst(60, Math.random() * W, H * .55, 3.2); }
+      cx.clearRect(0, 0, W, H);
+      feteParts = feteParts.filter(function (p) { return p.y < H + 40; });
+      feteParts.forEach(function (p) {
+        p.vy += .22 * dt; p.vx *= .992; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+        cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
+        if (p.heart) { cx.font = "16px sans-serif"; cx.fillText("\u2764", -8, 6); } else cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        cx.restore();
+      });
+      if (feteParts.length || more.length) feteRaf = requestAnimationFrame(frame); else cx.clearRect(0, 0, W, H);
+    }
+    feteRaf = requestAnimationFrame(frame);
+  }
+  function showFete(m, mark) {
+    var p = cur(), name = p.name || "Bébé";
+    $("feteKicker").textContent = "Joyeux mois-anniversaire, " + name;
+    $("feteTitle").textContent = "J'ai " + monthsText(m) + " aujourd'hui !";
+    $("feteMsg").textContent = FETE_MSG[m] || FETE_DEF[m % FETE_DEF.length];
+    $("fete").hidden = false;
+    document.body.style.overflow = "hidden";
+    try { if (navigator.vibrate) navigator.vibrate([30, 60, 30, 60, 90]); } catch (e) { /* ignoré */ }
+    var reduce = false; try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { /* ignoré */ }
+    if (!reduce) confetti();
+    if (mark) { try { localStorage.setItem("carnet-biberons:fete", m + ":" + dayKey(Date.now())); } catch (e) { /* ignoré */ } }
+    $("feteOk").focus();
+  }
+  function closeFete() { $("fete").hidden = true; document.body.style.overflow = ""; cancelAnimationFrame(feteRaf); }
+  function checkFete() {
+    if (!$("fete").hidden) return;
+    var m = monthiversary(); if (!m) return;
+    var seen = ""; try { seen = localStorage.getItem("carnet-biberons:fete") || ""; } catch (e) { /* ignoré */ }
+    if (seen === m + ":" + dayKey(Date.now())) return;
+    showFete(m, true);
+  }
   /* ---------- Quantité ---------- */
   function updateQtyUI() {
     $("qtyOut").innerHTML = qty + '<span>ml</span>';
@@ -2183,6 +2300,8 @@
       if (b && !suppressClick) openFeed(b.getAttribute("data-id"));
     });
     bindSwipe($("history")); bindSwipe($("dayDetail")); bindCare();
+    $("feteOk").addEventListener("click", closeFete);
+    $("fetePreview").addEventListener("click", function () { closeSheet(); showFete(Math.max(1, planFor(cur()).age.months), false); });
     $("feedAdj").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-min]");
       if (!b) return;
@@ -2266,6 +2385,7 @@
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       if (!$("sheet").hidden) closeSheet();
+      else if (!$("fete").hidden) closeFete();
       else if (!$("evSheet").hidden) closeEv();
       else if (!$("feedSheet").hidden) closeFeed();
       else if (!$("shareSheet").hidden) closeShare();
@@ -2280,7 +2400,7 @@
   render();
   setInterval(render, 60000);
   setInterval(function () { renderNow(); renderHero(); }, 15000);
-  document.addEventListener("visibilitychange", function () { if (!document.hidden) render(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { render(); checkFete(); } });
   window.addEventListener("pageshow", render);
   window.addEventListener("online", function () { renderFoot(); tryConnect(); });
   window.addEventListener("offline", renderFoot);
