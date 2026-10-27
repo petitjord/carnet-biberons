@@ -612,6 +612,37 @@
   @keyframes f2-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   .f2-reveal h2 { font: 700 36px/1.1 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; text-shadow: 0 4px 24px rgba(0,0,0,.35); }
   @media (prefers-reduced-motion: reduce) { .bln, .f2-gift, .f2-baby, .f2-baby img, .f2-hat, .f2-num, .f2-tap { animation: none !important; } .f2-stage[data-step="opening"] .f2-gift .lid { animation: none; opacity: 0; } .bln { bottom: auto; top: 20%; } }
+
+  /* Mois-anniversaire, style « Élégant » */
+  .fete3 { position: fixed; inset: 0; z-index: 40; overflow-y: auto; display: grid; place-items: center; padding: 28px 24px 34px; color: #fff;
+    background: radial-gradient(70% 50% at 50% 28%, color-mix(in srgb, var(--accent) 38%, #04100f), transparent 72%), linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, #03090a), #02060a); animation: fete-bg .7s ease both; }
+  .fete3 canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .f3-wrap { position: relative; width: min(100%, 360px); display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .f3-kicker { margin: 0 0 18px; font-size: 11.5px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: #E9C46A; opacity: 0; animation: f3-in .9s ease .2s forwards; }
+  .f3-medal { position: relative; width: min(78vw, 296px); aspect-ratio: 1; display: grid; place-items: center; animation: f3-medal 1.3s cubic-bezier(.2,.9,.2,1) .1s both; }
+  .f3-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .f3-ring .seg { fill: none; stroke-width: 7; stroke-linecap: round; stroke: rgba(255,255,255,.13); transition: stroke .5s ease, opacity .5s; }
+  .f3-ring .seg.prev { stroke: rgba(233,196,106,.38); }
+  .f3-ring .seg.lit { stroke: url(#f3Gold); }
+  .f3-ring .glow { fill: none; stroke-width: 12; stroke-linecap: round; stroke: #E9C46A; filter: url(#f3Glow); opacity: 0; transition: opacity .5s; }
+  .f3-ring .glow.lit { opacity: .55; }
+  .f3-ring .glow.last { opacity: .95; animation: f3-breath 2.4s ease-in-out infinite; }
+  .f3-pic { width: 68%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 30%, rgba(255,255,255,.22), rgba(255,255,255,.05) 70%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), 0 20px 50px -14px rgba(0,0,0,.7); display: grid; place-items: end center; }
+  .f3-pic img { width: 124%; max-width: none; height: auto; margin-bottom: -4%; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+  .f3-count { display: flex; align-items: baseline; justify-content: center; gap: 10px; margin-top: 22px; line-height: 1; }
+  .f3-num { font: 600 92px/1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; background: linear-gradient(100deg, #B8862F 10%, #FFF1BD 35%, #E9C46A 50%, #FFF1BD 65%, #B8862F 90%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: #E9C46A; }
+  .fete3.done .f3-num { animation: f3-shine 3.2s ease-in-out .2s 2; }
+  .f3-unit { font-size: 13px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .fete3 h2 { margin: 14px 0 0; font: 600 27px/1.2 var(--font-display); letter-spacing: -0.01em; text-wrap: balance; opacity: 0; transform: translateY(10px); transition: opacity .9s ease, transform .9s ease; }
+  .f3-msg { margin: 10px 0 0; max-width: 30ch; font: italic 400 16.5px/1.5 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; color: rgba(255,255,255,.78); text-wrap: balance; opacity: 0; transform: translateY(10px); transition: opacity .9s ease .25s, transform .9s ease .25s; }
+  .f3-ok { margin-top: 26px; min-height: 50px; padding: 12px 30px; border-radius: 999px; border: 1px solid rgba(233,196,106,.55); background: rgba(233,196,106,.1); color: #F5DFA0; font-weight: 600; font-size: 15px; letter-spacing: .04em; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 0; transform: translateY(10px); transition: opacity .9s ease .5s, transform .9s ease .5s, background .2s; }
+  .f3-ok:active { background: rgba(233,196,106,.22); }
+  .fete3.done h2, .fete3.done .f3-msg, .fete3.done .f3-ok { opacity: 1; transform: none; }
+  @keyframes f3-in { to { opacity: 1; } }
+  @keyframes f3-medal { from { opacity: 0; transform: scale(.82); filter: blur(10px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes f3-breath { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+  @keyframes f3-shine { from { background-position: 100% 0; } to { background-position: 0 0; } }
+  @media (prefers-reduced-motion: reduce) { .fete3 *, .fete3 { animation: none !important; transition: none !important; } .f3-kicker, .fete3 h2, .f3-msg, .f3-ok { opacity: 1; transform: none; } }
 </style>
 </head>
 <body>
@@ -688,7 +719,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">v22 · Developped by J. PETIT</p>
+      <p class="ver">v23 · Developped by J. PETIT</p>
     </footer>
   </div>
 
@@ -805,7 +836,8 @@
     <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot de bébé du jour »</span></label>
     <div class="field"><span class="lab" id="feteLab" style="font-size:13px;font-weight:600;color:var(--muted)">Style de l'animation du mois-anniversaire</span>
       <div class="seg" role="group" aria-labelledby="feteLab">
-        <button type="button" data-fstyle="surprise" aria-pressed="true">Surprise</button>
+        <button type="button" data-fstyle="elegant" aria-pressed="true">Élégant</button>
+        <button type="button" data-fstyle="surprise" aria-pressed="false">Surprise</button>
         <button type="button" data-fstyle="classique" aria-pressed="false">Classique</button>
       </div>
     </div>
@@ -912,6 +944,27 @@
       <p class="fete-msg" id="f2Msg"></p>
       <button type="button" class="solid fete-ok" id="f2Ok">Merci, mon cœur</button>
     </div>
+  </div>
+</div>
+
+<div class="fete3" id="fete3" hidden role="dialog" aria-modal="true" aria-labelledby="fete3Title">
+  <canvas id="f3Canvas" aria-hidden="true"></canvas>
+  <div class="f3-wrap" id="f3Wrap">
+    <p class="f3-kicker" id="f3Kicker"></p>
+    <div class="f3-medal">
+      <svg class="f3-ring" id="f3Ring" viewBox="0 0 300 300" aria-hidden="true">
+        <defs>
+          <linearGradient id="f3Gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF1BD"/><stop offset=".45" stop-color="#E9C46A"/><stop offset="1" stop-color="#B8862F"/></linearGradient>
+          <filter id="f3Glow" filterUnits="userSpaceOnUse" x="-40" y="-40" width="380" height="380"><feGaussianBlur stdDeviation="4"/></filter>
+        </defs>
+        <g id="f3Segs"></g>
+      </svg>
+      <div class="f3-pic"><img src="baby-head.webp" alt="" width="200" height="200"></div>
+    </div>
+    <div class="f3-count"><span class="f3-num" id="f3Num">0</span><span class="f3-unit" id="f3Unit">mois</span></div>
+    <h2 id="fete3Title"></h2>
+    <p class="f3-msg" id="f3Msg"></p>
+    <button type="button" class="f3-ok" id="f3Ok">Merci, mon cœur</button>
   </div>
 </div>
 
@@ -2030,11 +2083,81 @@
     fx.burst(90, W * .2, H * .8, 1.6); fx.burst(90, W * .8, H * .8, 1.6);
     [600, 1300, 2200].forEach(function (d) { feteTimers.push(setTimeout(function () { fx.burst(60, Math.random() * W, H * .55, 3.2); }, d)); });
   }
-  function feteStyle() { try { return localStorage.getItem("carnet-biberons:feteStyle") === "classique" ? "classique" : "surprise"; } catch (e) { return "surprise"; } }
+
+  function feteStyle() { try { var v = localStorage.getItem("carnet-biberons:feteStyle"); return v === "classique" || v === "surprise" ? v : "elegant"; } catch (e) { return "elegant"; } }
   function feteTexts(m) {
     var p = cur(), num = (m >= 12 && m % 12 === 0) ? m / 12 : m, unit = (m >= 12 && m % 12 === 0) ? (num > 1 ? "ans" : "an") : "mois";
     return { name: p.name || "Bébé", title: "J'ai " + monthsText(m) + " aujourd'hui !", msg: FETE_MSG[m] || FETE_DEF[m % FETE_DEF.length], num: num, unit: unit };
   }
+
+  /* Style « Élégant » : l'anneau des 12 mois se remplit d'or, le chiffre monte, poussière dorée. */
+  var f3Timers = [], f3Raf = 0, f3Open = false;
+  function f3Dust(cv) {
+    var cx = cv.getContext("2d"), dpr = Math.min(2, window.devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight, i, parts = [], stars = [];
+    cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (i = 0; i < 46; i++) parts.push({ x: Math.random() * W, y: Math.random() * H, r: .6 + Math.random() * 1.6, v: .1 + Math.random() * .35, ph: Math.random() * 6.28, sp: .6 + Math.random() * 1.2 });
+    function star(x, y, r, a) {
+      cx.save(); cx.translate(x, y); cx.globalAlpha = a; cx.fillStyle = "#FFE9A8"; cx.beginPath();
+      for (var k = 0; k < 8; k++) { var ang = k * Math.PI / 4, rr = k % 2 ? r * .22 : r; cx.lineTo(Math.cos(ang) * rr, Math.sin(ang) * rr); }
+      cx.closePath(); cx.fill(); cx.restore();
+    }
+    var t0 = performance.now();
+    function frame(now) {
+      var t = (now - t0) / 1000;
+      cx.clearRect(0, 0, W, H);
+      parts.forEach(function (p) {
+        p.y -= p.v; if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
+        var a = .25 + .5 * (.5 + .5 * Math.sin(t * p.sp + p.ph));
+        cx.globalAlpha = a; cx.fillStyle = "#F3D58A"; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.283); cx.fill();
+      });
+      stars = stars.filter(function (s) { return s.life > 0; });
+      stars.forEach(function (s) { s.x += s.vx; s.y += s.vy; s.vx *= .985; s.vy *= .985; s.life -= .012; star(s.x, s.y, s.r * (.6 + .4 * s.life), Math.max(0, s.life)); });
+      cx.globalAlpha = 1;
+      f3Raf = requestAnimationFrame(frame);
+    }
+    f3Raf = requestAnimationFrame(frame);
+    return { sparkle: function (x, y, n) { for (var k = 0; k < n; k++) { var a = Math.random() * 6.283, v = 1 + Math.random() * 3.2; stars.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: 3 + Math.random() * 6, life: 1 }); } }, rect: function () { return cv.getBoundingClientRect(); } };
+  }
+  var f3Fx = null;
+  function showFete3(m, mark) {
+    var t = feteTexts(m), k = ((m - 1) % 12) + 1, prevLap = m > 12, red = reducedMotion(), g = $("f3Segs"), h = "", i;
+    f3Open = true;
+    $("f3Kicker").textContent = "Joyeux mois-anniversaire, " + t.name;
+    $("fete3Title").textContent = t.title; $("f3Msg").textContent = t.msg; $("f3Unit").textContent = t.unit;
+    $("f3Num").textContent = red ? t.num : "0";
+    function pt(a, r) { return (150 + r * Math.cos(a)).toFixed(2) + " " + (150 + r * Math.sin(a)).toFixed(2); }
+    for (i = 0; i < 12; i++) {
+      var a0 = (-90 + i * 30 + 4) * Math.PI / 180, a1 = (-90 + (i + 1) * 30 - 4) * Math.PI / 180, d = "M" + pt(a0, 136) + " A136 136 0 0 1 " + pt(a1, 136);
+      h += '<path class="glow" data-i="' + i + '" d="' + d + '"/><path class="seg' + (prevLap ? " prev" : "") + '" data-i="' + i + '" d="' + d + '"/>';
+    }
+    g.innerHTML = h;
+    var el = $("fete3"); el.classList.remove("done"); el.hidden = false; document.body.style.overflow = "hidden";
+    if (mark) { try { localStorage.setItem("carnet-biberons:fete", m + ":" + dayKey(Date.now())); } catch (e) { /* ignoré */ } }
+    function lightTo(n) {
+      for (var j = 0; j < 12; j++) {
+        var sg = g.querySelector('.seg[data-i="' + j + '"]'), gl = g.querySelector('.glow[data-i="' + j + '"]');
+        sg.classList.toggle("lit", j < n); gl.classList.toggle("lit", j < n); gl.classList.toggle("last", j === n - 1 && n === k);
+      }
+    }
+    function finish() {
+      lightTo(k); $("f3Num").textContent = t.num; el.classList.add("done"); $("f3Ok").focus();
+    }
+    if (red) { finish(); return; }
+    f3Fx = f3Dust($("f3Canvas"));
+    var step = Math.max(70, Math.min(170, 1500 / k)), start = 1100;
+    for (i = 1; i <= k; i++) (function (n) {
+      f3Timers.push(setTimeout(function () {
+        lightTo(n); $("f3Num").textContent = Math.max(1, Math.round(t.num * n / k)); buzz(n === k ? [18, 30, 40] : 8);
+        if (f3Fx) { var rc = $("f3Ring").getBoundingClientRect(), cv = f3Fx.rect(), ang = (-90 + (n - .5) * 30) * Math.PI / 180, R = rc.width / 2 * .9; f3Fx.sparkle(rc.left + rc.width / 2 - cv.left + Math.cos(ang) * R, rc.top + rc.height / 2 - cv.top + Math.sin(ang) * R, n === k ? 26 : 4); }
+      }, start + (n - 1) * step));
+    })(i);
+    f3Timers.push(setTimeout(function () { finish(); }, start + k * step + 350));
+  }
+  function closeFete3() {
+    $("fete3").hidden = true; document.body.style.overflow = ""; f3Open = false;
+    f3Timers.forEach(clearTimeout); f3Timers = []; cancelAnimationFrame(f3Raf); f3Fx = null;
+  }
+
   /* Style « Surprise » : un cadeau à ouvrir, bébé avec un chapeau de fête, des ballons à éclater. */
   var popped = 0, fete2Open = false;
   function showFete2(m, mark) {
@@ -2079,7 +2202,9 @@
     feteTimers.forEach(clearTimeout); feteTimers = []; if (feteFx) feteFx.stop(); $("blnLayer").innerHTML = "";
   }
   function showFete(m, mark) {
-    if (feteStyle() === "surprise") { showFete2(m, mark); return; }
+    var st = feteStyle();
+    if (st === "elegant") { showFete3(m, mark); return; }
+    if (st === "surprise") { showFete2(m, mark); return; }
     var p = cur(), name = p.name || "Bébé";
     $("feteKicker").textContent = "Joyeux mois-anniversaire, " + name;
     $("feteTitle").textContent = "J'ai " + monthsText(m) + " aujourd'hui !";
@@ -2093,7 +2218,7 @@
   }
   function closeFete() { $("fete").hidden = true; document.body.style.overflow = ""; feteTimers.forEach(clearTimeout); feteTimers = []; if (feteFx) feteFx.stop(); }
   function checkFete() {
-    if (!$("fete").hidden || fete2Open) return;
+    if (!$("fete").hidden || fete2Open || f3Open) return;
     var m = monthiversary(); if (!m) return;
     var seen = ""; try { seen = localStorage.getItem("carnet-biberons:fete") || ""; } catch (e) { /* ignoré */ }
     if (seen === m + ":" + dayKey(Date.now())) return;
@@ -2470,6 +2595,7 @@
     bindSwipe($("history")); bindSwipe($("dayDetail")); bindCare();
     $("feteOk").addEventListener("click", closeFete);
     $("f2Ok").addEventListener("click", closeFete2);
+    $("f3Ok").addEventListener("click", closeFete3);
     $("f2Gift").addEventListener("click", openGift);
     $("blnLayer").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest(".bln"); if (b) popBalloon(b); });
     Array.prototype.forEach.call(document.querySelectorAll("[data-fstyle]"), function (b) {
@@ -2562,6 +2688,7 @@
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       if (!$("sheet").hidden) closeSheet();
+      else if (!$("fete3").hidden) closeFete3();
       else if (!$("fete2").hidden) closeFete2();
       else if (!$("fete").hidden) closeFete();
       else if (!$("evSheet").hidden) closeEv();
