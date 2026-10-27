@@ -564,6 +564,54 @@
   @keyframes fete-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
   @keyframes fete-ring { from { transform: scale(1); opacity: .8; } to { transform: scale(1.9); opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .fete-pic, .fete-rings i { animation: none; } .fete-rings { display: none; } }
+
+  /* Mois-anniversaire, style « Surprise » */
+  .fete2 { position: fixed; inset: 0; z-index: 40; overflow: hidden; display: grid; place-items: center; padding: 24px; background: radial-gradient(80% 60% at 50% 25%, #8B3FD6, #3B1D78 55%, #1B0E3F); animation: fete-bg .5s ease both; }
+  .fete2 canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+  .bln-layer { position: absolute; inset: 0; z-index: 1; }
+  .bln { position: absolute; bottom: -90px; width: 52px; height: 64px; padding: 0; border: 0; border-radius: 50% 50% 48% 48% / 58% 58% 42% 42%; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.75) 0 9%, transparent 10%), radial-gradient(circle at 40% 35%, var(--b1), var(--b2)); box-shadow: inset -6px -8px 14px rgba(0,0,0,.18); animation: bln-up var(--dur) linear var(--del) infinite; cursor: pointer; touch-action: manipulation; }
+  .bln::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1.5px; height: 34px; margin-left: -.5px; background: rgba(255,255,255,.5); transform-origin: top; animation: bln-str 1.6s ease-in-out infinite; }
+  .bln.pop { animation: bln-pop .22s ease-out forwards; }
+  @keyframes bln-up { from { transform: translate3d(0, 0, 0) rotate(-4deg); } 50% { transform: translate3d(var(--sway), -60vh, 0) rotate(4deg); } to { transform: translate3d(0, -118vh, 0) rotate(-4deg); } }
+  @keyframes bln-str { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
+  @keyframes bln-pop { to { transform: scale(1.7); opacity: 0; } }
+  .f2-count { position: absolute; z-index: 4; top: calc(14px + env(safe-area-inset-top, 0px)); right: 16px; margin: 0; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .f2-count:empty { display: none; }
+  .f2-stage { position: relative; z-index: 2; width: min(100%, 380px); text-align: center; color: #fff; }
+  .f2-stage { pointer-events: none; }
+  .f2-stage button { pointer-events: auto; }
+  .f2-pre { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .f2-stage[data-step="open"] .f2-pre { display: none; }
+  .f2-stage[data-step="gift"] .f2-reveal, .f2-stage[data-step="opening"] .f2-reveal { display: none; }
+  .f2-hello { font: 700 26px/1.2 var(--font-display); text-shadow: 0 3px 18px rgba(0,0,0,.35); }
+  .f2-tap { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.8); animation: f2-pulse 1.4s ease-in-out infinite; }
+  .f2-gift { width: 210px; height: 200px; padding: 0; border: 0; background: none; animation: f2-wob 1.8s ease-in-out infinite; transform-origin: 50% 90%; filter: drop-shadow(0 20px 28px rgba(0,0,0,.35)); }
+  .f2-gift:focus, .f2-gift:focus-visible { outline: none; }
+  .f2-gift svg { width: 100%; height: 100%; overflow: visible; }
+  .f2-gift .lid { transform-box: fill-box; transform-origin: 50% 100%; }
+  .f2-stage[data-step="opening"] .f2-gift { animation: f2-shake .55s linear both; }
+  .f2-stage[data-step="opening"] .f2-gift .lid { animation: f2-lid .5s ease-in .55s forwards; }
+  .f2-stage[data-step="opening"] .f2-hello, .f2-stage[data-step="opening"] .f2-tap { opacity: 0; transition: opacity .2s; }
+  @keyframes f2-wob { 0%, 100% { transform: rotate(-4deg) scale(1); } 25% { transform: rotate(4deg) scale(1.04); } 50% { transform: rotate(-3deg) scale(1); } 75% { transform: rotate(3deg) scale(1.05); } }
+  @keyframes f2-shake { 0%, 100% { transform: translateX(0); } 10% { transform: translateX(-9px) rotate(-5deg); } 30% { transform: translateX(9px) rotate(5deg); } 50% { transform: translateX(-9px) rotate(-5deg); } 70% { transform: translateX(9px) rotate(5deg); } 90% { transform: translateX(-4px); } }
+  @keyframes f2-lid { to { transform: translateY(-190px) rotate(-38deg); opacity: 0; } }
+  @keyframes f2-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+  .f2-reveal { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .f2-baby { position: relative; width: 190px; height: 190px; animation: f2-jump .9s cubic-bezier(.2,1.5,.3,1) both; }
+  .f2-baby img { position: relative; width: 190px; height: 190px; object-fit: contain; -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent); mask-image: linear-gradient(to bottom, #000 78%, transparent); filter: drop-shadow(0 18px 18px rgba(0,0,0,.4)); animation: f2-dance 2.2s ease-in-out .9s infinite; transform-origin: 50% 90%; }
+  .f2-hat { position: absolute; z-index: 2; left: 33%; top: -34px; width: 66px; transform: rotate(10deg); animation: f2-dance 2.2s ease-in-out .9s infinite; transform-origin: 50% 100%; }
+  .f2-hat svg { width: 100%; display: block; filter: drop-shadow(0 6px 6px rgba(0,0,0,.35)); }
+  .f2-num { position: absolute; z-index: 2; right: -6px; top: 6px; width: 112px; animation: f2-float 3.2s ease-in-out .7s infinite, f2-rise .9s cubic-bezier(.2,1.2,.3,1) .35s both; transform-origin: 50% 100%; }
+  .f2-num svg { width: 100%; display: block; overflow: visible; filter: drop-shadow(0 10px 12px rgba(0,0,0,.35)); }
+  .f2-unit { position: absolute; left: 0; right: 0; top: 138px; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
+  .f2-reveal > :nth-child(n+3) { animation: f2-up .6s ease .5s both; }
+  @keyframes f2-jump { 0% { transform: translateY(120px) scale(.2); opacity: 0; } 100% { transform: none; opacity: 1; } }
+  @keyframes f2-dance { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-4px); } }
+  @keyframes f2-float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-14px) rotate(3deg); } }
+  @keyframes f2-rise { from { opacity: 0; margin-top: 90px; } to { opacity: 1; margin-top: 0; } }
+  @keyframes f2-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .f2-reveal h2 { font: 700 36px/1.1 var(--font-display); letter-spacing: -0.02em; text-wrap: balance; text-shadow: 0 4px 24px rgba(0,0,0,.35); }
+  @media (prefers-reduced-motion: reduce) { .bln, .f2-gift, .f2-baby, .f2-baby img, .f2-hat, .f2-num, .f2-tap { animation: none !important; } .f2-stage[data-step="opening"] .f2-gift .lid { animation: none; opacity: 0; } .bln { bottom: auto; top: 20%; } }
 </style>
 </head>
 <body>
@@ -640,7 +688,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">v21 · Developped by J. PETIT</p>
+      <p class="ver">v22 · Developped by J. PETIT</p>
     </footer>
   </div>
 
@@ -755,6 +803,12 @@
       </div>
     </div>
     <label class="check"><input type="checkbox" id="fMot"> <span>Afficher le « mot de bébé du jour »</span></label>
+    <div class="field"><span class="lab" id="feteLab" style="font-size:13px;font-weight:600;color:var(--muted)">Style de l'animation du mois-anniversaire</span>
+      <div class="seg" role="group" aria-labelledby="feteLab">
+        <button type="button" data-fstyle="surprise" aria-pressed="true">Surprise</button>
+        <button type="button" data-fstyle="classique" aria-pressed="false">Classique</button>
+      </div>
+    </div>
     <button type="button" class="ghost" id="fetePreview">Voir l'animation du mois-anniversaire</button>
     <p class="err" id="formErr" role="alert" hidden></p>
     <div class="actions">
@@ -804,6 +858,60 @@
     <h2 id="feteTitle">J'ai 4 mois aujourd'hui !</h2>
     <p class="fete-msg" id="feteMsg"></p>
     <button type="button" class="solid fete-ok" id="feteOk">Merci, mon cœur</button>
+  </div>
+</div>
+
+<div class="fete2" id="fete2" hidden role="dialog" aria-modal="true" aria-labelledby="fete2Title">
+  <canvas id="fete2Canvas" aria-hidden="true"></canvas>
+  <div class="bln-layer" id="blnLayer"></div>
+  <p class="f2-count" id="f2Count" aria-live="polite"></p>
+  <div class="f2-stage" id="f2Stage" data-step="gift">
+    <div class="f2-pre">
+      <p class="f2-hello" id="f2Hello">Une surprise t'attend…</p>
+      <button type="button" class="f2-gift" id="f2Gift" aria-label="Ouvrir le cadeau">
+        <svg viewBox="0 0 200 190" aria-hidden="true">
+          <defs>
+            <linearGradient id="gBox" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7AA8"/><stop offset="1" stop-color="#D93A7A"/></linearGradient>
+            <linearGradient id="gLid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB3CF"/><stop offset="1" stop-color="#EF5C93"/></linearGradient>
+            <linearGradient id="gRib" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFE27A"/><stop offset=".5" stop-color="#FFD23F"/><stop offset="1" stop-color="#F2A900"/></linearGradient>
+          </defs>
+          <ellipse cx="100" cy="178" rx="70" ry="8" fill="rgba(0,0,0,.25)"/>
+          <rect x="34" y="78" width="132" height="94" rx="10" fill="url(#gBox)"/>
+          <rect x="88" y="78" width="24" height="94" fill="url(#gRib)"/>
+          <g class="lid">
+            <rect x="24" y="52" width="152" height="34" rx="10" fill="url(#gLid)"/>
+            <rect x="88" y="52" width="24" height="34" fill="url(#gRib)"/>
+            <path d="M100 52C84 22 54 22 60 40c4 12 28 12 40 12z" fill="url(#gRib)"/>
+            <path d="M100 52C116 22 146 22 140 40c-4 12-28 12-40 12z" fill="url(#gRib)"/>
+            <circle cx="100" cy="50" r="9" fill="#F2A900"/>
+          </g>
+          <ellipse cx="62" cy="108" rx="10" ry="26" fill="rgba(255,255,255,.18)"/>
+        </svg>
+      </button>
+      <p class="f2-tap">Touche le cadeau</p>
+    </div>
+    <div class="f2-reveal">
+      <div class="f2-baby">
+        <div class="f2-hat" aria-hidden="true">
+          <svg viewBox="0 0 80 100"><defs><linearGradient id="gHat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD23F"/><stop offset="1" stop-color="#FF6B9A"/></linearGradient></defs>
+            <path d="M40 6L72 92H8z" fill="url(#gHat)"/><path d="M26 54l36 -10M20 74l46 -12" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+            <circle cx="40" cy="8" r="8" fill="#fff"/></svg>
+        </div>
+        <img src="baby-head.webp" alt="" width="190" height="190">
+      </div>
+      <div class="f2-num" aria-hidden="true">
+        <svg viewBox="0 0 130 210">
+          <defs><linearGradient id="gNum" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3A6"/><stop offset=".5" stop-color="#FFC93C"/><stop offset="1" stop-color="#FF8A3D"/></linearGradient></defs>
+          <text id="f2NumTxt" x="65" y="128" text-anchor="middle" font-size="124" font-weight="800" fill="url(#gNum)" stroke="#fff" stroke-width="7" paint-order="stroke" style="font-family: var(--font-display), system-ui, sans-serif">4</text>
+          <ellipse cx="40" cy="52" rx="8" ry="16" fill="#fff" opacity=".45" transform="rotate(20 40 52)"/>
+        </svg>
+        <span class="f2-unit" id="f2Unit">mois</span>
+      </div>
+      <p class="fete-k" id="f2Kicker"></p>
+      <h2 id="fete2Title"></h2>
+      <p class="fete-msg" id="f2Msg"></p>
+      <button type="button" class="solid fete-ok" id="f2Ok">Merci, mon cœur</button>
+    </div>
   </div>
 </div>
 
@@ -1849,6 +1957,10 @@
 
 
   /* ---------- Mois-anniversaire ---------- */
+  function syncFeteStyle() {
+    var st = feteStyle();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-fstyle]"), function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-fstyle") === st)); });
+  }
   function monthsText(m) {
     if (m < 12) return m + " mois";
     var y = Math.floor(m / 12), r = m % 12;
@@ -1879,39 +1991,95 @@
     }
     return 0;
   }
-  var feteRaf = 0, feteParts = [];
-  function confetti() {
-    var cv = $("feteCanvas"), cx = cv.getContext("2d"), dpr = Math.min(2, window.devicePixelRatio || 1), W, H;
+  var feteFx = null, feteTimers = [];
+  function makeFx(cv) {
+    var cx = cv.getContext("2d"), dpr = Math.min(2, window.devicePixelRatio || 1), W = 0, H = 0, parts = [], raf = 0, last = 0;
+    var cols = ["#FFD166", "#EF476F", "#06D6A0", "#4CC9F0", "#FFFFFF", "#F78C6B", "#B388EB"];
     function size() { W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
-    size();
-    var cols = ["#FFD166", "#EF476F", "#06D6A0", "#4CC9F0", "#FFFFFF", "#F78C6B", "#B388EB"], t0 = performance.now(), last = t0;
-    feteParts = [];
-    function burst(n, x, y, spread) {
-      for (var i = 0; i < n; i++) {
-        var a = (Math.random() - .5) * spread - Math.PI / 2, v = 6 + Math.random() * 9;
-        feteParts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, w: 6 + Math.random() * 7, h: 4 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[(Math.random() * cols.length) | 0], heart: Math.random() < .14 });
-      }
-    }
-    burst(90, W * .2, H * .8, 1.6); burst(90, W * .8, H * .8, 1.6);
-    var more = [600, 1300, 2200];
-    cancelAnimationFrame(feteRaf);
     function frame(now) {
       var dt = Math.min(2, (now - last) / 16.7); last = now;
-      var el = now - t0;
-      while (more.length && el > more[0]) { more.shift(); burst(60, Math.random() * W, H * .55, 3.2); }
       cx.clearRect(0, 0, W, H);
-      feteParts = feteParts.filter(function (p) { return p.y < H + 40; });
-      feteParts.forEach(function (p) {
+      parts = parts.filter(function (p) { return p.y < H + 40; });
+      parts.forEach(function (p) {
         p.vy += .22 * dt; p.vx *= .992; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt;
         cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
         if (p.heart) { cx.font = "16px sans-serif"; cx.fillText("\u2764", -8, 6); } else cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         cx.restore();
       });
-      if (feteParts.length || more.length) feteRaf = requestAnimationFrame(frame); else cx.clearRect(0, 0, W, H);
+      raf = parts.length ? requestAnimationFrame(frame) : 0;
+      if (!parts.length) cx.clearRect(0, 0, W, H);
     }
-    feteRaf = requestAnimationFrame(frame);
+    return {
+      size: size,
+      burst: function (n, x, y, spread, power) {
+        if (!W) size();
+        for (var i = 0; i < n; i++) {
+          var a = (Math.random() - .5) * spread - Math.PI / 2, v = (power || 1) * (6 + Math.random() * 9);
+          parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, w: 6 + Math.random() * 7, h: 4 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[(Math.random() * cols.length) | 0], heart: Math.random() < .14 });
+        }
+        if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
+      },
+      stop: function () { cancelAnimationFrame(raf); raf = 0; parts = []; if (W) cx.clearRect(0, 0, W, H); }
+    };
+  }
+  function reducedMotion() { try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }
+  function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* ignoré */ } }
+  function confetti() {
+    var cv = $("feteCanvas"); feteFx = makeFx(cv); feteFx.size();
+    var W = cv.clientWidth, H = cv.clientHeight, fx = feteFx;
+    fx.burst(90, W * .2, H * .8, 1.6); fx.burst(90, W * .8, H * .8, 1.6);
+    [600, 1300, 2200].forEach(function (d) { feteTimers.push(setTimeout(function () { fx.burst(60, Math.random() * W, H * .55, 3.2); }, d)); });
+  }
+  function feteStyle() { try { return localStorage.getItem("carnet-biberons:feteStyle") === "classique" ? "classique" : "surprise"; } catch (e) { return "surprise"; } }
+  function feteTexts(m) {
+    var p = cur(), num = (m >= 12 && m % 12 === 0) ? m / 12 : m, unit = (m >= 12 && m % 12 === 0) ? (num > 1 ? "ans" : "an") : "mois";
+    return { name: p.name || "Bébé", title: "J'ai " + monthsText(m) + " aujourd'hui !", msg: FETE_MSG[m] || FETE_DEF[m % FETE_DEF.length], num: num, unit: unit };
+  }
+  /* Style « Surprise » : un cadeau à ouvrir, bébé avec un chapeau de fête, des ballons à éclater. */
+  var popped = 0, fete2Open = false;
+  function showFete2(m, mark) {
+    var t = feteTexts(m), stage = $("f2Stage");
+    fete2Open = true; popped = 0; $("f2Count").textContent = "";
+    stage.setAttribute("data-step", "gift");
+    $("f2Hello").textContent = t.name + " a une surprise pour vous…";
+    $("f2Kicker").textContent = "Joyeux mois-anniversaire, " + t.name;
+    $("fete2Title").textContent = t.title; $("f2Msg").textContent = t.msg;
+    $("f2NumTxt").textContent = t.num; $("f2Unit").textContent = t.unit;
+    $("fete2").hidden = false; document.body.style.overflow = "hidden";
+    feteFx = makeFx($("fete2Canvas")); feteFx.size();
+    var cols = [["#FF8FB1", "#E8346F"], ["#FFD76A", "#F59E0B"], ["#7DE0C4", "#0EA37F"], ["#8EC5FF", "#2F7DE1"], ["#C9A6FF", "#7C3AED"], ["#FFA77A", "#E5532D"]], lay = $("blnLayer"), h = "";
+    for (var i = 0; i < 9; i++) {
+      var c = cols[i % cols.length], sz = .8 + Math.random() * .55;
+      h += '<button type="button" class="bln" aria-label="Éclater le ballon" style="left:' + (4 + i * 10.5) + '%;--b1:' + c[0] + ';--b2:' + c[1] + ';--dur:' + (8 + Math.random() * 6).toFixed(1) + 's;--del:-' + (Math.random() * 12).toFixed(1) + 's;--sway:' + ((Math.random() - .5) * 60).toFixed(0) + 'px;transform:scale(' + sz.toFixed(2) + ')"></button>';
+    }
+    lay.innerHTML = h;
+    if (mark) { try { localStorage.setItem("carnet-biberons:fete", m + ":" + dayKey(Date.now())); } catch (e) { /* ignoré */ } }
+    $("f2Gift").focus();
+  }
+  function openGift() {
+    var stage = $("f2Stage"); if (stage.getAttribute("data-step") !== "gift") return;
+    stage.setAttribute("data-step", "opening"); buzz([25, 40, 25, 40, 25]);
+    var W = $("fete2Canvas").clientWidth, H = $("fete2Canvas").clientHeight, fx = feteFx;
+    feteTimers.push(setTimeout(function () {
+      if (!reducedMotion()) { fx.burst(130, W / 2, H * .5, 3.6, 1.35); fx.burst(70, W * .15, H * .75, 1.6); fx.burst(70, W * .85, H * .75, 1.6); }
+      stage.setAttribute("data-step", "open"); buzz([40, 50, 90]);
+    }, 900));
+    if (!reducedMotion()) feteTimers.push(setTimeout(function () { fx.burst(80, W / 2, H * .45, 3.4, 1.1); }, 1700));
+  }
+  function popBalloon(b) {
+    if (b.classList.contains("pop")) return;
+    var r = b.getBoundingClientRect(), cv = $("fete2Canvas").getBoundingClientRect();
+    b.classList.add("pop"); popped++; buzz(18);
+    if (!reducedMotion()) feteFx.burst(26, r.left + r.width / 2 - cv.left, r.top + r.height / 2 - cv.top, 6.28, .55);
+    $("f2Count").textContent = "Ballons éclatés : " + popped;
+    setTimeout(function () { b.parentNode && b.parentNode.removeChild(b); if (!$("blnLayer").children.length) { $("f2Count").textContent = "Tous éclatés, bravo !"; } }, 240);
+  }
+  function closeFete2() {
+    $("fete2").hidden = true; document.body.style.overflow = ""; fete2Open = false;
+    feteTimers.forEach(clearTimeout); feteTimers = []; if (feteFx) feteFx.stop(); $("blnLayer").innerHTML = "";
   }
   function showFete(m, mark) {
+    if (feteStyle() === "surprise") { showFete2(m, mark); return; }
     var p = cur(), name = p.name || "Bébé";
     $("feteKicker").textContent = "Joyeux mois-anniversaire, " + name;
     $("feteTitle").textContent = "J'ai " + monthsText(m) + " aujourd'hui !";
@@ -1919,14 +2087,13 @@
     $("fete").hidden = false;
     document.body.style.overflow = "hidden";
     try { if (navigator.vibrate) navigator.vibrate([30, 60, 30, 60, 90]); } catch (e) { /* ignoré */ }
-    var reduce = false; try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { /* ignoré */ }
-    if (!reduce) confetti();
+    if (!reducedMotion()) confetti();
     if (mark) { try { localStorage.setItem("carnet-biberons:fete", m + ":" + dayKey(Date.now())); } catch (e) { /* ignoré */ } }
     $("feteOk").focus();
   }
-  function closeFete() { $("fete").hidden = true; document.body.style.overflow = ""; cancelAnimationFrame(feteRaf); }
+  function closeFete() { $("fete").hidden = true; document.body.style.overflow = ""; feteTimers.forEach(clearTimeout); feteTimers = []; if (feteFx) feteFx.stop(); }
   function checkFete() {
-    if (!$("fete").hidden) return;
+    if (!$("fete").hidden || fete2Open) return;
     var m = monthiversary(); if (!m) return;
     var seen = ""; try { seen = localStorage.getItem("carnet-biberons:fete") || ""; } catch (e) { /* ignoré */ }
     if (seen === m + ":" + dayKey(Date.now())) return;
@@ -2014,6 +2181,7 @@
     $("fBirth").value = p.birthDate;
     $("fBirth").max = iso(new Date());
     $("fMot").checked = motOn();
+    syncFeteStyle();
     $("fDefault").value = defaultMl;
     $("fMe").value = curBy();
     applyTheme(loadTheme(), false);
@@ -2301,6 +2469,15 @@
     });
     bindSwipe($("history")); bindSwipe($("dayDetail")); bindCare();
     $("feteOk").addEventListener("click", closeFete);
+    $("f2Ok").addEventListener("click", closeFete2);
+    $("f2Gift").addEventListener("click", openGift);
+    $("blnLayer").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest(".bln"); if (b) popBalloon(b); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-fstyle]"), function (b) {
+      b.addEventListener("click", function () {
+        try { localStorage.setItem("carnet-biberons:feteStyle", b.getAttribute("data-fstyle")); } catch (e) { /* ignoré */ }
+        syncFeteStyle();
+      });
+    });
     $("fetePreview").addEventListener("click", function () { closeSheet(); showFete(Math.max(1, planFor(cur()).age.months), false); });
     $("feedAdj").addEventListener("click", function (e) {
       var b = e.target.closest && e.target.closest("button[data-min]");
@@ -2385,6 +2562,7 @@
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       if (!$("sheet").hidden) closeSheet();
+      else if (!$("fete2").hidden) closeFete2();
       else if (!$("fete").hidden) closeFete();
       else if (!$("evSheet").hidden) closeEv();
       else if (!$("feedSheet").hidden) closeFeed();
