@@ -627,8 +627,8 @@
   .f3-ring .glow { fill: none; stroke-width: 12; stroke-linecap: round; stroke: #E9C46A; filter: url(#f3Glow); opacity: 0; transition: opacity .5s; }
   .f3-ring .glow.lit { opacity: .55; }
   .f3-ring .glow.last { opacity: .95; animation: f3-breath 2.4s ease-in-out infinite; }
-  .f3-pic { width: 74%; aspect-ratio: 1; display: grid; place-items: center; }
-  .f3-pic img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 55%; filter: drop-shadow(0 10px 14px rgba(0,0,0,.45)); -webkit-mask-image: linear-gradient(#000 80%, transparent 98%); mask-image: linear-gradient(#000 80%, transparent 98%); }
+  .f3-pic { position: relative; height: calc(min(78vw, 296px) * .9); aspect-ratio: 365 / 520; }
+  .f3-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0,0,0,.45)); -webkit-mask-image: linear-gradient(#000 86%, transparent 97%); mask-image: linear-gradient(#000 86%, transparent 97%); }
   .f3-count { display: flex; align-items: baseline; justify-content: center; gap: 10px; margin-top: 22px; line-height: 1; }
   .f3-num { font: 600 92px/1 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; background: linear-gradient(100deg, #B8862F 10%, #FFF1BD 35%, #E9C46A 50%, #FFF1BD 65%, #B8862F 90%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: #E9C46A; }
   .fete3.done .f3-num { animation: f3-shine 3.2s ease-in-out .2s 2; }
@@ -719,7 +719,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">v26 · Developped by J. PETIT</p>
+      <p class="ver">v27 · Developped by J. PETIT</p>
     </footer>
   </div>
 
@@ -959,7 +959,7 @@
         </defs>
         <g id="f3Segs"></g>
       </svg>
-      <div class="f3-pic"><img src="baby-head.webp" alt="" width="200" height="200"></div>
+      <div class="f3-pic"><img src="baby-full.webp" alt="" width="365" height="520"></div>
     </div>
     <div class="f3-count"><span class="f3-num" id="f3Num">0</span><span class="f3-unit" id="f3Unit">mois</span></div>
     <h2 id="fete3Title"></h2>
