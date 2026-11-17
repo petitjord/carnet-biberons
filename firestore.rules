@@ -30,6 +30,19 @@ service cloud.firestore {
             || (request.resource.data.by is string && request.resource.data.by.size() <= 20));
     }
 
+    // Sommeil : endormi (start), réveillé (end, absent tant qu'il dort).
+    match /families/{code}/sleeps/{sleepId} {
+      allow read, delete: if code.size() >= 16;
+      allow create, update: if code.size() >= 16
+        && request.resource.data.keys().hasOnly(['start', 'end', 'by'])
+        && request.resource.data.keys().hasAll(['start'])
+        && request.resource.data.start is number
+        && (!('end' in request.resource.data)
+            || (request.resource.data.end is number && request.resource.data.end > request.resource.data.start))
+        && (!('by' in request.resource.data)
+            || (request.resource.data.by is string && request.resource.data.by.size() <= 20));
+    }
+
     // Fiche du bébé
     match /families/{code}/baby/profile {
       allow read: if code.size() >= 16;

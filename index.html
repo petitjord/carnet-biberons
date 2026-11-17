@@ -643,6 +643,55 @@
   @keyframes f3-breath { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
   @keyframes f3-shine { from { background-position: 100% 0; } to { background-position: 0 0; } }
   @media (prefers-reduced-motion: reduce) { .fete3 *, .fete3 { animation: none !important; transition: none !important; } .f3-kicker, .fete3 h2, .f3-msg, .f3-ok { opacity: 1; transform: none; } }
+
+  /* Sommeil */
+  section.sleep { background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 92%, #5B6BB5 8%)); border: 1px solid color-mix(in srgb, var(--line) 65%, transparent); }
+  section.sleep > .sl-head h2::before, section[aria-labelledby="slStatsTitle"] h2::before { content: ""; display: inline-block; width: 6px; height: .8em; margin-right: 10px; border-radius: 3px; vertical-align: -0.05em; background: linear-gradient(180deg, #8C9BE0, #4B5AA8); }
+  .sl-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .sl-add { border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 14.5px; padding: 8px 4px; min-height: 40px; }
+  .sl-state { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+  .sl-ic { flex: none; width: 52px; height: 52px; border-radius: 17px; display: grid; place-items: center; color: #fff; background: linear-gradient(160deg, #F6C66B, #E39A3B); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 8px 14px -8px rgba(0,0,0,.4); }
+  .sl-state.night .sl-ic { background: linear-gradient(160deg, #8C9BE0, #3F4C99); }
+  .sl-ic svg, .sl-go svg, .care-ic.k-night svg, .care-ic.k-nap svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .sl-txt { display: flex; flex-direction: column; min-width: 0; }
+  .sl-txt .k { font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .sl-txt .v { font: 700 30px/1.15 var(--font-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .sl-txt .s { font-size: 13px; color: var(--muted); }
+  .sl-bar { position: relative; height: 10px; margin: 16px 0 0; border-radius: 99px; background: color-mix(in srgb, var(--line) 75%, transparent); overflow: hidden; }
+  .sl-bar .win { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, #E9B44C 40%, transparent); }
+  .sl-bar .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: var(--accent); transition: width .6s ease; }
+  .sl-bar.now .fill { background: linear-gradient(90deg, var(--accent), #E3A43A); }
+  .sl-bar.late .fill { background: linear-gradient(90deg, #E3A43A, var(--peach)); }
+  .sl-pred { margin: 10px 0 0; font-size: 15px; line-height: 1.4; }
+  .sl-pred.now b { color: #B47A12; } .sl-pred.late b { color: var(--peach); }
+  .sl-basis { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.35; }
+  .sl-go { width: 100%; min-height: 54px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 18px; color: #fff; font-weight: 700; font-size: 16.5px;
+    background: linear-gradient(160deg, #7F8FD8, #3F4C99); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 12px 22px -12px rgba(63,76,153,.8); }
+  .sl-go.wake { background: linear-gradient(160deg, #F6C66B, #DB8F2F); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 12px 22px -12px rgba(219,143,47,.8); }
+  .sl-go:active { transform: scale(.98); }
+  .sl-daybar { margin-top: 16px; }
+  .sl-track { position: relative; height: 16px; border-radius: 8px; background: color-mix(in srgb, var(--line) 60%, transparent); overflow: hidden; }
+  .sl-track.sm { height: 14px; border-radius: 7px; }
+  .sl-track i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+  .sl-track i.n { background: linear-gradient(180deg, #6E7DCB, #3F4C99); }
+  .sl-track i.d { background: linear-gradient(180deg, #A9B5F0, #7F8FD8); }
+  .sl-track i.on { animation: sl-pulse 2s ease-in-out infinite; }
+  .sl-track .now { position: absolute; top: -2px; bottom: -2px; width: 2px; margin-left: -1px; background: var(--peach); border-radius: 1px; }
+  .sl-ticks { position: relative; height: 16px; margin-top: 4px; font-size: 10.5px; color: var(--muted); flex: 1; }
+  .sl-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+  .sl-ticks span:first-child { transform: none; } .sl-ticks span:last-child { transform: translateX(-100%); }
+  .sl-sum { margin: 8px 0 0; font-size: 13.5px; color: var(--muted); }
+  .care-ic.k-night { background: linear-gradient(160deg, #6E7DCB, #3F4C99); }
+  .care-ic.k-nap { background: linear-gradient(160deg, #A9B5F0, #6E7DCB); }
+  .sl-week { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+  .sl-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 48px; align-items: center; gap: 8px; }
+  .sl-row .dl { font-size: 12px; color: var(--muted); text-transform: capitalize; }
+  .sl-row .dl.today { color: var(--accent); font-weight: 700; }
+  .sl-row .tt { font-size: 12px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  .lg.nt { background: #3F4C99; } .lg.np { background: #A9B5F0; }
+  .sl-open { margin-top: 8px; }
+  @keyframes sl-pulse { 50% { opacity: .65; } }
+  section[aria-labelledby="slStatsTitle"] { background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 92%, #5B6BB5 8%)); border: 1px solid color-mix(in srgb, var(--line) 65%, transparent); }
 </style>
 </head>
 <body>
@@ -699,6 +748,14 @@
     </details>
   </section>
 
+    <section class="sleep" aria-labelledby="slH">
+      <div class="sl-head"><h2 id="slH">Sommeil</h2><button type="button" class="sl-add" id="slAdd">+ Ajouter</button></div>
+      <div id="slCard"></div>
+      <div class="sl-daybar" id="slDayBar"></div>
+      <p class="sl-sum" id="slSum"></p>
+      <ul class="care-list" id="slList"></ul>
+    </section>
+
     <section class="care" aria-labelledby="careTitle">
       <h2 id="careTitle">Santé et couches</h2>
       <div class="care-btns" id="careBtns"></div>
@@ -719,7 +776,7 @@
 
     <footer class="foot">
       <p id="storage"></p>
-      <p class="ver">v28 · Developped by J. PETIT</p>
+      <p class="ver">v29 · Developped by J. PETIT</p>
     </footer>
   </div>
 
@@ -760,6 +817,11 @@
         <p class="sub">Nombre de biberons à chaque heure de la journée, sur ces 7 jours.</p>
         <div id="hours"></div>
       </div>
+    </section>
+
+    <section aria-labelledby="slStatsTitle">
+      <div class="wk-head"><div><h2 id="slStatsTitle">Sommeil</h2><p class="wk-lab" id="slLab"></p></div></div>
+      <div id="slStats"></div>
     </section>
 
     <section aria-labelledby="careStatsTitle">
@@ -968,6 +1030,26 @@
   </div>
 </div>
 
+<div class="sheet" id="slSheet" hidden>
+  <div class="backdrop" id="slBack"></div>
+  <form class="panel" id="slForm" role="dialog" aria-modal="true" aria-labelledby="slTitle2" novalidate>
+    <h2 id="slTitle2">Ajouter un sommeil</h2>
+    <div class="field"><label for="slStartIn">Endormi à</label><input id="slStartIn" type="datetime-local"></div>
+    <div class="field"><label for="slEnd">Réveillé à</label><input id="slEnd" type="datetime-local">
+      <div class="adj sl-open"><button type="button" class="chip" id="slOpen" aria-pressed="false">Il dort encore</button></div>
+    </div>
+    <div class="field" id="slByField"><label id="slByLab">Noté par</label><div class="who-pick" id="slBy" role="group" aria-labelledby="slByLab"></div></div>
+    <p class="err" id="slErr" role="alert" hidden></p>
+    <div class="actions between">
+      <button class="ghost leave" type="button" id="slDelete" hidden>Supprimer</button>
+      <div class="right">
+        <button class="ghost" type="button" id="slCancel">Annuler</button>
+        <button class="solid" type="submit">Enregistrer</button>
+      </div>
+    </div>
+  </form>
+</div>
+
 <div class="sheet" id="evSheet" hidden>
   <div class="backdrop" id="evBack"></div>
   <form class="panel" id="evForm" role="dialog" aria-modal="true" aria-labelledby="evTitle" novalidate>
@@ -1125,7 +1207,7 @@
     { m: 12, nb: [2, 3], ml: [210, 270], n: 2, per: 270 }
   ];
 
-  var state = { profile: null, profileLocal: false, feeds: [], events: [], evDenied: false, evToast: false, mode: "local", code: null, sync: "none" };
+  var state = { profile: null, profileLocal: false, feeds: [], events: [], evDenied: false, evToast: false, sleeps: [], slDenied: false, slToast: false, mode: "local", code: null, sync: "none" };
   var qty = defaultMl;
   var lastPress = 0, flashTimer = null, toastTimer = null;
 
@@ -1216,10 +1298,12 @@
       sortFeeds();
       state.events = (o.events || []).map(function (x) { return cleanEvent(x, !!x.local); }).filter(validEvent);
       sortEvents();
+      state.sleeps = (o.sleeps || []).map(function (x) { return cleanSleep(x, !!x.local); }).filter(validSleep);
+      sortSleeps();
     } catch (e) { /* stockage indisponible */ }
   }
   function persistLocal() {
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, profileLocal: state.profileLocal, feeds: state.feeds, events: state.events })); } catch (e) { /* ignoré */ }
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ profile: state.profile, profileLocal: state.profileLocal, feeds: state.feeds, events: state.events, sleeps: state.sleeps })); } catch (e) { /* ignoré */ }
   }
 
   /* ---------- Code famille ---------- */
@@ -1302,11 +1386,14 @@
     });
     var pendEv = state.events.filter(function (x) { return x.local; });
     if (!state.evDenied) pendEv.forEach(function (x) { x.local = false; sendEvent(fsm.doc(eventsCol(), x.id), x); });
-    if (pend.length || pendEv.length) persistLocal();
+    var pendSl = state.sleeps.filter(function (x) { return x.local; });
+    if (!state.slDenied) pendSl.forEach(function (x) { x.local = false; sendSleep(fsm.doc(sleepsCol(), x.id), x); });
+    if (pend.length || pendEv.length || pendSl.length) persistLocal();
     unsubs.push(fsm.onSnapshot(profileRef(), { includeMetadataChanges: true }, onProfileSnap, onSyncError));
     var q = fsm.query(feedsCol(), fsm.orderBy("ts", "desc"), fsm.limit(500));
     unsubs.push(fsm.onSnapshot(q, { includeMetadataChanges: true }, onFeedsSnap, onSyncError));
     unsubs.push(fsm.onSnapshot(fsm.query(eventsCol(), fsm.orderBy("ts", "desc"), fsm.limit(500)), { includeMetadataChanges: true }, onEventsSnap, onEventsError));
+    unsubs.push(fsm.onSnapshot(fsm.query(sleepsCol(), fsm.orderBy("start", "desc"), fsm.limit(500)), { includeMetadataChanges: true }, onSleepsSnap, onSleepsError));
     render();
   }
   function onProfileSnap(snap) {
@@ -1708,7 +1795,7 @@
   }
 
   function render() {
-    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderCare(); renderCareStats(); renderPlan(); renderFoot(); renderMot(); updateQtyUI(); checkFete();
+    computePeople(); renderHead(); renderHero(); renderToday(); renderGoal(); renderChart(); renderHistory(); renderSleep(); renderCare(); renderSleepStats(); renderCareStats(); renderPlan(); renderFoot(); renderMot(); updateQtyUI(); checkFete();
   }
 
   /* ---------- Santé et couches : Doliprane, température, caca ---------- */
@@ -1917,6 +2004,311 @@
     }
     html += '<div class="sect"><h3>Ce qu\'on en tire</h3><ul class="insights">' + ins.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul><p class="sub">Ces repères sont informatifs et ne remplacent pas l\'avis d\'un professionnel de santé.</p></div>';
     $("careStats").innerHTML = html;
+  }
+
+
+  /* ---------- Sommeil (façon Napper) : endormi / réveillé, prévision de la prochaine sieste ---------- */
+  var MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.500A8 8 0 019.500 4a8 8 0 1010.500 10.500z"/></svg>';
+  var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.500v2M12 19.500v2M4.600 4.600l1.400 1.400M18 18l1.400 1.400M2.500 12h2M19.500 12h2M4.600 19.400L6 18M18 6l1.400-1.400"/></svg>';
+  /* Fenêtres d'éveil indicatives selon l'âge, en minutes [min, max] */
+  var WAKE = [[0, 45, 60], [1, 60, 90], [2, 75, 105], [3, 75, 120], [4, 90, 135], [5, 120, 165], [6, 120, 180], [8, 150, 195], [10, 180, 240], [13, 240, 330], [18, 300, 360]];
+  function wakeRange(months) { var r = WAKE[0]; WAKE.forEach(function (w) { if (months >= w[0]) r = w; }); return [r[1], r[2]]; }
+  /* Total de sommeil sur 24 h (repères des sociétés savantes du sommeil) */
+  function sleepNeed(months) { return months < 4 ? [14, 17] : months < 12 ? [12, 15] : months < 36 ? [11, 14] : [10, 13]; }
+  function validSleep(s) { return isFinite(s.start) && s.start > 0 && (s.end === null || (isFinite(s.end) && s.end > s.start && s.end - s.start <= 20 * 3600000)); }
+  function cleanSleep(x, local) {
+    x = x || {};
+    var e = x.end === null || x.end === undefined || x.end === "" ? null : Number(x.end);
+    return { id: String(x.id), start: Number(x.start), end: e, by: cleanBy(x.by), local: !!local };
+  }
+  function sortSleeps() { state.sleeps.sort(function (a, b) { return b.start - a.start; }); }
+  function sleepsCol() { return fsm.collection(fsDb, "families", state.code, "sleeps"); }
+  function findSleep(id) { for (var i = 0; i < state.sleeps.length; i++) if (state.sleeps[i].id === id) return state.sleeps[i]; return null; }
+  function ongoingSleep() { for (var i = 0; i < state.sleeps.length; i++) if (state.sleeps[i].end === null) return state.sleeps[i]; return null; }
+  function sEnd(s) { return s.end === null ? Date.now() : s.end; }
+  /* Nuit : commence entre 19 h et 5 h, ou dure 5 h ou plus */
+  function isNight(s) { var h = new Date(s.start).getHours(); return h >= 19 || h < 5 || sEnd(s) - s.start >= 5 * 3600000; }
+  function sendSleep(ref, s) {
+    var data = { start: s.start };
+    if (s.end !== null) data.end = s.end;
+    if (s.by && !noBy()) data.by = s.by;
+    return fsm.setDoc(ref, data).catch(function (err) {
+      if (err && err.code === "permission-denied") { slDenied(s, ref.id); return; }
+      writeFailed(err);
+    });
+  }
+  function slDeniedToast() {
+    if (!state.slToast) { state.slToast = true; toast("Le sommeil reste sur ce téléphone : ajoute la règle « sleeps » dans Firestore pour le partager."); }
+  }
+  function slDenied(s, id) {
+    state.slDenied = true;
+    var found = false;
+    state.sleeps.forEach(function (x) { if (x.id === id) { x.local = true; found = true; } });
+    if (!found) { state.sleeps.push({ id: id, start: s.start, end: s.end, by: s.by, local: true }); sortSleeps(); }
+    persistLocal(); render(); slDeniedToast();
+  }
+  function onSleepsSnap(snap) {
+    var m = snap.metadata;
+    if (m.fromCache && snap.empty && !m.hasPendingWrites && state.sleeps.length) return;
+    var keep = state.sleeps.filter(function (x) { return x.local; });
+    state.sleeps = snap.docs.map(function (d) { return cleanSleep(Object.assign({}, d.data() || {}, { id: d.id }), false); }).filter(validSleep).concat(keep.filter(function (k) {
+      return !snap.docs.some(function (d) { return d.id === k.id; });
+    }));
+    sortSleeps(); persistLocal(); render();
+  }
+  function onSleepsError(e) {
+    if (e && e.code === "permission-denied") { state.slDenied = true; slDeniedToast(); }
+    render();
+  }
+  function shared() { return state.mode === "shared" && fsm && !state.slDenied; }
+  async function addSleep(start, end, by) {
+    if (by === undefined) by = curBy();
+    var s = { start: start, end: end, by: by };
+    if (shared()) { var ref = fsm.doc(sleepsCol()); sendSleep(ref, s); return ref.id; }
+    var id = uid();
+    state.sleeps.push({ id: id, start: start, end: end, by: by, local: true });
+    sortSleeps(); persistLocal(); render();
+    return id;
+  }
+  async function updateSleep(id, start, end, by) {
+    var ex = findSleep(id), s = { start: start, end: end, by: by };
+    if (shared() && ex && !ex.local) { sendSleep(fsm.doc(sleepsCol(), id), s); return; }
+    state.sleeps = state.sleeps.map(function (x) { return x.id === id ? { id: id, start: start, end: end, by: by, local: x.local } : x; });
+    sortSleeps(); persistLocal(); render();
+  }
+  async function deleteSleep(id) {
+    var ex = findSleep(id);
+    if (shared() && ex && !ex.local) { fsm.deleteDoc(fsm.doc(sleepsCol(), id)).catch(writeFailed); return; }
+    state.sleeps = state.sleeps.filter(function (x) { return x.id !== id; });
+    persistLocal(); render();
+  }
+
+  /* Prévision : fenêtre d'éveil selon l'âge, ajustée à ses propres éveils des 14 derniers jours */
+  function wakeSamples() {
+    var done = state.sleeps.filter(function (s) { return s.end !== null; }).slice().sort(function (a, b) { return a.start - b.start; }), out = [], lim = Date.now() - 14 * DAY;
+    for (var i = 1; i < done.length; i++) {
+      var prev = done[i - 1], nx = done[i], gap = nx.start - prev.end, h = new Date(prev.end).getHours();
+      if (prev.end < lim || h < 6 || h >= 20 || gap < 20 * 60000 || gap > 6 * 3600000) continue;
+      out.push(gap / 60000);
+    }
+    return out;
+  }
+  function sleepPlan() {
+    var a = ageParts(cur().birthDate, Date.now()), r = wakeRange(a.months), samples = wakeSamples(), mid = (r[0] + r[1]) / 2, perso = samples.length >= 5;
+    if (perso) mid = Math.min(r[1] * 1.2, Math.max(r[0] * 0.8, 0.5 * mid + 0.5 * median(samples)));
+    var lo = perso ? mid - 15 : r[0], hi = perso ? mid + 15 : r[1];
+    return { months: a.months, r: r, lo: lo, hi: hi, perso: perso, n: samples.length };
+  }
+  function hm(ts) { var d = new Date(ts); return d.getHours() + " h " + pad(d.getMinutes()); }
+  function roundTo5(ts) { return Math.round(ts / 300000) * 300000; }
+
+  function renderSleep() {
+    var now = Date.now(), on = ongoingSleep(), name = cur().name || "Bébé", card = "";
+    if (on) {
+      card = '<div class="sl-state night"><span class="sl-ic">' + MOON + '</span><div class="sl-txt"><span class="k">' + esc(name) + ' dort depuis</span><span class="v">' + fmtDur(now - on.start) + '</span>' +
+        '<span class="s">Endormi à ' + fmtTime(on.start) + (isNight(on) ? " · nuit" : " · sieste") + '</span></div></div>' +
+        '<button type="button" class="sl-go wake" id="slWake">' + SUN + '<span>Il se réveille</span></button>';
+    } else {
+      var last = null; for (var i = 0; i < state.sleeps.length; i++) if (state.sleeps[i].end !== null) { last = state.sleeps[i]; break; }
+      var p = sleepPlan(), prog = "", pred = "";
+      if (last && now - last.end < 12 * 3600000) {
+        var el = (now - last.end) / 60000, from = roundTo5(last.end + p.lo * 60000), to = roundTo5(last.end + p.hi * 60000), lvl = el < p.lo ? "ok" : el <= p.hi ? "now" : "late";
+        var pct = Math.min(100, el / (p.hi * 1.15) * 100), a = p.lo / (p.hi * 1.15) * 100, b = 100 / 1.15;
+        prog = '<div class="sl-bar ' + lvl + '" role="img" aria-label="Fenêtre d\'éveil"><i class="win" style="left:' + a.toFixed(1) + '%;width:' + (b - a).toFixed(1) + '%"></i><i class="fill" style="width:' + pct.toFixed(1) + '%"></i></div>';
+        var bed = new Date(from).getHours() >= 18 || new Date(now).getHours() >= 18;
+        var what = bed ? "Coucher pour la nuit" : "Prochaine sieste";
+        pred = '<p class="sl-pred ' + lvl + '">' + (lvl === "late" ? "<b>Fenêtre d'éveil dépassée</b> : il risque d'être trop fatigué, c'est le moment de le coucher." :
+          lvl === "now" ? "<b>C'est le bon moment</b> pour " + (bed ? "le coucher" : "la sieste") + " (jusqu'à " + hm(to) + ")." :
+          "<b>" + what + "</b> entre " + hm(from) + " et " + hm(to) + ".") + '</p>' +
+          '<p class="sl-basis">' + (p.perso ? "Calculé sur ses " + p.n + " derniers éveils et son âge." : "Repère pour " + (p.months < 1 ? "un nouveau-né" : p.months + " mois") + " : " + fmtDur(p.r[0] * 60000) + " à " + fmtDur(p.r[1] * 60000) + " d'éveil. Ça s'affinera avec ses habitudes.") + '</p>';
+      }
+      card = '<div class="sl-state"><span class="sl-ic">' + SUN + '</span><div class="sl-txt"><span class="k">Éveillé depuis</span><span class="v">' + (last ? fmtDur(now - last.end) : "—") + '</span>' +
+        '<span class="s">' + (last ? "Réveillé à " + fmtTime(last.end) + (dayKey(last.end) !== dayKey(now) ? " (" + dayLabel(last.end).toLowerCase() + ")" : "") : "Note son premier dodo pour lancer les prévisions") + '</span></div></div>' + prog + pred +
+        '<button type="button" class="sl-go" id="slStart">' + MOON + '<span>Il s\'endort</span></button>';
+    }
+    $("slCard").innerHTML = card;
+    /* Frise de la journée et liste */
+    var t0 = midnight(now).getTime(), t1 = t0 + DAY, segs = "", tick = "";
+    var todays = state.sleeps.filter(function (s) { return sEnd(s) > t0 && s.start < t1; });
+    todays.forEach(function (s) {
+      var a = Math.max(s.start, t0), b = Math.min(sEnd(s), now);
+      segs += '<i class="' + (isNight(s) ? "n" : "d") + (s.end === null ? " on" : "") + '" style="left:' + ((a - t0) / DAY * 100).toFixed(2) + '%;width:' + Math.max(0.6, (b - a) / DAY * 100).toFixed(2) + '%"></i>';
+    });
+    [0, 6, 12, 18, 24].forEach(function (h) { tick += '<span style="left:' + (h / 24 * 100) + '%">' + h + ' h</span>'; });
+    var naps = todays.filter(function (s) { return !isNight(s); }), napMs = naps.reduce(function (t, s) { return t + Math.min(sEnd(s), now) - Math.max(s.start, t0); }, 0);
+    var nightMs = 0, nightN = 0, ns = midnight(now).getTime() - 7 * 3600000;
+    state.sleeps.forEach(function (s) { if (isNight(s) && s.start >= ns && s.start < t0 + 11 * 3600000 && s.end !== null) { nightMs += s.end - s.start; nightN++; } });
+    $("slDayBar").innerHTML = '<div class="sl-track">' + segs + '<b class="now" style="left:' + ((now - t0) / DAY * 100).toFixed(2) + '%"></b></div><div class="sl-ticks">' + tick + '</div>';
+    $("slSum").textContent = (naps.length ? naps.length + (naps.length > 1 ? " siestes" : " sieste") + " · " + fmtDur(napMs) + " de jour" : "Aucune sieste aujourd'hui") +
+      (nightMs ? " · nuit dernière " + fmtDur(nightMs) + (nightN > 1 ? " (" + (nightN - 1) + " réveil" + (nightN > 2 ? "s" : "") + ")" : "") : "");
+    $("slList").innerHTML = todays.length ? todays.map(function (s) {
+      var lab = isNight(s) ? "Nuit" : "Sieste", d = s.end === null ? "en cours" : fmtDur(s.end - s.start);
+      return '<li><button type="button" class="ev-row" data-sl="' + s.id + '" aria-label="Modifier : ' + lab + ' de ' + fmtTime(s.start) + '">' +
+        '<span class="care-ic k-' + (isNight(s) ? "night" : "nap") + ' sm">' + MOON + '</span>' +
+        '<span class="ev-main"><b>' + lab + ' · ' + d + '</b>' + evWho(s) + '</span><time>' + fmtTime(s.start) + (s.end !== null ? "–" + fmtTime(s.end) : "") + '</time><span class="chev" aria-hidden="true">›</span></button></li>';
+    }).join("") : "";
+  }
+
+  /* Bilan : 7 jours de sommeil */
+  function renderSleepStats() {
+    var r = windowRange(weekOff), t0 = r.a.getTime(), t1 = r.b.getTime(), now = Date.now(), i;
+    $("slLab").textContent = $("wkLab").textContent;
+    var list = state.sleeps.filter(function (s) { return sEnd(s) > t0 && s.start < t1; });
+    if (!list.length) { $("slStats").innerHTML = '<p class="sub">Aucun sommeil noté sur cette période. Utilise « Il s\'endort » sur la 1re page : l\'analyse apparaît ici.</p>'; return; }
+    var days = [];
+    for (i = 0; i < 7; i++) { var d = new Date(r.a.getFullYear(), r.a.getMonth(), r.a.getDate() + i); days.push({ d: d, a: d.getTime(), b: d.getTime() + DAY, tot: 0, nap: 0, napN: 0 }); }
+    list.forEach(function (s) {
+      days.forEach(function (x) {
+        var a = Math.max(s.start, x.a), b = Math.min(sEnd(s), x.b, now);
+        if (b > a) { x.tot += b - a; if (!isNight(s)) { x.nap += b - a; if (s.start >= x.a && s.start < x.b) x.napN++; } }
+      });
+    });
+    var oldest = state.sleeps.length ? midnight(state.sleeps[state.sleeps.length - 1].start).getTime() : t0;
+    var full = days.filter(function (x) { return x.b <= now && x.a >= oldest && x.tot > 0; });
+    var base = full.length ? full : days.filter(function (x) { return x.tot > 0; });
+    var avgTot = base.reduce(function (t, x) { return t + x.tot; }, 0) / base.length, avgNap = base.reduce(function (t, x) { return t + x.nap; }, 0) / base.length, avgNapN = base.reduce(function (t, x) { return t + x.napN; }, 0) / base.length;
+    var nights = list.filter(function (s) { return isNight(s) && s.end !== null; }), longest = nights.concat(list.filter(function (s) { return s.end !== null; })).reduce(function (m, s) { return !m || s.end - s.start > m.end - m.start ? s : m; }, null);
+    /* nuits regroupées (coucher -> réveil du matin) */
+    var nightGroups = {};
+    nights.forEach(function (s) { var h = new Date(s.start).getHours(), k = dayKey(h < 12 ? s.start - DAY : s.start); (nightGroups[k] = nightGroups[k] || []).push(s); });
+    var bedT = [], upT = [], nightDur = [];
+    Object.keys(nightGroups).forEach(function (k) {
+      var g = nightGroups[k].sort(function (a, b) { return a.start - b.start; }), first = g[0], lastS = g[g.length - 1];
+      var bm = new Date(first.start).getHours() * 60 + new Date(first.start).getMinutes(); if (bm < 12 * 60) bm += 24 * 60; bedT.push(bm);
+      var um = new Date(lastS.end).getHours() * 60 + new Date(lastS.end).getMinutes(); if (um < 12 * 60) upT.push(um);
+      nightDur.push(g.reduce(function (t, s) { return t + s.end - s.start; }, 0));
+    });
+    function clock(m) { m = Math.round(m) % (24 * 60); return Math.floor(m / 60) + " h " + pad(m % 60); }
+    var need = sleepNeed(ageParts(cur().birthDate, now).months);
+    var html = '<div class="tiles">' +
+      '<div class="tile"><div class="k">Sommeil / 24 h</div><div class="v sm">' + fmtDur(avgTot) + '</div><div class="d">repère ' + need[0] + ' à ' + need[1] + ' h</div></div>' +
+      '<div class="tile"><div class="k">Siestes / jour</div><div class="v">' + (Math.round(avgNapN * 10) / 10).toString().replace(".", ",") + '</div><div class="d">' + fmtDur(avgNap) + ' de jour en moyenne</div></div>' +
+      '<div class="tile"><div class="k">Nuit moyenne</div><div class="v sm">' + (nightDur.length ? fmtDur(nightDur.reduce(function (t, x) { return t + x; }, 0) / nightDur.length) : "—") + '</div><div class="d">' + (bedT.length ? "coucher vers " + clock(median(bedT)) : "aucune nuit notée") + '</div></div>' +
+      '<div class="tile"><div class="k">Plus long d\'une traite</div><div class="v sm">' + (longest ? fmtDur(longest.end - longest.start) : "—") + '</div><div class="d">' + (longest ? dayLabel(longest.start) + " " + fmtTime(longest.start) : "") + '</div></div></div>';
+    /* Frise 7 jours */
+    var rows = "";
+    days.forEach(function (x, idx) {
+      var segs = "", isToday = weekOff === 0 && idx === 6;
+      list.forEach(function (s) {
+        var a = Math.max(s.start, x.a), b = Math.min(sEnd(s), x.b, now);
+        if (b > a) segs += '<i class="' + (isNight(s) ? "n" : "d") + '" style="left:' + ((a - x.a) / DAY * 100).toFixed(2) + '%;width:' + Math.max(0.6, (b - a) / DAY * 100).toFixed(2) + '%"></i>';
+      });
+      rows += '<div class="sl-row"><span class="dl' + (isToday ? " today" : "") + '">' + (isToday ? "auj." : x.d.toLocaleDateString("fr-FR", { weekday: "short" })) + '</span><div class="sl-track sm">' + segs + '</div><span class="tt">' + (x.tot ? fmtDur(x.tot).replace(" h ", "h") : "") + '</span></div>';
+    });
+    var tick = ""; [0, 6, 12, 18, 24].forEach(function (h) { tick += '<span style="left:' + (h / 24 * 100) + '%">' + h + ' h</span>'; });
+    html += '<div class="sect"><h3>Frise du sommeil</h3><div class="sl-week">' + rows + '<div class="sl-row"><span class="dl"></span><div class="sl-ticks">' + tick + '</div><span class="tt"></span></div></div>' +
+      '<p class="sub legend2"><span class="lg nt"></span>Nuit <span class="lg np"></span>Sieste</p></div>';
+    /* Lecture */
+    var ins = [], avgH = avgTot / 3600000;
+    ins.push("En moyenne " + fmtDur(avgTot) + " de sommeil par 24 h" + (base.length < 7 ? " (sur " + base.length + " jour" + (base.length > 1 ? "s" : "") + ")" : "") + ". " +
+      (avgH < need[0] - 1 ? "C'est sous le repère de " + need[0] + " à " + need[1] + " h pour son âge : peut-être des sommeils pas tous notés, ou des journées agitées." :
+        avgH > need[1] + 1 ? "C'est au-dessus du repère de " + need[0] + " à " + need[1] + " h pour son âge." : "C'est dans le repère de " + need[0] + " à " + need[1] + " h pour son âge."));
+    if (bedT.length >= 2) ins.push("Coucher le soir vers " + clock(median(bedT)) + (upT.length >= 2 ? ", réveil du matin vers " + clock(median(upT)) : "") + ".");
+    var wakes = Object.keys(nightGroups).map(function (k) { return nightGroups[k].length - 1; });
+    if (wakes.length >= 2) ins.push("Réveils la nuit : " + (Math.round(wakes.reduce(function (t, x) { return t + x; }, 0) / wakes.length * 10) / 10).toString().replace(".", ",") + " par nuit en moyenne.");
+    var ws = wakeSamples(), wr = wakeRange(ageParts(cur().birthDate, now).months);
+    if (ws.length >= 3) ins.push("Entre deux sommeils de journée, il reste éveillé " + fmtDur(median(ws) * 60000) + " en général (repère pour son âge : " + fmtDur(wr[0] * 60000) + " à " + fmtDur(wr[1] * 60000) + ").");
+    html += '<div class="sect"><h3>Ce qu\'on en tire</h3><ul class="insights">' + ins.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul><p class="sub">Repères indicatifs : chaque bébé a son rythme. En cas de doute, parles-en à ton médecin.</p></div>';
+    $("slStats").innerHTML = html;
+  }
+
+  /* Feuille d'édition du sommeil */
+  var slEditId = null, slBy = "", slDelArmed = false, slDelTimer = null, slOpen = false;
+  function renderSlBy() {
+    var names = people.slice();
+    if (slBy && names.indexOf(slBy) < 0) names.push(slBy);
+    $("slByField").hidden = !names.length;
+    $("slBy").innerHTML = names.map(function (n) { return '<button type="button" class="chip" data-by="' + esc(n) + '" aria-pressed="' + (n === slBy) + '">' + esc(n) + '</button>'; }).join("") +
+      '<button type="button" class="chip" data-by="" aria-pressed="' + (slBy === "") + '">Personne</button>';
+  }
+  function renderSlSheet() {
+    $("slTitle2").textContent = slEditId ? "Modifier le sommeil" : "Ajouter un sommeil";
+    $("slDelete").hidden = !slEditId;
+    $("slDelete").textContent = slDelArmed ? "Confirmer" : "Supprimer";
+    var open = $("slOpen").getAttribute("aria-pressed") === "true";
+    $("slEnd").disabled = open;
+  }
+  function openSl(id) {
+    var s = id ? findSleep(id) : null;
+    if (id && !s) return;
+    hideToast();
+    slEditId = id || null; slDelArmed = false; clearTimeout(slDelTimer);
+    var now = Date.now();
+    $("slStartIn").value = toLocalInput(s ? s.start : now - 3600000);
+    $("slEnd").value = toLocalInput(s ? (s.end === null ? now : s.end) : now);
+    $("slStartIn").max = $("slEnd").max = toLocalInput(now);
+    $("slOpen").setAttribute("aria-pressed", s && s.end === null ? "true" : "false");
+    slBy = s ? (s.by || "") : curBy();
+    renderSlBy(); renderSlSheet();
+    $("slErr").hidden = true;
+    $("slSheet").hidden = false; slOpen = true;
+    $("slCancel").focus();
+  }
+  function closeSl() { $("slSheet").hidden = true; slOpen = false; slEditId = null; slDelArmed = false; clearTimeout(slDelTimer); }
+  async function submitSl(ev) {
+    ev.preventDefault();
+    var ex = slEditId ? findSleep(slEditId) : null, now = Date.now();
+    var a = new Date($("slStartIn").value).getTime(), open = $("slOpen").getAttribute("aria-pressed") === "true", b = open ? null : new Date($("slEnd").value).getTime(), err = "";
+    if (ex && $("slStartIn").value === toLocalInput(ex.start)) a = ex.start;
+    if (ex && b !== null && ex.end !== null && $("slEnd").value === toLocalInput(ex.end)) b = ex.end;
+    if (!isFinite(a)) err = "Choisis l'heure d'endormissement.";
+    else if (a > now + 60000) err = "L'endormissement est dans le futur.";
+    else if (b !== null && !isFinite(b)) err = "Choisis l'heure de réveil.";
+    else if (b !== null && b > now + 60000) err = "Le réveil est dans le futur.";
+    else if (b !== null && b <= a) err = "Le réveil doit être après l'endormissement.";
+    else if ((b === null ? now : b) - a > 20 * 3600000) err = "Un sommeil ne peut pas dépasser 20 h.";
+    else if (open && state.sleeps.some(function (s) { return s.end === null && (!ex || s.id !== ex.id); })) err = "Un sommeil est déjà en cours.";
+    if (!err) {
+      var bb = b === null ? now : b, clash = state.sleeps.filter(function (s) { return (!ex || s.id !== ex.id) && s.start < bb && sEnd(s) > a; })[0];
+      if (clash) err = "Ça chevauche le sommeil de " + fmtTime(clash.start) + (clash.end !== null ? " à " + fmtTime(clash.end) : "") + ".";
+    }
+    if (err) { $("slErr").textContent = err; $("slErr").hidden = false; return; }
+    try {
+      if (ex) await updateSleep(ex.id, a, b, slBy); else await addSleep(a, b, slBy);
+      closeSl();
+      toast(b === null ? "Endormi à " + fmtTime(a) : "Sommeil de " + fmtTime(a) + " à " + fmtTime(b) + " noté");
+    } catch (x) { $("slErr").textContent = errMsg(x); $("slErr").hidden = false; }
+  }
+  function startSleepNow() {
+    var now = Date.now(), last = null;
+    for (var i = 0; i < state.sleeps.length; i++) if (state.sleeps[i].end !== null) { last = state.sleeps[i]; break; }
+    var start = last && last.end > now ? last.end : now;
+    buzz(12);
+    addSleep(start, null).then(function (id) {
+      toast((new Date(start).getHours() >= 19 || new Date(start).getHours() < 5 ? "Bonne nuit" : "Bonne sieste") + " ! Endormi à " + fmtTime(start), function () { deleteSleep(id); });
+    }).catch(function (x) { toast(errMsg(x)); });
+  }
+  function wakeNow() {
+    var on = ongoingSleep(); if (!on) return;
+    var end = Math.max(Date.now(), on.start + 60000);
+    buzz([10, 30, 10]);
+    updateSleep(on.id, on.start, end, on.by).then(function () {
+      toast("Réveillé à " + fmtTime(end) + " · " + fmtDur(end - on.start) + " de sommeil", function () { updateSleep(on.id, on.start, null, on.by); });
+    });
+  }
+  function removeSl() {
+    var s = findSleep(slEditId);
+    closeSl();
+    if (!s) return;
+    deleteSleep(s.id).then(function () { toast("Sommeil supprimé", function () { addSleep(s.start, s.end, s.by || "").catch(function (x) { toast(errMsg(x)); }); }); });
+  }
+  function bindSleep() {
+    $("slCard").addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("button"); if (!b) return;
+      if (b.id === "slStart") startSleepNow(); else if (b.id === "slWake") wakeNow();
+    });
+    $("slAdd").addEventListener("click", function () { openSl(null); });
+    $("slList").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("button[data-sl]"); if (b) openSl(b.getAttribute("data-sl")); });
+    $("slForm").addEventListener("submit", submitSl);
+    $("slCancel").addEventListener("click", closeSl);
+    $("slBack").addEventListener("click", closeSl);
+    $("slOpen").addEventListener("click", function () { var v = $("slOpen").getAttribute("aria-pressed") === "true"; $("slOpen").setAttribute("aria-pressed", v ? "false" : "true"); renderSlSheet(); });
+    $("slBy").addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("button[data-by]"); if (!b) return; slBy = b.getAttribute("data-by"); renderSlBy(); });
+    $("slDelete").addEventListener("click", function () {
+      clearTimeout(slDelTimer);
+      if (!slDelArmed) { slDelArmed = true; renderSlSheet(); slDelTimer = setTimeout(function () { slDelArmed = false; renderSlSheet(); }, 4000); }
+      else removeSl();
+    });
   }
 
   /* Feuille de saisie */
@@ -2479,12 +2871,13 @@
   function useCode(code) {
     if (state.mode === "shared") {
       stopSync();
-      state.feeds = []; state.events = []; state.evDenied = false; state.profile = null; state.profileLocal = false;
+      state.feeds = []; state.events = []; state.evDenied = false; state.sleeps = []; state.slDenied = false; state.profile = null; state.profileLocal = false;
       state.mode = "local"; syncedCode = null;
     }
     if (state.mode !== "shared") {
       state.feeds.forEach(function (f) { f.local = true; });
       state.events.forEach(function (x) { x.local = true; });
+      state.sleeps.forEach(function (x) { x.local = true; });
       if (state.profile) state.profileLocal = true;
     }
     state.code = code;
@@ -2592,7 +2985,7 @@
       var b = e.target.closest && e.target.closest("button[data-id]");
       if (b && !suppressClick) openFeed(b.getAttribute("data-id"));
     });
-    bindSwipe($("history")); bindSwipe($("dayDetail")); bindCare();
+    bindSwipe($("history")); bindSwipe($("dayDetail")); bindCare(); bindSleep();
     $("feteOk").addEventListener("click", closeFete);
     $("f2Ok").addEventListener("click", closeFete2);
     $("f3Ok").addEventListener("click", closeFete3);
@@ -2692,6 +3085,7 @@
       else if (!$("fete2").hidden) closeFete2();
       else if (!$("fete").hidden) closeFete();
       else if (!$("evSheet").hidden) closeEv();
+      else if (!$("slSheet").hidden) closeSl();
       else if (!$("feedSheet").hidden) closeFeed();
       else if (!$("shareSheet").hidden) closeShare();
     });
@@ -2704,7 +3098,7 @@
   bind();
   render();
   setInterval(render, 60000);
-  setInterval(function () { renderNow(); renderHero(); }, 15000);
+  setInterval(function () { renderNow(); renderHero(); if (ongoingSleep() && !slOpen) renderSleep(); }, 15000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) { render(); checkFete(); } });
   window.addEventListener("pageshow", render);
   window.addEventListener("online", function () { renderFoot(); tryConnect(); });
